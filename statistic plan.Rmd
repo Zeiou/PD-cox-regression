@@ -358,6 +358,28 @@ In this study, we using the patients' observed data to impute the missing data b
 pmm<-mice(data2[,c(6:18,25,26)],method="pmm",seed=81420,m=10,print=F)
 ```
 
+```{r remove}
+
+pmm$loggedEvents%>%
+  kable(caption='\\label{tab:remove} Remove varibale from imputation model.',booktabs=T,format = "latex",linesep="",digits=2)%>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+  
+```
+
+The table \ref{tab:remove} informs that variable "agedx" is removed from the impuatation model because it is collinear with "agebl". Therefore, "agebl" will be imputed instead of "agedx". 
+
+Because the MICE algorithm is Markov chain Monte Carlo (MCMC) methods, we need to determine when the MICE algorithm has converged. One diagnostic method is to plot the parameters against the iteration number. Convergence is diagnosed when the variance between different sequences is no larger than the variance within each individual sequence. 
+
+```{r convergence, fig.align = "center",fig.cap = "\\label{ } Mean and standard deviation of the synthetic values plotted against iteration number for the imputed data.", fig.pos ='H'}
+# pmm$visitSequence
+
+plot(pmm)
+
+```
+From fig \ref{fig:convergence}, we can see that the different streams freely intermingled with one another and there are no trends. Hence, the MICE algorithm is convergence.
+
+To assess the imputation model fit, first is to plot the density plot of imputed and observed data and see how well they match.
+
 ```{r densityplot1, fig.height=5, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Density plot of observed and imputed data of mmsebltotal.", fig.pos ='H' }
 
 densityplot(pmm,~ mmsebltotal)
@@ -379,7 +401,34 @@ for (i in 1:10) {
 }
 
 ```
-In this study, patients with missing "packyears" variable are all with smoking history, which means these 7 patients' missing "packyears" value should all larger than zero. Therefore, plotting the density plot of `r nrow(packyearsnozero)` patients' non-zero "packyears" observed value to compare with the imputation. In the fig \ref{fig:densityplot2}, the blue line is the observed data and red line is imputed data. We can see that the distribution between observed and imputed data is different. However, since there are only 7 missing, the difference of distribution is acceptable.
+In this study, patients with missing "packyears" variable are all with smoking history, which means these 7 patients' missing "packyears" value should all larger than zero. Therefore, plotting the density plot of `r nrow(packyearsnozero)` patients' non-zero "packyears" observed value to compare with the imputation. In the fig \ref{fig:densityplot2}, the blue line is the observed data and red line is imputed data. We can see that the distribution between observed and imputed data is different. 
+
+The discrepancies may be caused by a bad imputation model, by a missing data mechanism that is not MCAR or by a combination of both. To further compare the distributions of observed and imputed data of "packyears", we use the diagnostic tool proposed by @Diagnostic2016. The idea is that under MAR the conditional distributions should be similar if the assumed model for creating multiple imputations has a good fit.
+
+
+
+
+```{r diagnostic, fig.align = "center",fig.cap = "\\label{ } Packyears against missingness probability for observed and imputed values.", fig.pos ='H'}
+
+fit<-with(pmm,glm(ici(pmm)~agebl+agesymptomonset+sex+packyears+eversmok+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsebltotal+mmseyr1total+cens+tt,family = binomial))
+
+# agebl+agesymptomonset+sex+packyears+eversmok+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsebltotal+mmseyr1total+cens+tt
+
+ps<-rep(rowMeans(sapply(fit$analyses,fitted.values)),pmm$m +1)
+
+xyplot(pmm, packyears~ps | as.factor(.imp),
+       xlab="Probability that record is incomplete",
+       ylab="Packyears",
+       pch=c(1,19),
+       col=mdc(1:2))
+
+
+
+
+```
+
+The \ref{fig:diagnostic} shows that the distributions of the blue and red points are quite similar, as expected under MAR. Therefore, the imputation model has a good fit.
+
 
 
 ### Buliding model

@@ -256,7 +256,7 @@ Table \ref{tab:KM} shows the median survival time for patients with Parkinson's 
 
 
 
-ggsurvplot(survfit(Surv(tt/365,cens)~diagnosiscat,data=data),xlab="Survival days",data,surv.median.line = "hv",legend="top")
+ggsurvplot(survfit(Surv(tt/365.25,cens)~diagnosiscat,data=data),xlab="Survival days",data,surv.median.line = "hv",legend="top")
 
 
 
@@ -265,7 +265,7 @@ The fig \ref{fig:KMplot} shows that the survival curve for the Parkinson's disea
 
 ### The incidence rate 
 
-```{r incidence}
+```{r incidence,eval=FALSE}
 
 data%>%
   group_by(diagnosiscat)%>%
@@ -273,8 +273,11 @@ data%>%
   kable(caption='\\label{tab:incidence} Incidence rate.',booktabs=T,format = "latex",linesep="",digits=2) %>%
   kable_styling(font_size = 11,latex_options = "HOLD_position")
 
+
+
+#Table \ref{tab:incidence} shows that Atypical parkinsonism group has the highest incidence rate of institutionalization (0.605), which is 1.7 times higher than the incidence rate in Parkinson's disease group (0.353). And the incidence rate in control group is the lowest, only 0.173. 
 ```
-Table \ref{tab:incidence} shows that Atypical parkinsonism group has the highest incidence rate of institutionalization (0.605), which is 1.7 times higher than the incidence rate in Parkinson's disease group (0.353). And the incidence rate in control group is the lowest, only 0.173. 
+
 
 ## Identify the risk factors 
 
@@ -292,7 +295,7 @@ From the fig \ref{fig:colplot}, we can see the correlation between variable "age
 
 ### Missing data pattern
 
-```{r missplot,out.width="70%", fig.align = "center",fig.cap = "\\label { } Cluster analysis showing which predictors tend to be missing on the same patients.", fig.pos ='H'}
+```{r missplot,out.width="80%", fig.align = "center",fig.cap = "\\label { } Cluster analysis showing which predictors tend to be missing on the same patients.", fig.pos ='H'}
 
 plot(naclus(data2[,c(6:18)]))
 
@@ -468,7 +471,7 @@ data.frame(Model=c("Model A","Model B","Model C") ,AIC = c(AIC1,AIC2,AIC3), BIC 
 
 From table\ref{tab:AIC}, we can see Model C has the lowest AIC and BIC value. 
 
-```{r wald}
+```{r anova}
 
 modela<-coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsebltotal,data=data2)  #full
 modelb<-coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsebltotal,data=data2)       #without hybl
@@ -478,35 +481,7 @@ data.frame(Model=c("Model A","Model B","Model C"),anova(modela,modelb,modelc))%>
   kable(caption='\\label{tab:wald} The ANOVA table.',booktabs=T,format = "latex",linesep="",digits=2)%>%
   kable_styling(font_size = 10,latex_options = "HOLD_position") 
 ```
-Table table\ref{tab:wald} shows that Model C is significance, therefore we choose model C as the final model. 
-
-```{r cox}
-
-# cox<- with(pmm,exp=coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsebltotal))
-
-# cox<- with(pmm,cph(Surv(tt,cens) ~ rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+hybl+sebl+rcs(mmsebltotal,3)))
-
-
-# cox.res.exp<-summary(pool(cox), exponentiate = TRUE, conf.int = 0.95) %>%
-               #dplyr::rename("exp(coef)" = "estimate",
-                      #"exp(coef)2.5%"="2.5 %",
-                       #"exp(coef)97.5%"="97.5 %")
-
-
-
-
-#cox.res.exp$coef<-cox.res.notexp$estimate
-
-#cox.res.exp<-cox.res.exp[,c(1,9,2:8)]
-
-
-#cox.res.exp%>% 
-  #kable(caption='\\label{tab:cox} Cox regression output #result.',booktabs=T,format = "latex",linesep="",digits=2)%>%
- # kable_styling(font_size = 11,latex_options = "HOLD_position")
-  
-
-
-```
+Table table\ref{tab:wald} shows that Model C is significance, therefore we choose Model C as the final model. 
 
 Then we test the proportional hazards assumption of this cox regression model by Schoenfeld residuals in each of the imputed dataset.
 
@@ -529,17 +504,17 @@ for (i in 1:10){
 }
 
 unlist(test.ph1[["table"]]) %>%
-   kable(caption='\\label{tab:testcox} PH assumption test results.',booktabs=T,format = "latex",linesep="",digits=2)%>%
+   kable(caption='\\label{tab:testcox} PH assumption test results.',booktabs=T,format = "latex",linesep="",digits=3)%>%
   kable_styling(font_size = 11,latex_options = "HOLD_position")
 
 ```
 
-Table \ref{tab:testcox} shows a example of proportional hazards assumption, we can see that all the p-value is larger than 0.05. Hence there is no enough evidence to reject the null hypothesis of proportional hazards assumption. After checking proportional hazards assumption in each imputed dataset, we found no enough evidence to reject th assumption. 
+Table \ref{tab:testcox} shows a example of proportional hazards assumption, we can see that all the p-value is larger than 0.05. Hence there is no enough evidence to reject the null hypothesis of proportional hazards assumption. After checking proportional hazards assumption in each imputed dataset, we found no enough evidence to reject the assumption. 
 
 To assess the good fit of model, we plot the Martingale residual against continuous predictors. If the fitted model is correct, these residuals should symmetrically distributed with expected value 0.
 
 
-```{r martingale,fig.align = "center",fig.cap = "\\label{ } Martingale residuals versus four continuous predictors.", fig.pos ='H'}
+```{r martingale,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Martingale residuals versus four continuous predictors.", fig.pos ='H'}
 
 pmm1<-complete(pmm,1)
 rr.0<-residuals(coxph(Surv(tt,cens)~1,data = data2),type="martingale")
@@ -580,12 +555,12 @@ The \ref{fig:martingale} shows that variable "agebl" and "mmsebltotal" need to t
 
 
 
-```{r rcs,eval=FALSE}
+```{r rcs,results = 'hide'}
 dd<-datadist(data2)
 options(datadist='dd')
 
-modelc.rcs1<- fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+hybl+sebl+rcs(mmsebltotal,3)),x=T,cph,xtrans=pmm)
-modelc.rcs2<- fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+rcs(mmsebltotal,3)),x=T,cph,xtrans=pmm)
+modelc.rcs1<- fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+hybl+sebl+rcs(mmsebltotal,3)),x=T,y=T,surv=T,cph,xtrans=pmm)
+modelc.rcs2<- fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+rcs(mmsebltotal,3)),x=T,y=T,surv=T,cph,xtrans=pmm)
 
 ```
 ```{r selectrcs}
@@ -596,8 +571,14 @@ data.frame(Model=c("Both 3 knots of agebl and mmsebltotal","Only 3 knots of mmse
   kable_styling(font_size = 11,latex_options = "HOLD_position")
 
 ```
-Table \ref{tab:selectrcs} shows that these two models have same value of $R^2$ and $D_{xy}$. Due to this study only has 140 events and to avoid over fitting, we choose the model without knots in "agebl" 
-```{r }
+Table \ref{tab:selectrcs} shows that these two models have same value of $R^2$ and $D_{xy}$. Due to this study only has 140 events and to avoid over fitting, we choose the model without knots in "agebl". The model equation is: 
+
+$\hat{h}(t,\mbox{X})=\hat{h}_{0}(t)e^{\beta_{1} \cdot agebl+\beta_{2} \cdot sex+\beta_{3} \cdot packyears+\beta_{4} \cdot livesalone+\beta_{5} \cdot charlsonbl+\beta_{6} \cdot hybl+\beta_{7} \cdot sebl+f(mmsebltotal)}$, where
+
+$f(mmsebltotal)=\beta_{8} \cdot mmsebltotal+\beta_{9} \cdot mmsebltotal^{'}.$
+
+
+```{r waldlinear}
 
 round_df <- function(x, digits) {
     # round all numeric variables
@@ -608,33 +589,82 @@ round_df <- function(x, digits) {
     x
 }
 
-round_df(data.frame(anova(modelc.rcs2)), 3)
+
+round_df(data.frame(anova(modelc.rcs2)), 3)%>%
+   kable(caption='\\label{tab:wald} Wald statistics for survival function.',booktabs=T,format = "latex",linesep="",digits=2)%>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
 ```
-The total savings is thus 3 d.f. 
-
-```{r }
-
-plot(summary(modelc.rcs2),main='')
-
-ggplot(Predict(modelc.rcs2))
-
-modelc.rcs<- fit.mult.impute((Surv(tt,cens)~ agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+rcs(mmsebltotal,3)),x=T,cph,xtrans=pmm)
-
-modelc.rcs
-
-#pmm<-mice(data2[,c(6,9:18,25:27)],method="pmm",seed=81420,m=10,print=F)
-
-#long<-complete(pmm,'long',include = T)
-
-#impute.short<-as.mids(long)
+Table \ref{tab:wald} shows there are 8 parameters associated with nonlinear effects, and the overall test of linearity indicates the strong presence of nonlinearity for at least one of the variable "agebl", "packyears","mmsebltotal". There is no strong evidence for a difference in survival time between sex, whether lives alone or not, Charlson co-morbidity index at baseline, Hoehn & Yahr disease stage at baseline, and Schwab & England ADL score at baseline.
 
 
-# z<-predict(modelc.rcs,type='terms',data=impute.short ) #315
+```{r testcox2}
 
-#impute.short$imp
+test_names<- paste("test.rcs.ph",1:10,sep="")   # create names first
 
-# f.short<-cph(Surv(tt,cens)~z,x=T,y=T,data = impute.short$imp)
-# cox.zph(f.short,transform = 'identity')
+for (i in 1:10){
+    test.rcs.ph_df<-cox.zph(cph((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+rcs(mmsebltotal,3)),data=get(paste0("pmm",i)),x = TRUE, y = TRUE, surv = TRUE),transform = "km")
+    assign(test_names[i], test.rcs.ph_df)
+}
+
+unlist(test.rcs.ph10[["table"]]) %>%
+   kable(caption='\\label{tab:testcox2} PH assumption test of model with RCS.',booktabs=T,format = "latex",linesep="",digits=3)%>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+
+
+
+
+```
+Table \ref{tab:testcox2} shows that only the p-value of variable "sebl" is less than 0.05, which means it significantly changes over time. However, the p-value of global test of PH is 0.214. Therefore, in general, the proportional hazards assumption is valid. Next, we plot the resudial plot of "sebl". 
+
+
+```{r reslplot,eval=FALSE}
+plot(cox.zph(cph((Surv(tt/365,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+rcs(mmsebltotal,3)),data=pmm10,x = TRUE, y = TRUE, surv = TRUE),transform = "km"),var='sebl')
+
+```
+
+
+
+
+
+```{r coxout}
+
+sumrcs2<-data.frame(summary(modelc.rcs2))
+
+row.names(sumrcs2)<-c("agebl","agebl Hazard Ratio","sex","sex Hazard Ratio","packyears", "packyears Hazard Ratio","livesalone","livesalone Hazard Ratio","charlsonbl","charlsonbl Hazard Ratio","hybl","hybl Hazard Ratio","sebl","sebl Hazard Ratio","mmsebltotal","mmsebltotal Hazard Ratio")
+
+sumrcs2%>%
+  select(Effect,Lower.0.95,Upper.0.95)%>%
+   kable(caption='\\label{tab:coxout} Summary of estimatied effects.',booktabs=T,format = "latex",linesep="",digits=3)%>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+  
+
+```
+
+Table \ref{tab:coxout} shows the hazard ratio confidence interval of variable "sex", "livesalone", "charlsonbl", "hybl", and "sebl" include one. Hence, they are not statistical significance. The risk of being admitted into institution for female is 7.1% higher than male. And for patients live alone the risk is 24.2% higher than those live with someone at baseline. And patients with one higher level in Hoehn & Yahr disease stage at baseline will increase the risk by 29.4%. However, patients with one level higher in Charlson co-morbidity index or Schwab & England ADL score at baseline, their risk of being admitted into institution will decrease 85.7% and 76% respectively. 
+
+
+On the contrary, the effects of "agebl", "packyears" and "mmsebltotal" are statistical significance.
+The hazard ratio of patients who are one year old older than others at baseline visit is 1.896. Hence, every one year older, the risk of being admitted into institution increases 89.6%. And for patients'  one more pack in annual smoking history, the risk of being admitted into institution increases 14.5%. However, for patient with one level higher in minimental state examination score at baseline, the risk of being admitted into institution will decrease 34.7%. 
+
+Then we present the point and interval estimates of predictor effects by a hazard ratio chart. And the final presentation of the model is by a nomogram plot.
+```{r coxoutplot,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Hazard ratios and confidence bars for effects of predictors in model.", fig.pos ='H'}
+
+plot(summary (modelc.rcs2),main= '' )
+
+```
+
+```{r nomogram,fig.align = "center",fig.cap = "\\label{ } Nomogram for predicting the risk of entering institution.", fig.pos ='H'}
+
+
+
+surv <- Survival(modelc.rcs2)
+surv5 <- function(x) surv(5*365,lp=x)
+surv8 <- function(x) surv(8*365,lp=x)
+
+
+plot(nomogram(modelc.rcs2, 
+              fun=list(surv5, surv8), 
+              funlabel=c('5-year survival', '8-year survival')))
 
 ```
 

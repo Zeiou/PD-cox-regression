@@ -1,0 +1,666 @@
+---
+title: "PD cox regression"
+author: "Yan Li"
+header-includes:
+- \usepackage{floatrow}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+- \floatsetup[table]{capposition=top}
+- \floatplacement{table}{H}
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    number_sections: yes
+  word_document: default
+fig_caption: yes
+bibliography: my5.bib
+fontsize: 12pt
+bookdown::pdf_book: null
+citation_package: none
+csl: harvard-cite-them-right2.csl
+nocite: '@*'
+---
+# Abstract
+
+When patients with Parkinson's disease lose their ability to take care of themselves, and carers are no longer able to care for them at home, they will need long-term care. The risk factors for being admitted to a nursing home are unclear and there are few published studies. This work will identify the incidence of institutionalization by Kaplan-Meier estimate. And identify the risk factors for institutionalization using cox regression, using data from a prospective incident cohort of parkinsonism in North East Scotland.
+
+
+# Introduction
+
+Parkinson's disease (PD) and atypical parkinsonism are neurodegenerative disorders. As the disease progresses, the needs for care in PD patients will increase and many patients will need to enter a long-term care institution, such as a nursing home. No previous studies have reported the incidence of institutionalisation in PD and atypical parkinsonism in a population-representative cohort. Several studies have investigated risk factors for institutionalisation. A previous study suggested that older patients who live alone with motor disability are tend to have higher probability entering the nursing home [@pred2000]. And @pred2015 pointed out that the probability of being admitted into nursing home was associated with race and sex. In previous study, the researchers found that dementia, hallucinations cognitive decline, and hip fracture were risk factors for PD patients[@pred1993;@pred2000;@pred2015]. Based on the previous studies' finding, the clinicians can plan management earlier and provide more appropriate services to help PD patients. No previous studies have investigated risk factors in a population-representative cohort. No previous study has examined the influence of socioeconomic status on institutionalisation in parkinsonism. 
+
+This study will first identify the incidence of institutionalization in PD and atypical parkinsonism. Then identify the risk factors for institutionalization in PD and atypical parkinsonism.
+
+
+# Methods
+
+**Databases**
+
+The Parkinsonism incidence in North-East Scotland (PINE) study is a prospective follow-up study that collecting patients' data on survival, disability, and institutionalization till death annually [@Field2016]. The pilot study of PINE is from 2002 to 2004 and the main study is from 2006 to 2009. It recruited all patients with a newly diagnosed presumed degenerative or vascular parkinsonian syndrome over 4.5 years from a baseline population of about 315000 registered with 37 primary care practices in and around Aberdeen, Scotland. The screening in multiple overlapping searches is limited to the population over 65 years old. And, Parkinsonism was defined as two or more cardinal motor signs and patients with drug-induced parkinsonism were excluded. Ongoing yearly follow-up the eligible patients and their carers with linkage to the national death register. And, the standardized baseline visit at diagnosis and annually was the same for patients and controls. At each annual review the parkinsonian syndrome was classified by a single consultant neurologist with movement disorders expertise using all information, by applying the appropriate research criteria, and the patients' diagnosis was assigned by the best fitted criteria. If patients died, then the diagnosis was made after reviewing all the clinical and imaging information held in their research files and the annual videotaped examinations or from pathology in those who had given consent for post-mortems. For the lost to follow-up patients, identifying an age-sex matched control from the same primary care practice or a register of elderly people who had taken part in a previous community-based screening project. At each annual visit (and when notification of death was received) the patient's address was documented. If this was a nursing home or other form of institutionalisation, the date of admission was obtained from the patient, or from the nursing home if the patient was unable to remember. And if the patient died, the details about the date, place and cause of death from death certificates and primary and secondary care records were collected.
+
+**Analysis**
+
+The event of interest is institutionalisation, which is defined as entry to a nursing home, residential home, or long-stay hospital ward. Hence, the date of institution is the date of entry into the institution. Patients lost to follow, who died without being institutionalised, or alive at end of follow-up but were not admitted to and institution were censored. For participants who were not institutionalised, the censoring date will be the date lost to follow-up, if lost to follow-up; the date of death, if dead and not lost to follow-up; and date last known to be alive and living at home. The survival time is the difference between the event/censoring time and the date of baseline visit.
+
+The study will first use the Kaplan-Meier(KM) estimate to find the median time of participants in PD, Atypical parkinsonism and control group being admitted into institutionalization. Then plotting separate KM survival curves and calculating the incidence rates of these three groups. 
+
+The analyse of identifying the risk factors will only use the data of patients with PD and atypical parkinsonism only. Since the data is incomplete, the missing data cluster and pattern will be plotted. Then using the patients' observed data to impute the missing data by predictive mean matching method with MICE algorithm. And, the convergence and good fit of multiple imputation model will be checked. This study will also compare three different cox regression models by model selection method. The predictor variables in the best cox regression models are "agebl", "sex", "packyears", "livesalone", "charlsonbl", "cirsbl", "hybl", "sebl" and "mmsecat". The model assumption of proportional hazards will be checked by Schoenfeld residuals method. And accessing the goodness fit of model by the martingale residual plot. Finally, the point and interval estimates of predictor effects will be present by nomogram.
+
+
+
+# Describe of data
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F,eval = T,warning = F,message = F)
+
+```
+
+```{r library}
+library(xtable)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(gridExtra)
+library(Hmisc)
+library(readstata13)
+library(survival)
+library(survminer)
+library(rms)
+library(skimr)
+library(finalfit)
+library(mice)
+library(ggplot2)
+library(GGally)
+library(png)
+
+# install.packages('Hmisc')
+```
+
+```{r options}
+options( tinytex.verbose = TRUE)
+```
+
+```{r }
+data<-read.dta13("updata3.dta",nonint.factors = T,missing.type = T)
+data[is.na(data)] <- NA  #575
+```
+
+
+There are total `r nrow(data)` participants data,  with `r sum(is.na(data$dateinstitution))` participants' data undefined the date of institution.
+
+```{r data}
+
+attach(data)
+
+data<-data %>%
+  mutate(t=dateinstitution)%>%           
+  mutate(t=coalesce(t,datelost))%>%
+  mutate(t=coalesce(t,datedeath))%>%
+  mutate(t=coalesce(t,datelastknownalive))
+
+# sum(is.na(data$t))
+
+data$cens<-ifelse(is.na(dateinstitution),0,1)
+
+
+data$tt<-as.Date(as.character(data$t), format="%Y-%m-%d")-
+                as.Date(as.character(data$datevisitbl), format="%Y-%m-%d")
+
+data$year<-data$tt/365.25
+```
+
+```{r data2}
+
+data2<- subset(data,!(diagnosiscat %in% c("Control")))
+```
+
+```{r agebl}
+
+my_skim <- skim_with(base = sfl(n = length))
+
+data%>%
+  group_by(diagnosiscat)%>%
+  dplyr::select(agebl)%>%
+  my_skim()%>%
+  transmute(Variable=skim_variable,Group=diagnosiscat,n=n,Mean=numeric.mean,SD=numeric.sd,Min=numeric.p0,Median=numeric.p50,Max=numeric.p100,IQR=numeric.p75-numeric.p50)%>%
+  kable(caption='\\label{tab:agebl} Summary statistics of the age at baseline visit.',booktabs=T,format = "latex",linesep="",digits=2) %>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+
+
+```
+
+Table \ref{tab:agebl} shows there are 201 patients have been diagnosed Parkinson's disease, and 114 patients have been diagnosed Atypical parkinsonism, and 260 patients in control group. And the patients' mean age at baseline visit in Parkinson's disease is around 6 years old younger than atypical parkinsonism. The youngest patient with Parkinson's disease is 17.6 years old younger than that of atypical parkinsonism. And the interquartile range of patients' baseline visit age with Parkinson's disease is wider than the other two groups' patients.
+
+```{r ageboxplot, fig.height=5, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Boxplots of patients' age at diagnosis and at onset of parkinsonian symptoms.", fig.pos ='H' }
+
+plot1<-ggplot(data=data2,aes(y=agedx,x=diagnosiscat))+
+  geom_boxplot()+
+  ylab("Age at diagnosis of parkinsonian syndrome")+
+  xlab("Diagnoses group")
+
+
+plot2<-ggplot(data=data2,aes(agesymptomonset,x=diagnosiscat))+
+  geom_boxplot()+
+  ylab("Age at onset of parkinsonian symptoms")+
+  xlab("Diagnoses group")
+
+grid.arrange(plot1, plot2,ncol=2, nrow=1)
+
+```
+
+The fig \ref{fig:ageboxplot} shows the distribution of patients' age at diagnosis and at onset of parkinsonian symptoms are similarly. 
+
+```{r sex}
+
+data$sex.mf<-ifelse(sex==0,"male","female")
+
+
+data%>%
+  group_by(diagnosiscat,sex.mf)%>%
+  dplyr::summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),2),'%'))%>%
+  kable(caption='\\label{tab:sex} Summary statistics of the sex.',booktabs=T,format = "latex",linesep="",digits=2) %>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+
+```
+
+Table \ref{tab:sex} shows that there are more men than women in each group, the number of male patients is around 1.6 times than female in total.
+
+```{r packyears}
+
+my_skim <- skim_with(base = sfl(n = length))
+
+data%>%
+  group_by(diagnosiscat)%>%
+  dplyr::select(packyears)%>%
+  my_skim()%>%
+  transmute(Variable=skim_variable,Group=diagnosiscat,Mean=numeric.mean,SD=numeric.sd,Median=numeric.p50,Max=numeric.p100,IQR=numeric.p75-numeric.p50)%>%
+  kable(caption='\\label{tab:packyears} Summary statistics of smoking history in pack-years.',booktabs=T,format = "latex",linesep="",digits=2) %>%
+  kable_styling(font_size = 10,latex_options = "HOLD_position")
+
+
+
+```
+
+Table \ref{tab:packyears} shows the mean of smoking history in pack-years in Atypical parkinsonism group is highest with widest interquartile range due to the maximum number of that is larger than the other two groups. And the median of all three groups are much lower than their mean value, which means that in each group there are lots of no-smoking participants. 
+
+```{r  eversmok}
+
+data$eversmok.yn<-ifelse(eversmok==0,"no","yes")
+
+data%>%
+  group_by(diagnosiscat,eversmok.yn)%>%
+  dplyr::summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),2),'%'))%>%
+  transmute(eversmok= eversmok.yn, n=n,percentage=percentage)%>%
+  kable(caption='\\label{tab:eversmok} Summary statistics of ever smoking or not.',booktabs=T,format = "latex",linesep="",digits=2) %>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+
+```
+Table \ref{tab:eversmok} shows more than half PD patients don't smoke. However, more than half patients smoke in atypical parkinsonism and control group. And there are few missing data in control group.
+
+
+```{r livesalone}
+
+data$livesalone.yn<-ifelse(livesalone==1,"yes","no")
+
+data%>%
+  group_by(diagnosiscat,livesalone.yn)%>%
+  dplyr::summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),2),'%'))%>%
+  kable(caption='\\label{tab:livesalone} Summary statistics of whether participants live alone or not.',booktabs=T,format = "latex",linesep="",digits=2) %>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+
+```
+
+Table \ref{tab:livesalone} shows that the proportion of living alone in Atypical parkinsonism group (31.58%) is higher than that of Parkinson's disease (24.88%). And around half of the participants in control group live alone, despite there are three missing value in control groups. 
+
+
+# Analysis
+
+## The incidence of institutionalization
+
+### The median time to institutionalization in each group.
+
+```{r KM}
+
+KM2<-survfit(Surv(tt/365,cens)~diagnosiscat,data=data,type="fh")
+
+data.frame(groups= c("Parkinson's disease","Atypical parkinsonism","Control"),n=c(201,114,260),events=c(71,69,45),median=c(11.78,2.55,NA),LCL=c(9.45,2.55,NA),UCL=c(NA,4.24,NA))%>%
+  kable(caption='\\label{tab:KM} Kaplan-Meier estimate of the survival function.',booktabs=T,format = "latex",linesep="",digits=2) %>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+
+```
+Table \ref{tab:KM} shows the median survival time for patients with Parkinson's disease is 11.78 years and for patients with Atypical parkinsonism is 2.55 years. The median survival time and the upper 95% confidence limit for control group are both undefined, indicated by a missing value “NA”. To better visualized the estimation, we plot the Kaplan-Maier survival curve.
+
+### KM analysis of institutionalization with separate survival curves
+
+```{r KMplot,out.width="60%", fig.align = "center",fig.cap = "\\label { } Kaplan-Maier survival curve.", fig.pos ='H'}
+
+
+
+ggsurvplot(survfit(Surv(year,cens)~diagnosiscat,data=data),xlab="Survival days",data,surv.median.line = "hv",legend="top")
+
+
+
+```
+The fig \ref{fig:KMplot} shows that the survival curve for the Parkinson's disease group is above that for the Atypical parkinsonism group. Hence, we can conclude that the survival time for patients with Parkinson's disease is longer than patients with Atypical parkinsonism. And the control group has the longest survival time. 
+
+### The incidence rate 
+
+```{r incidence}
+
+data%>%
+  group_by(diagnosiscat)%>%
+  summarise('incidence rate'=paste0(round(sum(cens)/as.numeric(sum(year))*100,3),'%'))%>%
+  rename(group=diagnosiscat)%>%
+  kable(caption='\\label{tab:incidence} Summary of incidence rate by group.',booktabs=T,format = "latex",linesep="",digits=2) %>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+
+
+
+```
+
+Table \ref{tab:incidence} shows that Atypical parkinsonism group has the highest incidence rate of institutionalization (27.563%), which is 5.3 times higher than the incidence rate in Parkinson's disease group (5.188%). And the incidence rate in control group is the lowest, only 1.921%. 
+
+## Identify the risk factors 
+
+To identify risk factors of institutionalisation using, we only consider the patients with Parkinson's disease or Atypical parkinsonism. Therefore, after excluding the data of control, the number of remain patients is `r nrow(data2)`. 
+
+### Corrleation of predictors
+
+```{r colplot,out.width="60%", fig.align = "center",fig.cap = "\\label { } Corrleation plot.", fig.pos ='H'}
+
+ggcorr(data2[,c(6:18)], label=F)
+
+
+```
+From the fig \ref{fig:colplot}, we can see the correlation between variable "agebl", "agedx", and "agesymptomonset" is one. Therefore, to avoid multicollinearity, only variable "agebl" will be included in the imputation model.
+
+### Missing data pattern
+
+```{r missplot,out.width="65%", fig.align = "center",fig.cap = "\\label { } Cluster analysis showing which predictors tend to be missing on the same patients.", fig.pos ='H'}
+
+plot(naclus(data2[,c(6:18)]))
+
+```
+
+From the fig \ref{fig:missplot}, we can see that minimental state examination score at baseline and minimental state examination score at year 1 are likely to be found missing in the same patients. 
+
+ 
+```{r mistable1}
+
+explanatory<-c("packyears","mmsebltotal","mmseyr1total")
+dependent<- c("cens","tt")
+
+fit1<-data2%>%
+  ff_glimpse(dependent,explanatory)
+
+data.frame(Variable=c("packyears","mmsebltotal","mmseyr1total"),n=c(308,289,257),missing_n=c(7,26,58),missing_percent=c("2.2%","8.3%","18.4%")) %>%
+  kable(caption='\\label{tab:mistable1}  Summary of missing data.',booktabs=T,format = "latex",linesep="",digits=2) %>%
+  kable_styling(font_size = 10,latex_options = "HOLD_position")
+  
+
+```
+
+Table \ref{tab:mistable1} shows that there are `r sum(is.na(data2$packyears))` missing in the variable of smoking history in pack-years. For minimental state examination score, `r sum(is.na(data2$mmsebltotal))` missing at basline and `r sum(is.na(data2$mmseyr1total))` missing at year 1. 
+
+```{r misspattern,out.width="70%", fig.align = "center",fig.cap = "\\label { } Missing data pattern.", fig.pos ='H'}
+
+mispattern<-data2 %>% 
+  missing_pattern(explanatory)
+```
+The fig \ref{fig:misspattern} is the visualisation of this missing pattern output, where the blue cubic means observed and red cubic means missing. From the fig \ref{fig:misspattern}, we can see that 26 patients missing with the "mmsebltotal" variable and 7 patients missing with "packyears" variable.
+
+```{r mistable2}
+
+as.data.frame(mispattern)%>%
+  rename(" "=V4)%>%
+  kable(caption='\\label{tab:mistable2}  Summary of missing data pattern.',booktabs=T,format = "latex",linesep="",digits=2)%>%
+  kable_styling(font_size = 10,latex_options = "HOLD_position")
+
+```
+
+In the table \ref{tab:mistable2}, value 0 means missing and 1 means observed in the output, and the first column shows the frequency of each pattern. The missing pattern is general and connected through the first row. The number of missing entries in each pattern shows in the last column. For example, the first row means there are 241 patients in the dataset with all three observed variables. 
+
+### Mutiple Imputation 
+
+In this study, we using the patients' observed data to impute the missing data by the predictive mean matching method with MICE algorithm. Since the "mmseyr1total" variable will not be used in the cox regression model, we do not consider the imputation of "mmseyr1total" and only use it as observed data to impute other 2 missing variables. There are 33 patients missing with "mmsebltotal" or "packyears", which takes 10.5% patients in total. Hence, the imputation times will be 10.
+
+
+```{r pmm}
+
+data2$diagnosiscatbinary<-ifelse(data2$diagnosiscat=="Atypical parkinsonism",0,1)   # (,yes,no) Atypical parkinsonism=0, Parkinson's disease=1
+
+pmm<-mice(data2[,c(4,6,9:18,25:26)],method="pmm",seed=81420,m=10,print=F)
+
+
+```
+
+
+Because the MICE algorithm is Markov chain Monte Carlo (MCMC) methods, we need to determine when the MICE algorithm has converged. One diagnostic method is to plot the parameters against the iteration number. Convergence is diagnosed when the variance between different sequences is no larger than the variance within each individual sequence. 
+
+```{r convergence, fig.align = "center",fig.cap = "\\label{ } Mean and standard deviation of the synthetic values plotted against iteration number for the imputed data.", fig.pos ='H'}
+# pmm$visitSequence
+
+plot(pmm)
+
+```
+From fig \ref{fig:convergence}, we can see that the different streams freely intermingled with one another and there are no trends. Hence, the MICE algorithm is convergence.
+
+To assess the imputation model fit, first is to plot the density plot of imputed and observed data and see how well they match.
+
+```{r densityplot1,fig.height=5, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Density plot of observed and imputed data of mmsebltotal.", fig.pos ='H' }
+
+densityplot(pmm,~ mmsebltotal)
+
+```
+
+In the fig \ref{fig:densityplot1}, the blue line is the observed data and red line is imputed data. From the fig \ref{fig:densityplot1}, we can see that the distribution of observed and imputed data is similar.
+
+```{r densityplot2, fig.height=5, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Density plot of non-zero observed and imputed data of packyears.", fig.pos ='H'}
+
+imp.packyears<-pmm[["imp"]][["packyears"]]
+
+
+packyearsnozero<-subset(data2,packyears>0)
+
+
+ plot(density(packyearsnozero$packyears),col="darkblue",main=" ", xlab = "packyears")
+for (i in 1:10) {
+  lines(density(imp.packyears[,i] ),col="deeppink3")
+}
+
+```
+In this study, patients with missing "packyears" variable are all with smoking history, which means these 7 patients' missing "packyears" value should all larger than zero. Therefore, plotting the density plot of `r nrow(packyearsnozero)` patients' non-zero "packyears" observed value to compare with the imputation. In the fig \ref{fig:densityplot2}, the blue line is the observed data and red line is imputed data. We can see that the distribution between observed and imputed data is different. 
+
+The discrepancies may be caused by a bad imputation model, by a missing data mechanism that is not MCAR or by a combination of both. To further compare the distributions of observed and imputed data of "packyears", we use the diagnostic tool proposed by @Diagnostic2016. The idea is that under MAR the conditional distributions should be similar if the assumed model for creating multiple imputations has a good fit.
+
+```{r diagnostic, fig.align = "center",fig.cap = "\\label{ } Packyears against missingness probability for observed and imputed values.", fig.pos ='H'}
+
+fit<-with(pmm,glm(ici(pmm)~agebl+sex+packyears+eversmok+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsebltotal+mmseyr1total+cens+tt,family = binomial))
+
+# agebl+agesymptomonset+sex+packyears+eversmok+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsebltotal+mmseyr1total+cens+tt
+
+ps<-rep(rowMeans(sapply(fit$analyses,fitted.values)),pmm$m +1)
+
+xyplot(pmm, packyears~ps | as.factor(.imp),
+       xlab="Probability that record is incomplete",
+       ylab="Packyears",
+       pch=c(1,19),
+       col=mdc(1:2))
+
+
+
+
+```
+
+The \ref{fig:diagnostic} shows that the distributions of the blue and red points are quite similar, as expected under MAR. Therefore, the imputation model has a good fit. patients
+
+
+
+```{r mmsecat}
+
+long<-complete(pmm, 'long', include=TRUE) #include=T means, the long contains original data and 10 imputed data.
+                                          #if include=FALSE or not specified, Error in as.mids(long) : Original data not found.
+
+
+N <- nrow(long)
+for (i in 1:N){
+  if(!is.na(long$mmsebltotal[i])){
+    if (long$mmsebltotal[i] <= 23 ){
+      long$mmsecat[i] = 0
+    }else if (long$mmsebltotal[i] <= 27 && long$mmsebltotal[i] > 23){
+      long$mmsecat[i] = 1
+    }else if (long$mmsebltotal[i] <= 30 && long$mmsebltotal[i] > 27){
+      long$mmsecat[i] = 2
+    }
+  }
+}
+
+
+
+
+long$mmsecat<-factor(long$mmsecat,
+                        levels = c(0,1,2),
+                        labels = c("<24", "24-27", "28-30"))
+
+
+
+pmm.new<-as.mids(long)
+
+
+
+```
+
+
+
+
+
+## Cox regression model
+
+### Model selection
+
+
+In this study, in total, there are nine predictors: 
+
+- "agebl" is age at baseline visit;
+
+- "sex" is male or female;
+
+- "packyears" is smoking history in pack-years;
+
+- "livesalone" is participant lives alone or lives with someone at baseline;
+
+- "charlsonbl" is Charlson co-morbidity index at baseline;
+
+- "updrsblpart3" is UPDRS part 3 (motor) score;
+
+- "hybl" is Hoehn & Yahr disease stage at baseline;
+
+- "sebl" is Schwab & England ADL score at baseline;
+
+- "mmsecat" is category of minimental state examination score at baseline. There are three categories, the first one is the minimental state examination score at baseline is less than 24, the second one is the score greater or equal to 24 and less than 28, and the last one is greater or equal than 28 and less than 30.
+
+Here, we compare 3 cox regression models to choose the best model. The first is the full model with all these nine predictors, the second is the model without "hybl" variable and the third is the model without "updrsblpart3". 
+
+```{r cox models,results = 'hide'}
+
+dd<-datadist(long)
+options(datadist='dd')
+
+modela<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsecat),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)  #full
+
+modelb<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) #without hybl
+
+modelc<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) #without updrsblpart3
+
+```
+
+```{r ,eval=FALSE}
+modela
+modelb
+modelc
+
+```
+
+
+
+
+
+```{r model select}
+
+AIC1<-AIC(modela)  #full
+AIC2<-AIC(modelb)  #without hybl
+AIC3<-AIC(modelc)  #without updrs
+
+
+BIC1<-BIC(modela)  #full
+BIC2<-BIC(modelb)  #without hybl
+BIC3<-BIC(modelc) #without updrs
+
+
+data.frame(Model=c("Full Model","Model without Hoehn & Yahr disease stage at baseline","Model without UPDRS part 3 (motor) score") , 'LR chi2'=c(149.81,147.68,149.76),'d.f.'=c(10,9,9),'R square' = c(0.383,0.379,0.383),AIC = c(AIC1,AIC2,AIC3), BIC = c(BIC1,BIC2,BIC3))%>%
+  kable(caption='\\label{tab:select} Model tests and discrimination indexes.',booktabs=T,format = "latex",linesep="",digits=2)%>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+
+
+```
+
+
+Table \ref{tab:select} shows that the model without UPDRS part 3 (motor) score has highest $R^2$ and the lowest AIC and BIC value. And the rough shrinkage estimate for the full model is 0.93 (139.81/149.81), for the model without Hoehn & Yahr disease stage at baseline is 0.94 (138.68/147.68), and for the model without UPDRS part 3 (motor) score is 0.94 (140.76/149.76). Therefore, these three models are all fitted the data well and the noise is very low. Due to this study only has 140 events and to avoid over fitting, we choose the model without UPDRS part 3 (motor) score.
+
+
+Then we test the proportional hazards assumption of this cox regression model by Schoenfeld residuals in each of the imputed dataset.
+
+```{r testcox}
+
+
+pmm.new_names <- paste("pmm.new",1:10,sep="")  # create names first
+
+for (i in 1:10){
+    pmm.new_df<-complete(pmm.new,i)
+    assign(pmm.new_names[i], pmm.new_df)
+}
+
+
+test_names<- paste("test.ph",1:10,sep="")   # create names first
+
+for (i in 1:10){
+    test.ph_df<-cox.zph(coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat,data=get(paste0("pmm.new",i))),transform = "km")   # data=get(paste0("pmm.new",i))
+    assign(test_names[i], test.ph_df)
+}
+
+unlist(test.ph1[["table"]]) %>%
+   kable(caption='\\label{tab:testcox} PH assumption test results.',booktabs=T,format = "latex",linesep="",digits=3)%>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+
+```
+
+Table \ref{tab:testcox} shows a example of proportional hazards assumption, we can see that all the p-value is larger than 0.05. Hence there is no enough evidence to reject the null hypothesis of proportional hazards assumption. After checking proportional hazards assumption in each imputed dataset, we found no enough evidence to reject the assumption. 
+
+To assess the good fit of model, we plot the Martingale residual against continuous predictors. If the fitted model is correct, these residuals should symmetrically distributed with expected value 0.
+
+
+```{r martingale,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Martingale residuals versus four continuous predictors.", fig.pos ='H'}
+
+pmm.new1<-complete(pmm.new,1)
+rr.0<-residuals(coxph(Surv(tt,cens)~1,data = data2),type="martingale")
+
+pmm.new1$rr.0<-rr.0
+
+
+plot1<-ggplot(pmm.new1,aes(agebl, rr.0)) + 
+         geom_point(cex=1) +
+         geom_smooth(method = "loess", se = T)+
+         ylim(c(-3,3))
+
+
+
+plot2<- ggplot(pmm.new1,aes(packyears, rr.0)) + 
+         geom_point(cex=1) +
+         geom_smooth(method = "loess", se = T) +
+         ylim(c(-3,3))   
+
+
+plot3<- ggplot(pmm.new1,aes(sebl, rr.0)) + 
+        geom_point(cex=1) +
+        geom_smooth(method = "loess", se = T)+
+        ylim(c(-3,3))
+
+
+
+grid.arrange(plot1,plot2,plot3, ncol=1, nrow=3)
+
+
+```
+From the \ref{fig:martingale} we can see that the lots of "packyears" value is zero, and they seems symmetrically distributed around $\pm 1$ with the line seems straight and flat. For the scatter plot of "sebl", even though there seems a slightly decrease trend, the points are still symmetrically distributed around zero. And for variable "agebl" plot, the line is slightly going up. This is because,the range of patients' age is large and most  of them is over 70 years old. However, the points are still symmetrically distributed and scattered around $\pm 1$. In short, we think the model fits well and no need to transform. 
+
+
+
+
+```{r coxout}
+
+sumrcs2<-data.frame(summary(modelc))
+
+row.names(sumrcs2)<-c("agebl","agebl Hazard Ratio","sex","sex Hazard Ratio","packyears", "packyears Hazard Ratio","livesalone","livesalone Hazard Ratio","charlsonbl","charlsonbl Hazard Ratio","hybl","hybl Hazard Ratio","sebl","sebl Hazard Ratio","mmsecat - <24:28-30 ","mmsecat - <24:28-30   Hazard Ratio","mmsecat - 24-27:28-30","mmsecat - 24-27:28-30 Hazard Ratio")
+
+sumrcs2%>%
+  select(Effect,Lower.0.95,Upper.0.95)%>%
+   kable(caption='\\label{tab:coxout} Summary of estimatied effects.',booktabs=T,format = "latex",linesep="",digits=3)%>%
+  kable_styling(font_size = 11,latex_options = "HOLD_position")
+  
+
+```
+
+Table \ref{tab:coxout} shows the hazard ratio confidence interval of variable "sex", "livesalone", "charlsonbl", "hybl", and "sebl" include one. Hence, they are not statistical significance. The risk of being admitted into institution for female is 11.8% higher than male. And for patients live alone the risk is 22.1% higher than those live with someone at baseline. And patients with one higher level in Hoehn & Yahr disease stage at baseline will increase the risk by 29.9%. However, patients with one level higher in Charlson co-morbidity index or Schwab & England ADL score at baseline, their risk of being admitted into institution will decrease 84.4% and 71.1% respectively. 
+
+
+On the contrary, the effects of "agebl", "packyears" and "mmsecat" are statistical significance. The hazard ratio of patients who are one year old older than others at baseline visit is 2.01. Hence, every one year older, the risk of being admitted into institution increases 100.5%. And for patients'  one more pack in annual smoking history, the risk of being admitted into institution increases 18.3%. And patients with higher minimental state examination score at baseline are tend to have less risk. Patients with minimental state examination score at baseline less than 24 will have 211.7% more risk of entering institution than those with score at baseline equal or larger than 28 and less than 30, and those score between 24 to 27 will have 85.3% more risk than those with score equal or larger than 28 and less than 30. 
+
+
+Then we present the point and interval estimates of predictor effects by a hazard ratio chart. And the final presentation of the model is by a nomogram plot.
+```{r coxoutplot,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Hazard ratios and confidence bars for effects of predictors in model.", fig.pos ='H'}
+
+plot(summary (modelc),main= '',log = T)
+
+```
+
+
+
+```{r nomogram,fig.height=8.5, fig.width=10,fig.align = "center",fig.cap = "\\label{ } Nomogram for predicting the risk of entering institution.", fig.pos ='H'}
+
+
+
+surv <- Survival(modelc)
+surv5 <- function(x) surv(5*365,lp=x)
+surv8 <- function(x) surv(8*365,lp=x)
+
+
+plot(nomogram(modelc, 
+              fun=list(surv5, surv8), 
+              funlabel=c('5-year survival', '8-year survival')))
+
+```
+
+
+
+```{r, eval=FALSE}
+
+
+img1_path<-"nomogram.png"
+img1<-readPNG(img1_path,native = T,info = T)
+# attr(img1,"info")
+include_graphics(img1_path)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Reference
+
+

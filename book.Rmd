@@ -30,7 +30,7 @@ output:
     toolbar:
       position: fixed
     edit : null
-    download: null
+    download: [["book.pdf", "Download PDF version"]]
     search: yes
     fontsettings:
       theme: white
@@ -47,8 +47,11 @@ output:
       whatsapp: no
       all: ['facebook', 'twitter', 'linkedin', 'weibo', 'instapaper']
     info: yes
+  bookdown::html_book:
+    css: toc.css
   bookdown::pdf_book:
     keep_tex: yes
+documentclass: book
 bibliography: my5.bib
 fontsize: 14pt
 citation_package: none
@@ -81,7 +84,7 @@ The Parkinsonism incidence in North-East Scotland (PINE) study is a prospective 
 
 The event of interest is institutionalisation, which is defined as entry to a nursing home, residential home, or long-stay hospital ward. Hence, the date of institution is the date of entry into the institution. Patients lost to follow, who died without being institutionalised, or alive at end of follow-up but were not admitted to and institution were censored. For participants who were not institutionalised, the censoring date will be the date lost to follow-up, if lost to follow-up; the date of death, if dead and not lost to follow-up; and date last known to be alive and living at home. The survival time is the difference between the event/censoring time and the date of baseline visit.
 
-The study will first use the Kaplan-Meier(KM) estimate to find the median time of participants in PD, Atypical parkinsonism and control group being admitted into institutionalization. Then plotting separate KM survival curves and calculating the incidence rates of these three groups. 
+The study will first use the "reverse" Kaplan-Meier(KM) method to find the median time of participants in PD, Atypical parkinsonism and control group being admitted into institutionalization. Then plotting separate KM survival curves and calculating the incidence rates of these three groups. 
 
 The analyse of identifying the risk factors will only use the data of patients with PD and atypical parkinsonism only. Since the data is incomplete, the missing data cluster and pattern will be plotted. Then using the patients' observed data to impute the missing data by predictive mean matching method with MICE algorithm. And, the convergence and good fit of multiple imputation model will be checked. This study will also compare three different cox regression models by model selection method. The predictor variables in the best cox regression models are "agebl", "sex", "packyears", "livesalone", "charlsonbl", "cirsbl", "hybl", "sebl" and "mmsecat". The model assumption of proportional hazards will be checked by Schoenfeld residuals method. And accessing the goodness fit of model by the martingale residual plot. Finally, the point and interval estimates of predictor effects will be present by nomogram.
 
@@ -110,6 +113,9 @@ library(mice)
 library(ggplot2)
 library(GGally)
 library(png)
+library(bookdown)
+library(foreign)
+
 
 # install.packages('Hmisc')
 ```
@@ -144,6 +150,8 @@ data$cens<-ifelse(is.na(dateinstitution),0,1)
 
 data$tt<-as.Date(as.character(data$t), format="%Y-%m-%d")-
                 as.Date(as.character(data$datevisitbl), format="%Y-%m-%d")
+
+data$tt<-as.numeric(data$tt)
 
 data$year<-data$tt/365.25
 ```
@@ -258,17 +266,17 @@ Table \@ref(tab:livesalone) shows that the proportion of living alone in Atypica
 
 ```{r KM}
 
-KM2<-survfit(Surv(tt/365,cens)~diagnosiscat,data=data,type="fh")
+KM2<-survfit(Surv(tt/365,cens)~diagnosiscat,data=data)
 
-data.frame(groups= c("Parkinson's disease","Atypical parkinsonism","Control"),n=c(201,114,260),events=c(71,69,45),median=c(11.78,2.55,NA),LCL=c(9.45,2.55,NA),UCL=c(NA,4.24,NA))%>%
+data.frame(groups= c("Parkinson's disease","Atypical parkinsonism","Control"),n=c(201,114,260),events=c(71,69,45),median=c(11.78,2.55,NA),LCL=c(9.32,1.81,14.78),UCL=c(NA,4.22,NA))%>%
   kable(caption='\\label{tab:KM} Kaplan-Meier estimate of the survival function.',booktabs=T,linesep="",digits=2) 
 
 ```
-Table \@ref(tab:KM) shows the median survival time for patients with Parkinson's disease is 11.78 years and for patients with Atypical parkinsonism is 2.55 years. The median survival time and the upper 95% confidence limit for control group are both undefined, indicated by a missing value “NA”. To better visualized the estimation, we plot the Kaplan-Maier survival curve.
+Table \@ref(tab:KM) shows the median follow-up time for patients with Parkinson's disease is 11.78 years and for patients with Atypical parkinsonism is 2.55 years. The median survival time and the upper 95% confidence limit for control group are both undefined, indicated by a missing value “NA”. To better visualized the estimation, we plot the Kaplan-Maier survival curve.
 
 ### KM analysis of institutionalization with separate survival curves
 
-```{r KMplot,out.width="60%", fig.align = "center",fig.cap = "\\label { } Kaplan-Maier survival curve.", fig.pos ='H'}
+```{r KMplot, fig.align = "center",fig.cap = "\\label { } Kaplan-Maier survival curve.", fig.pos ='H'}
 
 
 
@@ -311,7 +319,7 @@ From the fig \@ref(fig:colplot), we can see the correlation between variable "ag
 
 #### Missing data pattern
 
-```{r missplot,out.width="65%", fig.align = "center",fig.cap = "\\label { } Cluster analysis showing which predictors tend to be missing on the same patients.", fig.pos ='H'}
+```{r missplot, fig.align = "center",fig.cap = "\\label { } Cluster analysis showing which predictors tend to be missing on the same patients.", fig.pos ='H'}
 
 plot(naclus(data2[,c(6:18)]))
 
@@ -335,7 +343,7 @@ data.frame(Variable=c("packyears","mmsebltotal","mmseyr1total"),n=c(308,289,257)
 
 Table \@ref(tab:mistable1) shows that there are `r sum(is.na(data2$packyears))` missing in the variable of smoking history in pack-years. For minimental state examination score, `r sum(is.na(data2$mmsebltotal))` missing at basline and `r sum(is.na(data2$mmseyr1total))` missing at year 1. 
 
-```{r misspattern,out.width="70%", fig.align = "center",fig.cap = "\\label { } Missing data pattern.", fig.pos ='H'}
+```{r misspattern, fig.align = "center",fig.cap = "\\label { } Missing data pattern.", fig.pos ='H'}
 
 mispattern<-data2 %>% 
   missing_pattern(explanatory)
@@ -394,7 +402,7 @@ imp.packyears<-pmm[["imp"]][["packyears"]]
 packyearsnozero<-subset(data2,packyears>0)
 
 
- plot(density(packyearsnozero$packyears),col="darkblue",main=" ", xlab = "packyears")
+ plot(density(packyearsnozero$packyears),col="darkblue",main=" ", xlab = "packyears",xlim=c(-100,200),ylim=c(0.000,0.025))
 for (i in 1:10) {
   lines(density(imp.packyears[,i] ),col="deeppink3")
 }
@@ -527,13 +535,13 @@ BIC3<-BIC(modelc) #without updrs
 
 
 data.frame(Model=c("Full Model","Model without Hoehn & Yahr disease stage at baseline","Model without UPDRS part 3 (motor) score") , 'LR chi2'=c(149.81,147.68,149.76),'d.f.'=c(10,9,9),'R square' = c(0.383,0.379,0.383),AIC = c(AIC1,AIC2,AIC3), BIC = c(BIC1,BIC2,BIC3))%>%
-  kable(caption='\\label{tab:select} Model tests and discrimination indexes.',booktabs=T,linesep="",digits=2)
+  kable(caption='\\label{tab:model select} Model tests and discrimination indexes.',booktabs=T,linesep="",digits=2)
 
 
 ```
 
 
-Table \@ref(tab:select) shows that the model without UPDRS part 3 (motor) score has highest $R^2$ and the lowest AIC and BIC value. And the rough shrinkage estimate for the full model is 0.93 (139.81/149.81), for the model without Hoehn & Yahr disease stage at baseline is 0.94 (138.68/147.68), and for the model without UPDRS part 3 (motor) score is 0.94 (140.76/149.76). Therefore, these three models are all fitted the data well and the noise is very low. Due to this study only has 140 events and to avoid over fitting, we choose the model without UPDRS part 3 (motor) score.
+Table \@ref(tab:model select) shows that the model without UPDRS part 3 (motor) score has highest $R^2$ and the lowest AIC and BIC value. And the rough shrinkage estimate for the full model is 0.93 (139.81/149.81), for the model without Hoehn & Yahr disease stage at baseline is 0.94 (138.68/147.68), and for the model without UPDRS part 3 (motor) score is 0.94 (140.76/149.76). Therefore, these three models are all fitted the data well and the noise is very low. Due to this study only has 140 events and to avoid over fitting, we choose the model without UPDRS part 3 (motor) score.
 
 
 Then we test the proportional hazards assumption of this cox regression model by Schoenfeld residuals in each of the imputed dataset.
@@ -560,7 +568,32 @@ unlist(test.ph10[["table"]]) %>%
    kable(caption='\\label{tab:testcox} PH assumption test results.',booktabs=T,linesep="",digits=3)
 ```
 
-Table \@ref(tab:testcox) shows a example of proportional hazards assumption, we can see that all the p-value is larger than 0.05. Hence there is no enough evidence to reject the null hypothesis of proportional hazards assumption. After checking proportional hazards assumption in each imputed dataset, we found no enough evidence to reject the assumption. 
+Table \@ref(tab:testcox) shows a example of proportional hazards assumption, we can see that except for "sebl", all predictors' p-value is larger than 0.05. It indicates that only the "sebl" effect changes significantly over time. However, the p-value of global test of PH assumption is larger than 0.05. Hence there is no enough evidence to reject the null hypothesis of proportional hazards assumption. After checking proportional hazards assumption in each imputed dataset, we found no enough evidence to reject the assumption. 
+
+```{r,eval=FALSE}
+plot(cox.zph(coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat,data=pmm.new10),transform = "km"),var="sebl")
+
+
+# fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat+sebl:tt),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)
+
+
+
+```
+
+```{r,eval=FALSE}
+
+#page 545
+
+z<-predict(modelc,type = 'terms')
+z.sebl<-z[,7]
+z.other<-z[,-7]
+f.ia<-cph(Surv(data2$tt,data2$cens)~z.sebl*z.other)
+anova(f.ia)
+
+```
+
+
+
 
 
 To assess the good fit of model, we plot the Martingale residual against continuous predictors. If the fitted model is correct, these residuals should symmetrically distributed with expected value 0.
@@ -641,11 +674,11 @@ BIC.C3<-BIC(modelc3)  # with age and sebl as 3 knot rcs
 
 
 data.frame(Model=c("Model without RCS","Model with age 3 knots RCS","Model with sebl 3 knots RCS","Model with age and sebl 3 knots RCS") , 'LR chi2'=c(149.76,149.81,152.00,152.06),'d.f.'=c(9,10,10,11),'R square' = c(0.383,0.383,0.387,0.387),AIC = c(AIC.C,AIC.C1,AIC.C2,AIC.C3), BIC = c(BIC.C,BIC.C1,BIC.C2,BIC.C3))%>%
-  kable(caption='\\label{tab:select2} Model with and without RCS tests and discrimination indexes.',booktabs=T,linesep="",digits=2)
+  kable(caption='\\label{tab:model select2} Model with and without RCS tests and discrimination indexes.',booktabs=T,linesep="",digits=2)
 
 
 ```
-Table \@ref(tab:select2) shows that there are no big difference between $R^2$, AIC and BIC value of models with or without RCS. Model with sebl 3 knots RCS has the highest $R^2$ and lowest AIC value. However, $R^2$ value of the linear model only 0.04 lower than the highest one and AIC only 0.293 higher than the lowest one. And the linear model has the lowest BIC and highest rough shrinkage estimate value (0.94). Therefore, due to the data simple size of this study and to avoid over fitting, we choose the model without RCS. 
+Table \@ref(tab:model select2) shows that there are no big difference between $R^2$, AIC and BIC value of models with or without RCS. Model with sebl 3 knots RCS has the highest $R^2$ and lowest AIC value. However, $R^2$ value of the linear model only 0.04 lower than the highest one and AIC only 0.293 higher than the lowest one. And the linear model has the lowest BIC and highest rough shrinkage estimate value (0.94). Therefore, due to the data simple size of this study and to avoid over fitting, we choose the model without RCS. 
 
 Then we present the point and interval estimates of predictor effects by a hazard ratio chart and a table of summary estimated effects.
 ```{r coxoutplot,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Hazard ratios and confidence bars for effects of predictors in model.", fig.pos ='H'}
@@ -658,24 +691,23 @@ plot(summary (modelc),main= '',log = T)
 
 sumrcs2<-data.frame(summary(modelc))
 
-row.names(sumrcs2)<-c("agebl","agebl Hazard Ratio","sex","sex Hazard Ratio","packyears", "packyears Hazard Ratio","livesalone","livesalone Hazard Ratio","charlsonbl","charlsonbl Hazard Ratio","hybl","hybl Hazard Ratio","sebl","sebl Hazard Ratio","mmsecat - <24:28-30 ","mmsecat - <24:28-30   Hazard Ratio","mmsecat - 24-27:28-30","mmsecat - 24-27:28-30 Hazard Ratio")
+sumrcs2.new<-sumrcs2[grep("Hazard.Ratio",rownames(sumrcs2)),]
 
-sumrcs2%>%
+row.names(sumrcs2.new)<-c("agebl","sex","packyears","livesalone","charlsonbl","hybl","sebl","mmsecat - <24:28-30 ","mmsecat - 24-27:28-30")
+
+
+sumrcs2.new%>%
   select(Effect,Lower.0.95,Upper.0.95)%>%
+  rename("Hazard ratio"=Effect)%>%
    kable(caption='\\label{tab:coxout} Summary of estimated effects.',booktabs=T,linesep="",digits=3)
   
 
 ```
 
-Table \@ref(tab:coxout) shows the hazard ratio confidence interval of variable "sex", "livesalone", "charlsonbl", "hybl", and "sebl" include one. Hence, they are not statistical significance. The risk of being admitted into institution for female is 11.8% higher than male. And for patients live alone the risk is 22.1% higher than those live with someone at baseline. And patients with one higher level in Hoehn & Yahr disease stage at baseline will increase the risk by 29.9%. However, patients with one level higher in Charlson co-morbidity index or Schwab & England ADL score at baseline, their risk of being admitted into institution will decrease 84.4% and 71.1% respectively. 
+Table \@ref(tab:coxout) shows the hazard ratio confidence interval of variable "sex", "livesalone", "charlsonbl", "hybl", and "sebl" include one. Hence, they are not statistical significance. The hazard of being admitted into institution for female is 11.8% higher than male. And for patients live alone the hazard is 22.1% higher than those live with someone at baseline. And patients with one higher level in Hoehn & Yahr disease stage at baseline will increase the hazard by 29.9%. However, patients with one level higher in Charlson co-morbidity index or Schwab & England ADL score at baseline, their hazard ratio of being admitted into institution will decrease 84.4% and 71.1% respectively. 
 
 
-On the contrary, the effects of "agebl", "packyears" and "mmsecat" are statistical significance. The hazard ratio of patients who are one year old older than others at baseline visit is 2.01. Hence, every one year older, the risk of being admitted into institution increases 100.5%. And for patients'  one more pack in annual smoking history, the risk of being admitted into institution increases 18.3%. And patients with higher minimental state examination score at baseline are tend to have less risk. Patients with minimental state examination score at baseline less than 24 will have 211.7% more risk of entering institution than those with score at baseline equal or larger than 28 and less than 30, and those score between 24 to 27 will have 85.3% more risk than those with score equal or larger than 28 and less than 30. 
-
-
-
-
-
+On the contrary, the effects of "agebl", "packyears" and "mmsecat" are statistical significance. The hazard ratio of patients who are one year old older than others at baseline visit is 2.01. Hence, every one year older, the hazard of being admitted into institution increases 100.5%. And for patients'  one more pack in annual smoking history, the hazard of being admitted into institution increases 18.3%. And patients with higher minimental state examination score at baseline are tend to have less hazard. Patients with minimental state examination score at baseline less than 24 will have 211.7% more hazard of entering institution than those with score at baseline equal or larger than 28 and less than 30, and those score between 24 to 27 will have 85.3% more hazard than those with score equal or larger than 28 and less than 30. 
 
 ```{r nomogram, eval=FALSE}
 
@@ -707,12 +739,20 @@ include_graphics(img1_path)
 
 
 
+## Summary
+
+For same years old patients, the risk of woman being admitted into institution is higher than male. And if the patient's age is above median age at baseline visit and living alone, clinicians should pay more attention to him/her need for help with daily activities and plan management earlier. patients' smoking habit will also increase their chance into nursing home. Patients with heavy smoking habit should be advised to live a more health life and smoking less. In general, the highest risk patient's profile is older than 80 years old heavy smoker woman who lives alone.
+
+If two patients' personal profile is the same, then their medical profile will effect their chance of entering nursing home. Hoehn and Yahr scale is a common way to describe the Parkinson's disease progress. The higher Hoehn and Yahr disease stage at baseline means the less independent. To assess patients' impaired mobility, we choose the the Schwab and England ADL score which represents the percentage of independence. The lower the score is, the more dependent of patients and hence more care will be needed. Some patients' may not suffer from functional disability in body, but suffer from cognitive impairment. The Mini-Mental State Exam (MMSE) is to test patients' mental skills. The lower mini-mental state examination score at baseline means the more severe dementia in patient. And compare to impaired mobility, the cognitive impairment affect patients' independence more seriously. However, sometimes patients may die before being admitted into institution. The Charlson co-morbidity index is used to predict patients' one-year mortality. Therefore, patients with higher Charlson co-morbidity index at baseline will decrease the chance of being admitted into institution due to their living time is shorter than waiting time. In short, patients with higher Hoehn and Yahr scale and lower in Schwab and England ADL score and mini-mental state examination score at baseline will have higher demand of dependency and will need clinicians to plan management earlier. Meanwhile, patients with high Charlson co-morbidity index should be priority consider to entering nursing home. 
 
 
+## Strengths and limitations
 
+There are only 315 patients be involved in this study and only 140 events. Therefore, the sample size of this study is not big enough and will arise some bias. Due to the sample size problem, we have to choose the linear cox regression model to avoid over fitting. Therefore, the confidence interval might be wider. The sample size is also limited the number of predictors. And in the cox regression model, the PH assumption is valid in global test but not in "sebl" variable. 
 
+## Further work 
 
-
+In further analysis, it could expand the patients' number in the study and use more patients' profile personal information as predictors to build cox regression model. And this model can be validated in external data. 
 
 
 

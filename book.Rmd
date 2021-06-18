@@ -74,17 +74,15 @@ Parkinson’s disease (PD) and atypical parkinsonism are neurodegenerative disor
 This study will first identify the incidence of institutionalization in PD and atypical parkinsonism. We will then identify the risk factors for institutionalization in PD and atypical parkinsonism. The results from this study will enable clinicians to manage their patients better and earlier and provide more appropriate services to help PD patients.
 
 
-## Methods
-
-**Databases**
+## Databases
 
 The Parkinsonism incidence in North-East Scotland (PINE) study is a prospective follow-up study that collects annual patient data on survival, disability, and institutionalization [@Field2016]. The pilot study of PINE is from 2002 to 2004 and the main study is from 2006 to 2009. It recruited all patients with a newly diagnosed presumed degenerative or vascular parkinsonian syndrome over 4.5 years from a baseline population of about 315000 patients registered with 37 primary care practices in and around Aberdeen, Scotland. The screening in multiple overlapping searches is limited to the population over 65 years old. Parkinsonism was defined as two or more cardinal motor signs and patients with drug-induced parkinsonism were excluded. There is ongoing yearly follow-up of eligible patients and their carers with linkage to the national death register. The standardized baseline visit at diagnosis and annually thereafter was the same for patients and controls. At each annual review the parkinsonian syndrome was classified by a single consultant neurologist with expertise in movement disorders. The patient diagnosis was assigned by the best fitted criteria. If a patient died, then the diagnosis was made after reviewing all the clinical and imaging information held in their research files and the annual videotaped examinations or from pathology in those who had given consent for post-mortems. For patients who were lost to follow-up, identifying an age-sex matched control from the same primary care practice or a register of elderly people who had taken part in a previous community-based screening project. At each annual visit (and when notification of death was received) the patient’s address was documented. If this was a nursing home or other form of institutionalisation, the date of admission was obtained from the patient, or from the nursing home if the patient was unable to remember. And if the patient died, the details about the date, place and cause of death were extracted from death certificates and primary and secondary care records.
 
-**Study design**
+## Study design
 
 The study design is an observational study. 
 
-**Baseline characteristics**
+## Baseline characteristics
 
 In this study, there are four predictor variables to describe patients' basic information and five predictor variables to describe patients' medical information. Patients' basic information includes their age, sex, smoking history in pack-years, whether lives alone or lives with someone. Patients' medical recording includes three rating scales of Parkinson's, one index of patients' death risk, and one test result of patients' mental abilities. 
 
@@ -95,22 +93,17 @@ Parkinson’s rating scales are used to assess patients' symptoms of the conditi
 In short, there are nine predictor variables in the Cox regression models: “age at baseline visit”, “sex”, “smoking history in pack-years”, “participant lives alone or lives with someone at baseline”, “Charlson co-morbidity index at baseline”, “UPDRS part 3 (motor) score”, “Hoehn & Yahr disease stage at baseline”, “Schwab & England ADL score at baseline”, and “Category of minimental state examination score at baseline”. And there are three categories of minimental state examination score at baseline. The first one is the minimental state examination score at baseline is less than 24, the second one is the score greater or equal to 24 and less than 28, and the last one is greater or equal than 28 and less than 30. 
 
 
+## Outcome
 
+The event of interest is institutionalisation, which is defined as entry to a nursing home, residential home, or long-stay hospital ward. Hence, the date of institutionalisation is the date of entry into the institution. And the censor is when patients who were lost to follow, who died without being institutionalised, or who were alive at end of follow-up but were not admitted to an institution. For participants who were not institutionalised, the censoring date will be the date lost to follow-up, if lost to follow-up; the date of death, if dead and not lost to follow-up; and date last known to be alive and living at home. The survival time is the difference between the event/censoring time and the date of baseline visit. In total, there are 575 participants, 315 patients with PD or atypical parkinsonism, and 140 events. 
 
+## Statistical analysis
 
+First, we used the Kaplan-Meier (KM) estimate to find the median time to institutionalization of participants with PD or Atypical parkinsonism and those in the control group. Separate KM survival curves were plotted and incidence rates were calculated for each of these three groups. 
 
-**Outcome**
+Second, we used the data from patients with PD and atypical parkinsonism to identify the risk factors. Since the data was incomplete, the cluster of missing data and the pattern of missing data were plotted to see what variables tend to missing together and their pattern. The assumption of missing data was missing at random (MAR), hence we used the multiple imputation to impute patients’ missing data by predictive mean matching method with multivariate imputation by chained equations (MICE) algorithm. Since the patients' medical information of minimental state examination score at year 1 will not be used in the Cox regression model, we only use it as observed data to impute missing variables. There were 33 patients (10.5%) with missing medical records of minimental state examination score at baseline and smoking history in pack-years, hence, the imputation times was 10. Because the MICE algorithm is Markov chain Monte Carlo (MCMC) method, we plotted the parameters against the iteration number to determine whether the MICE algorithm has converged. Convergence was diagnosed as the plot showed no trend. The goodness-of-fit of the multiple imputation model were checked by the density plot of imputed versus observed data. Then, we built three Cox regression models to select predictors by comparing their heuristic shrinkage, $R^2$, Akaike information criterion (AIC) and Bayesian information criterion (BIC). The model without “UPDRS part 3 (motor) score” is the best model. The model assumption of proportional hazards was checked by Schoenfeld residuals method. The global p-value was larger than 0.05, hence the proportional hazards assumption was valid. We accessed the functional form of each continuous predictor by plotting martingale residual against continuous predictor. If the fitted model is correct, these residuals should symmetrically distributed with expected value 0. However, the plot showed trends in "age at baseline visit” and “Schwab & England ADL score at baseline”. To determine whether they need to be transformed or not, we compared models with and without restricted cubic splines (RCS) by $R^2$, AIC and BIC. The result showed that linear model fit was as good as a model with RCS. Hence, we chose the linear cox regression model. Finally, we presented the hazard ratios and confidence interval of estimate effects of predictors in model by figure and table. 
 
-
-The event of interest is institutionalisation, which is defined as entry to a nursing home, residential home, or long-stay hospital ward. Hence, the date of institutionalisation is the date of entry into the institution. Patients who were lost to follow, who died without being institutionalised, or who were alive at end of follow-up but were not admitted to an institution, were censored. For participants who were not institutionalised, the censoring date will be the date lost to follow-up, if lost to follow-up; the date of death, if dead and not lost to follow-up; and date last known to be alive and living at home. The survival time is the difference between the event/censoring time and the date of baseline visit.
-
-**Statistical analysis**
-
-
-The study used the Kaplan-Meier (KM) estimate to find the median time to institutionalization of participants with PD or Atypical parkinsonism and those in the control group. Separate KM survival curves were plotted and incidence rates were calculated for each of these three groups.
-
-
-To identify the risk factors, we used the data from patients with PD and atypical parkinsonism. Since the data is incomplete, the cluster of and pattern of missing data were plotted to see what variables tend to missing together and the pattern of missing data. The assumption of missing data is missing at random (MAR), hence we used the multiple imputation to impute patients’ missing data by predictive mean matching method with multivariate imputation by chained equations (MICE) algorithm. The convergence and goodness-of-fit of the multiple imputation model were checked. We built three cox regression models and compared their $R^2$, AIC and BIC with the full model to select the best model. The model without “UPDRS part 3 (motor) score” is the best model. The model assumption of proportional hazards was checked by Schoenfeld residuals method. The global p-value is larger than 0.05, hence the PH assumption is valid. We accessed the goodness fit of model by plotting martingale residual against continuous predictors. To determine whether "age at baseline visit” and “Schwab & England ADL score at baseline” need to be transformed or not, we compared models with and without restricted cubic splines by $R^2$, AIC and BIC. Due to no significant difference between these models and to avoid over fitting, we chose the linear cox regression model. Finally, we presented the hazard ratios and confidence interval of estimate effects of predictors in model by figure and table. 
+ 
 
 
 ## Describe of data
@@ -275,7 +268,7 @@ grid.arrange(plot1, plot2, plot3,ncol=3, nrow=1)
 
 ```
 
-The fig \@ref(fig:ageboxplot) shows the distribution of patients’ age at baseline, at diagnosis and at onset of parkinsonian symptoms are similarly.
+The fig \@ref(fig:ageboxplot) shows the distribution of patients’ age at baseline, at diagnosis and at onset of parkinsonian symptoms are similarly. Hence, to avoid multicollinearity, only variable “age at baseline visit” will be included in the imputation and cox regression model. 
 
 
 
@@ -326,17 +319,17 @@ Table \@ref(tab:incidence) shows that Atypical parkinsonism group has the highes
 
 ### Identify the risk factors by cox regression model
 
-To identify risk factors of institutionalisation using, we only consider the patients with Parkinson's disease or Atypical parkinsonism. Therefore, after excluding the data of control, the number of remain patients is `r nrow(data2)`. 
+```{r ,eval=FALSE}
 
 #### Correlation of predictors
 
-```{r colplot, fig.align = "center",fig.cap = "\\label { } Corrleation plot.", fig.pos ='H'}
+# ggcorr(data2[,c(6:18)], label=F)
 
-ggcorr(data2[,c(6:18)], label=F)
+# fig.align = "center",fig.cap = "\\label { } Corrleation plot.", fig.pos ='H'
 
-
+# From the fig \@ref(fig:colplot), we can see the correlation between variable "agebl", "agedx", and "agesymptomonset" is one. Therefore, to avoid multicollinearity, only variable "agebl" will be included in the imputation model.
 ```
-From the fig \@ref(fig:colplot), we can see the correlation between variable "agebl", "agedx", and "agesymptomonset" is one. Therefore, to avoid multicollinearity, only variable "agebl" will be included in the imputation model.
+
 
 #### Missing data pattern
 
@@ -357,32 +350,32 @@ dependent<- c("cens","tt")
 fit1<-data2%>%
   ff_glimpse(dependent,explanatory)
 
-data.frame(Variable=c("packyears","mmsebltotal","mmseyr1total"),n=c(308,289,257),missing_n=c(7,26,58),missing_percent=c("2.2%","8.3%","18.4%")) %>%
-  kable(caption='\\label{tab:mistable1}  Summary of missing data.',booktabs=T,linesep="",digits=2)
+data.frame(Variable=c("smoking history in pack-years","minimental state examination score at baseline","minimental state examination score at year 1"),n=c(308,289,257),missing_n=c(7,26,58),missing_percent=c("2.2%","8.3%","18.4%")) %>%
+  kable(caption='\\label{tab:mistable1}  Summary of missing data.',booktabs=T,linesep="",digits=1)
 
 ```
 
-Table \@ref(tab:mistable1) shows that there are `r sum(is.na(data2$packyears))` missing in the variable of smoking history in pack-years. For minimental state examination score, `r sum(is.na(data2$mmsebltotal))` missing at basline and `r sum(is.na(data2$mmseyr1total))` missing at year 1. 
+Table \@ref(tab:mistable1) shows that there are `r sum(is.na(data2$packyears))` missing in the variable of smoking history in pack-years. For minimental state examination score, `r sum(is.na(data2$mmsebltotal))` missing at baseline and `r sum(is.na(data2$mmseyr1total))` missing at year 1. 
 
 ```{r misspattern, fig.align = "center",fig.cap = "\\label { } Missing data pattern.", fig.pos ='H'}
 
 mispattern<-data2 %>% 
   missing_pattern(explanatory)
 ```
-The fig \@ref(fig:misspattern) is the visualisation of this missing pattern output, where the blue cubic means observed and red cubic means missing. From the fig \ref{fig:misspattern}, we can see that 26 patients missing with the "mmsebltotal" variable and 7 patients missing with "packyears" variable.
+The fig \@ref(fig:misspattern) is the visualisation of this missing pattern output, where the blue cubic means observed and red cubic means missing. From the fig \ref{fig:misspattern}, we can see that 26 patients missing with the minimental state examination score at baseline and 7 patients missing with smoking history in pack-years. The missing pattern is general and connected through the first row. The first column shows the frequency of each pattern and the number of missing entries in each pattern shows in the last column. For example, the first row means there are 241 patients in the dataset with all three observed variables. 
 
-```{r mistable2}
 
-as.data.frame(mispattern)%>%
-  rename(" "=V4)%>%
-  kable(caption='\\label{tab:mistable2}  Summary of missing data pattern.',booktabs=T,linesep="",digits=2)
+
+```{r ,eval=FALSE}
+
+# as.data.frame(mispattern)%>%
+#  rename(" "=V4)%>%
+#  kable(caption='\\label{tab:mistable2}  Summary of missing data pattern.',booktabs=T,linesep="",digits=2)
 ```
 
-In the table \@ref(tab:mistable2), value 0 means missing and 1 means observed in the output, and the first column shows the frequency of each pattern. The missing pattern is general and connected through the first row. The number of missing entries in each pattern shows in the last column. For example, the first row means there are 241 patients in the dataset with all three observed variables. 
+
 
 #### Mutiple Imputation 
-
-In this study, we using the patients' observed data to impute the missing data by the predictive mean matching method with MICE algorithm. Since the "mmseyr1total" variable will not be used in the cox regression model, we do not consider the imputation of "mmseyr1total" and only use it as observed data to impute other 2 missing variables. There are 33 patients missing with "mmsebltotal" or "packyears", which takes 10.5% patients in total. Hence, the imputation times will be 10.
 
 
 ```{r pmm}
@@ -395,7 +388,7 @@ pmm<-mice(data2[,c(4,6,9:18,25:26)],method="pmm",seed=81420,m=10,print=F)
 ```
 
 
-Because the MICE algorithm is Markov chain Monte Carlo (MCMC) methods, we need to determine when the MICE algorithm has converged. One diagnostic method is to plot the parameters against the iteration number. Convergence is diagnosed when the variance between different sequences is no larger than the variance within each individual sequence. 
+
 
 ```{r convergence, fig.align = "center",fig.cap = "\\label{ } Mean and standard deviation of the synthetic values plotted against iteration number for the imputed data.", fig.pos ='H'}
 # pmm$visitSequence
@@ -403,19 +396,17 @@ Because the MICE algorithm is Markov chain Monte Carlo (MCMC) methods, we need t
 plot(pmm)
 
 ```
-From fig \@ref(fig:convergence), we can see that the different streams freely intermingled with one another and there are no trends. Hence, the MICE algorithm is convergence.
+From fig \@ref(fig:convergence), we can see that the different streams freely intermingle with one another and there are no obvious trends. Hence, the MICE algorithm has converged.
 
-To assess the imputation model fit, first is to plot the density plot of imputed and observed data and see how well they match.
 
-```{r densityplot1,fig.height=5, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Density plot of observed and imputed data of mmsebltotal.", fig.pos ='H' }
+```{r densityplot1,fig.height=5, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Density plot of the observed data (blue) and the m=10 densities per variable calculated from the imputed data (thin red lines) of minimental state examination score at baseline ", fig.pos ='H' }
 
 densityplot(pmm,~ mmsebltotal)
-
 ```
 
-In the fig \@ref(fig:densityplot1), the blue line is the observed data and red line is imputed data. From the fig \ref{fig:densityplot1}, we can see that the distribution of observed and imputed data is similar.
+From the fig \ref{fig:densityplot1}, we can see that the distribution of observed and imputed data is similar.
 
-```{r densityplot2, fig.height=5, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Density plot of non-zero observed and imputed data of packyears.", fig.pos ='H'}
+```{r densityplot2, fig.height=5, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Density plot of non-zero observed (blue) and the m=10 densities per variable calculated from the imputed data (thin red lines) of packyears.", fig.pos ='H'}
 
 imp.packyears<-pmm[["imp"]][["packyears"]]
 
@@ -429,7 +420,7 @@ for (i in 1:10) {
 }
 
 ```
-In this study, patients with missing "packyears" variable are all with smoking history, which means these 7 patients' missing "packyears" value should all larger than zero. Therefore, plotting the density plot of `r nrow(packyearsnozero)` patients' non-zero "packyears" observed value to compare with the imputation. In the fig \@ref(fig:densityplot2), the blue line is the observed data and red line is imputed data. We can see that the distribution between observed and imputed data is different. 
+In this study, the `r nrow(packyearsnozero)` patients with missing “packyears” variable are all smokers, which means pack years should be larger than zero. Therefore, fig \@ref(fig:densityplot2) shows the distribution for those with non-zero "packyears". We can see that the distribution between observed and imputed data is different.
 
 The discrepancies may be caused by a bad imputation model, by a missing data mechanism that is not MCAR or by a combination of both. To further compare the distributions of observed and imputed data of "packyears", we use the diagnostic tool proposed by @Diagnostic2016. The idea is that under MAR the conditional distributions should be similar if the assumed model for creating multiple imputations has a good fit.
 
@@ -452,7 +443,7 @@ xyplot(pmm, packyears~ps | as.factor(.imp),
 
 ```
 
-The fig \@ref(fig:diagnostic) shows that the distributions of the blue and red points are quite similar, as expected under MAR. Therefore, the imputation model has a good fit. patients
+The fig \@ref(fig:diagnostic) shows that the distributions of the blue and red points are quite similar, as expected under MAR. Therefore, the imputation model has a good fit.
 
 
 
@@ -498,28 +489,7 @@ pmm.new<-as.mids(long)
 
 #### Model selection
 
-
-In this study, in total, there are nine predictors: 
-
-- "agebl" is age at baseline visit;
-
-- "sex" is male or female;
-
-- "packyears" is smoking history in pack-years;
-
-- "livesalone" is participant lives alone or lives with someone at baseline;
-
-- "charlsonbl" is Charlson co-morbidity index at baseline;
-
-- "updrsblpart3" is UPDRS part 3 (motor) score;
-
-- "hybl" is Hoehn & Yahr disease stage at baseline;
-
-- "sebl" is Schwab & England ADL score at baseline;
-
-- "mmsecat" is category of minimental state examination score at baseline. There are three categories, the first one is the minimental state examination score at baseline is less than 24, the second one is the score greater or equal to 24 and less than 28, and the last one is greater or equal than 28 and less than 30.
-
-Here, we compare 3 cox regression models to choose the best model. The first is the full model with all these nine predictors, the second is the model without "hybl" variable and the third is the model without "updrsblpart3". 
+Since the UPDRS part 3 (motor) score and Hoehn & Yahr disease stage are both used to evaluate the degree of disability and measure the progress of Parkinson’s symptoms, hence they are similar predictors. To determine whether they should both include in the model or not, we compare 3 Cox regression models to select predictors. The first is the full model with all these nine predictors, the second is the model without “hybl” variable and the third is the model without “updrsblpart3”.
 
 ```{r cox models,results = 'hide'}
 
@@ -562,10 +532,10 @@ data.frame(Model=c("Full Model","Model without Hoehn & Yahr disease stage at bas
 ```
 
 
-Table \@ref(tab:model select) shows that the model without UPDRS part 3 (motor) score has highest $R^2$ and the lowest AIC and BIC value. And the rough shrinkage estimate for the full model is 0.93 (139.81/149.81), for the model without Hoehn & Yahr disease stage at baseline is 0.94 (138.68/147.68), and for the model without UPDRS part 3 (motor) score is 0.94 (140.76/149.76). Therefore, these three models are all fitted the data well and the noise is very low. Due to this study only has 140 events and to avoid over fitting, we choose the model without UPDRS part 3 (motor) score.
+Table \@ref(tab:model select) shows that the model without UPDRS part 3 (motor) score has highest $R^2$ and the lowest AIC and BIC value. And the heuristic shrinkage estimate for the full model is 0.93 (139.81/149.81), for the model without Hoehn & Yahr disease stage at baseline is 0.94 (138.68/147.68), and for the model without UPDRS part 3 (motor) score is 0.94 (140.76/149.76). Therefore, these three models are all fitted the data well and the noise is very low. Due to this study only has 140 events and to avoid over fitting, we choose the model without UPDRS part 3 (motor) score.
 
 
-Then we test the proportional hazards assumption of this cox regression model by Schoenfeld residuals in each of the imputed dataset.
+Then we test the proportional hazards assumption of this cox regression model by Schoenfeld residuals in each of the imputed datasets.
 
 ```{r testcox}
 
@@ -589,7 +559,8 @@ unlist(test.ph10[["table"]]) %>%
    kable(caption='\\label{tab:testcox} PH assumption test results.',booktabs=T,linesep="",digits=3)
 ```
 
-Table \@ref(tab:testcox) shows a example of proportional hazards assumption, we can see that except for "sebl", all predictors' p-value is larger than 0.05. It indicates that only the "sebl" effect changes significantly over time. However, the p-value of global test of PH assumption is larger than 0.05. Hence there is no enough evidence to reject the null hypothesis of proportional hazards assumption. After checking proportional hazards assumption in each imputed dataset, we found no enough evidence to reject the assumption. 
+Table \@ref(tab:testcox) shows a example of proportional hazards assumption, we can see that except for "Schwab & England ADL score at baseline", all predictors' p-value is larger than 0.05. It indicates that only the "Schwab & England ADL score at baseline" effect changes significantly over time. However, the p-value of global test of PH assumption is larger than 0.05. Hence there is not enough evidence to reject the null hypothesis of proportional hazards. After checking proportional hazards assumption in each imputed dataset, we found no evidence to reject the assumption.
+
 
 ```{r,eval=FALSE}
 plot(cox.zph(coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat,data=pmm.new10),transform = "km"),var="sebl")
@@ -617,7 +588,7 @@ anova(f.ia)
 
 
 
-To assess the good fit of model, we plot the Martingale residual against continuous predictors. If the fitted model is correct, these residuals should symmetrically distributed with expected value 0.
+
 
 
 ```{r martingale,fig.align = "center",fig.cap = "\\label{ } Martingale residuals versus four continuous predictors.", fig.pos ='H'}
@@ -655,9 +626,10 @@ grid.arrange(plot1,plot2,plot3,plot4, ncol=1, nrow=4)
 
 
 ```
-From the \@ref(fig:martingale) we can see that the lots of "packyears" value is zero, and they seems symmetrically distributed around $\pm 1$ with the line seems straight and flat. And the scatter points of "hybl" seems symmetrically distributed around $\pm 0.5$ with expected value of zero. For the scatter plot of "sebl", even though there seems a slightly decrease trend, the points are still symmetrically distributed around zero. And for variable "agebl" plot, the line is slightly going up. This is because,the range of patients' age is large and most  of them is over 70 years old. However, the points are still symmetrically distributed and scattered around $\pm 1$. 
+From the \@ref(fig:martingale) we can see that "smoking history in pack-years" seems to be symmetrically distributed around $\pm 1$ and the blue fitted lowess curve seems straight and flat. The scatter points of "Hoehn & Yahr disease stage at baseline" seems symmetrically distributed around $\pm 0.5$ with expected value of zero. For the scatter plot of "Schwab & England ADL score at baseline", there appears to be a slightly decreasing trend  while for "age at baseline visit" the line is slightly going up. 
 
-To determine whether "agebl" and "sebl" need to be transformed or not, we compare models with and without restricted cubic splines (RCS).
+
+To determine whether "age at baseline visit" and "Schwab & England ADL score at baseline" need to be transformed or not, we compare models with and without restricted cubic splines (RCS).
 
 ```{r rcs,results = 'hide'}
 
@@ -699,9 +671,10 @@ data.frame(Model=c("Model without RCS","Model with age 3 knots RCS","Model with 
 
 
 ```
-Table \@ref(tab:model select2) shows that there are no big difference between $R^2$, AIC and BIC value of models with or without RCS. Model with sebl 3 knots RCS has the highest $R^2$ and lowest AIC value. However, $R^2$ value of the linear model only 0.04 lower than the highest one and AIC only 0.293 higher than the lowest one. And the linear model has the lowest BIC and highest rough shrinkage estimate value (0.94). Therefore, due to the data simple size of this study and to avoid over fitting, we choose the model without RCS. 
+Table \@ref(tab:model select2) shows that there is very little difference between the model $R^2$, AIC and BIC value of models with or without RCS terms. The model with sebl 3 knots RCS has the highest $R^2$ and lowest AIC value. However, the $R^2$ value of the linear model is only 0.04 lower than the highest one and the AIC is only 0.293 higher than the lowest one. The linear model has the lowest BIC. Therefore, since the simplest model is just as good as the models with RCS terms, we choose the model without RCS.
 
-Then we present the point and interval estimates of predictor effects by a hazard ratio chart and a table of summary estimated effects.
+
+Then we present the point and interval estimates of predictor effects by a hazard ratio chart and a table of summary estimated effects. 
 ```{r coxoutplot,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Hazard ratios and confidence bars for effects of predictors in model.", fig.pos ='H'}
 
 plot(summary (modelc),main= '',log = T)

@@ -64,7 +64,7 @@ nocite: '@*'
 
 ## Abstract
 
-When patients with Parkinson’s disease lose their ability to take care of themselves, and carers are no longer able to look after them at home, they will need long-term care. The risk factors for being admitted to a nursing home are unclear and there are few published studies. The aim of this work is to identify the incidence of institutionalization and the risk factors for institutionalization using data from a prospective incident cohort of parkinsonism in North East Scotland. The cohort study collects annual follow-up data of 575 participants from 2002 to 2020 with the baseline visit time from 2002 to 2010, around Aberdeen, Scotland. By using the reverse Kaplan-Meier estimate method, the study found that the median time to institutionalization of patients with Parkinson's disease (11.8 years) is 4.7 times longer than Atypical parkinsonism (2.5 years). The results from the Cox regression showed that patients with mild dementia have the highest risk for entering institutionalization (HR=3.1) and ageing increasing the need of the long-term care (HR=2). While the sex of patients (HR=1.1), smoking habits (HR=1.2) and whether living alone (HR=1.2) are all not high-risk factors, since their 95% confidence interval all contain one. Therefore, older patients with mild dementia, especially Atypical parkinsonism patients, are more likely need long-term care. 
+When patients with Parkinson’s disease lose their ability to take care of themselves, and carers are no longer able to look after them at home, they will need long-term care. The risk factors for being admitted to a nursing home are unclear and there are few published studies. The aim of this work is to identify the incidence of institutionalisation and the risk factors for institutionalisation using data from a prospective incident cohort of parkinsonism in North East Scotland. The cohort study collects annual follow-up data of 575 participants from 2002 to 2020 with the baseline visit time from 2002 to 2010, around Aberdeen, Scotland. By using the reverse Kaplan-Meier estimate method, the study found that the median time to institutionalization of patients with Parkinson's disease (11.8 years) is 4.7 times longer than Atypical parkinsonism (2.5 years). The results from the Cox regression showed that patients with mild dementia have the highest risk for entering institutionalization (HR=3.1) and ageing increasing the need of the long-term care (HR=2). While the sex of patients (HR=1.1), smoking habits (HR=1.2) and whether living alone (HR=1.2) are all not high-risk factors, since their 95% confidence interval all contain one. Therefore, older patients with mild dementia, especially Atypical parkinsonism patients, are more likely need long-term care. 
 
 
 
@@ -793,18 +793,20 @@ include_graphics(img1_path)
 
 ## Discussion 
 
-For same years old patients, the risk of woman being admitted into institution is higher than male. And if the patient's age is above median age at baseline visit and living alone, clinicians should pay more attention to him/her need for help with daily activities and plan management earlier. patients' smoking habit will also increase their chance into nursing home. Patients with heavy smoking habit should be advised to live a more health life and smoking less. In general, the highest risk patient's profile is older than 80 years old heavy smoker woman who lives alone.
 
-If two patients' personal profile is the same, then their medical profile will effect their chance of entering nursing home. Hoehn and Yahr scale is a common way to describe the Parkinson's disease progress. The higher Hoehn and Yahr disease stage at baseline means the less independent. To assess patients' impaired mobility, we choose the the Schwab and England ADL score which represents the percentage of independence. The lower the score is, the more dependent of patients and hence more care will be needed. Some patients' may not suffer from functional disability in body, but suffer from cognitive impairment. The Mini-Mental State Exam (MMSE) is to test patients' mental skills. The lower mini-mental state examination score at baseline means the more severe dementia in patient. And compare to impaired mobility, the cognitive impairment affect patients' independence more seriously. However, sometimes patients may die before being admitted into institution. The Charlson co-morbidity index is used to predict patients' one-year mortality. Therefore, patients with higher Charlson co-morbidity index at baseline will decrease the chance of being admitted into institution due to their living time is shorter than waiting time. In short, patients with higher Hoehn and Yahr scale and lower in Schwab and England ADL score and mini-mental state examination score at baseline will have higher demand of dependency and will need clinicians to plan management earlier. Meanwhile, patients with high Charlson co-morbidity index should be priority consider to entering nursing home. 
+This study found that patients with atypical parkinsonism have 5.3 times higher incidence rate of entering the long-term care facilities and 4.7 times shorter median survival time to institutionalisation than patients with Parkinson’s disease (PD). The highest hazard ratio risk factor is mild dementia (HR=3.1), follows with ageing (HR=2.0) and cognitive function declines (HR=1.2), and these three risk factors are three statistical significance as their 95% confidence interval don't include one. Female patients who live alone and have smoking habit are more likely need long-term care. And patients with more serious disability and disease stage have higher chance of admitting into nursing home. However, patients with more serious comorbid conditions tend to have less chance of entering institutionalisation. 
 
 
-## Strengths and limitations
 
-There are only 315 patients be involved in this study and only 140 events. Therefore, the sample size of this study is not big enough and will arise some bias. Due to the sample size problem, we have to choose the linear cox regression model to avoid over fitting. Therefore, the confidence interval might be wider. The sample size is also limited the number of predictors. And in the cox regression model, the PH assumption is valid in global test but not in "sebl" variable. 
 
-## Further work 
 
-In further analysis, it could expand the patients' number in the study and use more patients' profile personal information as predictors to build cox regression model. And this model can be validated in external data. 
+
+
+
+
+
+
+
 
 
 

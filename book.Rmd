@@ -549,7 +549,7 @@ modelc
 
 
 
-```{r model_select}
+```{r modelselect}
 
 AIC1<-AIC(modela)  #full
 AIC2<-AIC(modelb)  #without hybl
@@ -566,7 +566,7 @@ data.frame(Model=c("Full Model","Model without Hoehn & Yahr disease stage at bas
 
 
 ```
-Table \@ref(tab:model_select) shows that the $R^2$ of these three model are the same and the heuristic shrinkage are all very close to one. Therefore, these three models are all fitted the data well and the noise is very low. And the model without UPDRS part 3 (motor) score has the lowest AIC and BIC value. Due to this study only has 140 events and to avoid over fitting, we choose the model without UPDRS part 3 (motor) score.
+Table \@ref(tab:modelselect) shows that the $R^2$ of these three model are the same and the heuristic shrinkage are all very close to one. Therefore, these three models are all fitted the data well and the noise is very low. And the model without UPDRS part 3 (motor) score has the lowest AIC and BIC value. Due to this study only has 140 events and to avoid over fitting, we choose the model without UPDRS part 3 (motor) score.
 
 
 ```{r testcox}
@@ -712,7 +712,7 @@ modelc3
 ```
 
 
-```{r model_select2}
+```{r modelselect2}
 AIC.C<-AIC(modelc)    # chose one,without updrs
 AIC.C1<-AIC(modelc1)  # with age as 3 knot rcs
 AIC.C2<-AIC(modelc2)  # with sebl as 3 knot rcs
@@ -730,7 +730,7 @@ data.frame(Model=c("Linear model","RCS model with 3 knots in age","RCS model wit
   kable(caption=' Compare model with and without Restricted cubic splines (RCS).',booktabs=T,linesep="",digits=2)
 
 ```
-Table \@ref(tab:model_select2) shows that all these four models fit the data well as their heuristic shrinkage are all very close to one. And there is only little difference between $R^2$, AIC and BIC value of models with or without RCS terms. And the linear model has the lowest BIC value and the second lowest AIC value. Therefore, since the simplest model is just as good as the models with RCS terms, we choose the linear model.
+Table \@ref(tab:modelselect2) shows that all these four models fit the data well as their heuristic shrinkage are all very close to one. And there is only little difference between $R^2$, AIC and BIC value of models with or without RCS terms. And the linear model has the lowest BIC value and the second lowest AIC value. Therefore, since the simplest model is just as good as the models with RCS terms, we choose the linear model.
 
 
 ```{r eval=FALSE}
@@ -756,16 +756,10 @@ sumrcs2.new%>%
   
 ```
 
-Table \@ref(tab:coxout) shows 
+Table \@ref(tab:coxout) shows that patients' with with mild dementia (less than 24 score in MMSE test) have the highest hazard ratio (HR=3.1) compare to patients with normal cognitive function (MMSE test score larger than 28). The decline in cognitive function (MMSE test score from 24 to 27) increase the risk of entering the nursing home (HR=1.9). The second highest risk for patient's need of long-term care is ageing (HR=2.0). However, patient's sex, smoking habit and whether lives alone all don't have significant effect on the chance of entering into institutionalisation as their 95% hazard ratio confidence interval all include one and the hazard ratio are all closed to one. Woman have smoking habit and lives alone tend to have higher need of long-term care. For the patients' annual clinical examinations of disease stage (Hoehn and Yahr Scale), disability (Schwab and England Activities of Daily Living (ADL) Scale), and comorbid conditions (Charlson co-morbidity index) are all not statistical significant as their 95% hazard ratio confidence interval all include one. The point estimate hazard ratio indicates that less independence patients (lower percentages in Schwab and England ADL Scale) and more serious disease stage patients have higher chance of being admitted into nursing home. However, patients with more serious comorbid conditions have less chance entering into long term care facilities. 
 
 
 
-
-
-shows the hazard ratio confidence interval of variable "sex", "livesalone", "charlsonbl", "hybl", and "sebl" include one. Hence, they are not statistical significance. The hazard of being admitted into institution for female is 11.8% higher than male. And for patients live alone the hazard is 22.1% higher than those live with someone at baseline. And patients with one higher level in Hoehn & Yahr disease stage at baseline will increase the hazard by 29.9%. However, patients with one level higher in Charlson co-morbidity index or Schwab & England ADL score at baseline, their hazard ratio of being admitted into institution will decrease 84.4% and 71.1% respectively. 
-
-
-On the contrary, the effects of "agebl", "packyears" and "mmsecat" are statistical significance. The hazard ratio of patients who are one year old older than others at baseline visit is 2.01. Hence, every one year older, the hazard of being admitted into institution increases 100.5%. And for patients'  one more pack in annual smoking history, the hazard of being admitted into institution increases 18.3%. And patients with higher minimental state examination score at baseline are tend to have less hazard. Patients with minimental state examination score at baseline less than 24 will have 211.7% more hazard of entering institution than those with score at baseline equal or larger than 28 and less than 30, and those score between 24 to 27 will have 85.3% more hazard than those with score equal or larger than 28 and less than 30. 
 
 ```{r nomogram, eval=FALSE}
 
@@ -797,7 +791,7 @@ include_graphics(img1_path)
 
 
 
-## Summary
+## Discussion 
 
 For same years old patients, the risk of woman being admitted into institution is higher than male. And if the patient's age is above median age at baseline visit and living alone, clinicians should pay more attention to him/her need for help with daily activities and plan management earlier. patients' smoking habit will also increase their chance into nursing home. Patients with heavy smoking habit should be advised to live a more health life and smoking less. In general, the highest risk patient's profile is older than 80 years old heavy smoker woman who lives alone.
 

@@ -125,7 +125,7 @@ Cox regressions were built to identify the hazard ratio of potential risk factor
 Due to the UPDRS part 3 and Hoehn and Yahr Scale are both Parkinson’s rating scales that used to assess patients' symptoms, they may have similar predictive effect. Therefore, we first built three Cox regression models: (i) Full model; (ii) Model without Hoehn and Yahr Scale; (iii) Model without UPDRS part 3. Then, we compared these three models by heuristic shrinkage, $R^2$, Akaike information criterion (AIC) and Bayesian information criterion (BIC) to select predictors. Shrinkage shows the difference between real value and the predict value, and the value is from zero to one. Higher shrinkage value means the model more closed to the real model. The heuristic shrinkage is calculated by one minus the model chi-square divides by the degrees of freedom. $R^2$ gives the proportion of the variability of the dependent variable that can be explained by the independent variable. It is used to measure the goodness of it of the model and ranges from zero to one. $R^2$ of one indicates model is perfectly fit and it's equation is one minus the sum of squares of residuals divides by the total sum of squares. AIC also measure the goodness of fit of model and the lower AIC value means the model fits better. BIC is used to compare model with different numbers of parameters, model with lower BIC value is more likely to be the true model. AIC tends to choose a bigger model, while BIC tends to choose a small model because BIC penalizes model complexity more heavily. Hence, AIC and BIC are used together to choose model. The formal is $-2logL+kp$, where L is the likelihood function and p is the number of parameters in the model, and k is 2 for AIC and log(n) for BIC.  
 
 After selecting the model, the model assumption of proportional hazards was checked by Schoenfeld residuals method. The Schoenfeld residual is the observed value for patient minus the expected value of this patient. 
-And under the proportional hazards assumption, plot of the scale Schoenfeld residuals of each predictors over time should not have trends. If the Schoenfeld residual plot can fit a straight line, then the p-value of the hypothesis test of proportional hazards assumption should be larger than 0.05. Then, we accessed the functional form of each continuous predictor by plotting martingale residual against continuous predictor. If the fitted model is correct, these residuals should symmetrically distributed with expected value 0. However, the plot showed trends in "age” and “Schwab & England ADL score”. To determine whether they need to be transformed or not, we compared models with and without restricted cubic splines (RCS) by $R^2$, AIC and BIC. Finally, we presented the hazard ratios and confidence interval of estimate effects of predictors in model by figure and table. 
+And under the proportional hazards assumption, plot of the scale Schoenfeld residuals of each predictors over time should not have trends. If the Schoenfeld residual plot can fit a straight line, then the p-value of the hypothesis test of proportional hazards assumption should be larger than 0.05. Then, we accessed the functional form of each continuous predictor by plotting martingale residual against continuous predictor. If the fitted model is correct, these residuals should symmetrically distributed with expected value 0. However, the plot showed trends in "Age” and “Schwab & England ADL Scale”. To determine whether they need to be transformed or not, we compared models with and without restricted cubic splines (RCS) by $R^2$, AIC and BIC. Finally, we presented the hazard ratios and confidence interval of estimate effects of predictors in model by figure and table. 
 
  
 
@@ -549,7 +549,7 @@ modelc
 
 
 
-```{r model select}
+```{r model_select}
 
 AIC1<-AIC(modela)  #full
 AIC2<-AIC(modelb)  #without hybl
@@ -561,17 +561,13 @@ BIC2<-BIC(modelb)  #without hybl
 BIC3<-BIC(modelc) #without updrs
 
 
-data.frame(Model=c("Full Model","Model without Hoehn & Yahr disease stage at baseline","Model without UPDRS part 3 (motor) score") , 'LR chi2'=c(149.81,147.68,149.76),'d.f.'=c(10,9,9),'R square' = c(0.383,0.379,0.383),AIC = c(AIC1,AIC2,AIC3), BIC = c(BIC1,BIC2,BIC3))%>%
-  kable(caption='\\label{tab:model select} Model tests and discrimination indexes.',booktabs=T,linesep="",digits=2)
+data.frame(Model=c("Full Model","Model without Hoehn & Yahr disease stage at baseline","Model without UPDRS part 3 (motor) score") , "Heuristic shrinkage"=c(0.93,0.94,0.94),'R square' = c(0.383,0.379,0.383),AIC = c(AIC1,AIC2,AIC3), BIC = c(BIC1,BIC2,BIC3))%>%
+  kable(caption='Model tests and discrimination indexes.',booktabs=T,linesep="",digits=2)
 
 
 ```
+Table \@ref(tab:model_select) shows that the $R^2$ of these three model are the same and the heuristic shrinkage are all very close to one. Therefore, these three models are all fitted the data well and the noise is very low. And the model without UPDRS part 3 (motor) score has the lowest AIC and BIC value. Due to this study only has 140 events and to avoid over fitting, we choose the model without UPDRS part 3 (motor) score.
 
-
-Table \@ref(tab:model select) shows that the model without UPDRS part 3 (motor) score has highest $R^2$ and the lowest AIC and BIC value. And the heuristic shrinkage estimate for the full model is 0.93 (139.81/149.81), for the model without Hoehn & Yahr disease stage at baseline is 0.94 (138.68/147.68), and for the model without UPDRS part 3 (motor) score is 0.94 (140.76/149.76). Therefore, these three models are all fitted the data well and the noise is very low. Due to this study only has 140 events and to avoid over fitting, we choose the model without UPDRS part 3 (motor) score.
-
-
-Then we test the proportional hazards assumption of this cox regression model by Schoenfeld residuals in each of the imputed datasets.
 
 ```{r testcox}
 
@@ -591,11 +587,22 @@ for (i in 1:10){
     assign(test_names[i], test.ph_df)
 }
 
-unlist(test.ph10[["table"]]) %>%
-   kable(caption='\\label{tab:testcox} PH assumption test results.',booktabs=T,linesep="",digits=3)
+
+test.ph<-unlist(test.ph10[["table"]])
+
+test.ph<-as.data.frame(test.ph)
+  
+rownames(test.ph)<-c("Age","Sex","Smoking history in pack-years","Lives alone","Charlson co-morbidity index","Hoehn and Yahr Scale","Schwab and England Activities of Daily Living (ADL) Scale","Mini Mental State Examination (MMSE) test","Global") 
+
+
+test.ph %>%
+   kable(caption='\\label{tab:testcox} PH assumption test results.',booktabs=T,linesep="",digits=2)
+
+
 ```
 
-Table \@ref(tab:testcox) shows a example of proportional hazards assumption, we can see that except for "Schwab & England ADL score at baseline", all predictors' p-value is larger than 0.05. It indicates that only the "Schwab & England ADL score at baseline" effect changes significantly over time. However, the p-value of global test of PH assumption is larger than 0.05. Hence there is not enough evidence to reject the null hypothesis of proportional hazards. After checking proportional hazards assumption in each imputed dataset, we found no evidence to reject the assumption.
+Table \@ref(tab:testcox) shows a example of proportional hazards (PH) assumption, we can see that except for "Schwab and England Activities of Daily Living (ADL) Scale", all predictors' p-value is larger than 0.05. It indicates that only the "Schwab and England ADL Scale" effect changes significantly over time. However, the p-value of global PH assumption test is larger than 0.05. Hence there is not enough evidence to reject the null hypothesis of proportional hazards. And the p-value of global PH assumption test are all larger than 0.05 in all 10 imputed datasets. Hence, the PH assumption is valid. 
+
 
 
 ```{r,eval=FALSE}
@@ -627,7 +634,7 @@ anova(f.ia)
 
 
 
-```{r martingale,fig.align = "center",fig.cap = "\\label{ } Martingale residuals versus four continuous predictors.", fig.pos ='H'}
+```{r martingale,fig.align = "center",fig.cap = "\\label{ } Martingale residuals versus continuous predictors.", fig.pos ='H'}
 
 pmm.new1<-complete(pmm.new,1)
 rr.0<-residuals(coxph(Surv(tt,cens)~1,data = data2),type="martingale")
@@ -638,6 +645,8 @@ pmm.new1$rr.0<-rr.0
 plot1<-ggplot(pmm.new1,aes(agebl, rr.0)) + 
          geom_point(cex=1) +
          geom_smooth(method = "loess", se = T)+
+         xlab("Age")+
+         ylab("residuals")+
          ylim(c(-2,2))
 
 
@@ -645,27 +654,42 @@ plot1<-ggplot(pmm.new1,aes(agebl, rr.0)) +
 plot2<- ggplot(pmm.new1,aes(packyears, rr.0)) + 
          geom_point(cex=1) +
          geom_smooth(method = "loess", se = T) +
+         xlab("Smoking history in pack-years")+
+         ylab("residuals")+
          ylim(c(-2,2))   
 
-
-plot3<- ggplot(pmm.new1,aes(sebl, rr.0)) + 
+plot3<-ggplot(pmm.new1,aes(hybl, rr.0)) + 
         geom_point(cex=1) +
         geom_smooth(method = "loess", se = T)+
+        xlab("Hoehn and Yahr Scale")+
+        ylab("Martingale residuals")+
         ylim(c(-2,2))
 
-plot4<-ggplot(pmm.new1,aes(hybl, rr.0)) + 
+
+plot4<- ggplot(pmm.new1,aes(sebl, rr.0)) + 
         geom_point(cex=1) +
         geom_smooth(method = "loess", se = T)+
+        xlab("Schwab and England ADL Scale")+
+        ylab("residuals")+
         ylim(c(-2,2))
 
-grid.arrange(plot1,plot2,plot3,plot4, ncol=1, nrow=4)
+plot5<- ggplot(pmm.new1,aes(charlsonbl, rr.0)) + 
+        geom_point(cex=1) +
+        geom_smooth(method = "loess", se = T)+
+        xlab("Charlson co-morbidity index")+
+        ylab("residuals")+
+        ylim(c(-2,2))
+
+
+grid.arrange(plot1,plot2,plot3,plot4,plot5, ncol=2, nrow=3)
+
+
+
 
 
 ```
-From the \@ref(fig:martingale) we can see that "smoking history in pack-years" seems to be symmetrically distributed around $\pm 1$ and the blue fitted lowess curve seems straight and flat. The scatter points of "Hoehn & Yahr disease stage at baseline" seems symmetrically distributed around $\pm 0.5$ with expected value of zero. For the scatter plot of "Schwab & England ADL score at baseline", there appears to be a slightly decreasing trend  while for "age at baseline visit" the line is slightly going up. 
+From the \@ref(fig:martingale) we can see that "Smoking history in pack-years" and "Charlson co-morbidity index" are both seems to be symmetrically distributed around $\pm 1$ and with flat blue fitted line around zero. And the scatter points of "Hoehn & Yahr Scale" seems symmetrically distributed around $\pm 0.5$ with expected value of zero. For the scatter plot of "Schwab & England ADL Scale", there appears to be a slightly decreasing trend  while for "Age" the line is slightly going up. 
 
-
-To determine whether "age at baseline visit" and "Schwab & England ADL score at baseline" need to be transformed or not, we compare models with and without restricted cubic splines (RCS).
 
 ```{r rcs,results = 'hide'}
 
@@ -688,7 +712,7 @@ modelc3
 ```
 
 
-```{r model select2}
+```{r model_select2}
 AIC.C<-AIC(modelc)    # chose one,without updrs
 AIC.C1<-AIC(modelc1)  # with age as 3 knot rcs
 AIC.C2<-AIC(modelc2)  # with sebl as 3 knot rcs
@@ -700,19 +724,17 @@ BIC.C2<-BIC(modelc2)  # with sebl as 3 knot rcs
 BIC.C3<-BIC(modelc3)  # with age and sebl as 3 knot rcs
 
 
+# restricted cubic splines (RCS)
 
-
-data.frame(Model=c("Model without RCS","Model with age 3 knots RCS","Model with sebl 3 knots RCS","Model with age and sebl 3 knots RCS") , 'LR chi2'=c(149.76,149.81,152.00,152.06),'d.f.'=c(9,10,10,11),'R square' = c(0.383,0.383,0.387,0.387),AIC = c(AIC.C,AIC.C1,AIC.C2,AIC.C3), BIC = c(BIC.C,BIC.C1,BIC.C2,BIC.C3))%>%
-  kable(caption='\\label{tab:model select2} Model with and without RCS tests and discrimination indexes.',booktabs=T,linesep="",digits=2)
-
+data.frame(Model=c("Linear model","RCS model with 3 knots in age","RCS model with 3 knots in Schwab and England Activities of Daily Living (ADL) Scale","RCS model with 3 knots both in age and Schwab and England Activities of Daily Living (ADL) Scale") , 'Heuristic shrinkage'=c(0.94,0.93,0.93,0.93),'R square' = c(0.383,0.383,0.387,0.387),AIC = c(AIC.C,AIC.C1,AIC.C2,AIC.C3), BIC = c(BIC.C,BIC.C1,BIC.C2,BIC.C3))%>%
+  kable(caption=' Compare model with and without Restricted cubic splines (RCS).',booktabs=T,linesep="",digits=2)
 
 ```
-Table \@ref(tab:model select2) shows that there is very little difference between the model $R^2$, AIC and BIC value of models with or without RCS terms. The model with sebl 3 knots RCS has the highest $R^2$ and lowest AIC value. However, the $R^2$ value of the linear model is only 0.04 lower than the highest one and the AIC is only 0.293 higher than the lowest one. The linear model has the lowest BIC. Therefore, since the simplest model is just as good as the models with RCS terms, we choose the model without RCS.
+Table \@ref(tab:model_select2) shows that all these four models fit the data well as their heuristic shrinkage are all very close to one. And there is only little difference between $R^2$, AIC and BIC value of models with or without RCS terms. And the linear model has the lowest BIC value and the second lowest AIC value. Therefore, since the simplest model is just as good as the models with RCS terms, we choose the linear model.
 
 
-Then we present the point and interval estimates of predictor effects by a hazard ratio chart and a table of summary estimated effects. 
-```{r coxoutplot,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Hazard ratios and confidence bars for effects of predictors in model.", fig.pos ='H'}
-
+```{r eval=FALSE}
+#coxoutplot,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Hazard ratios and confidence bars for effects of predictors in model.", fig.pos ='H'
 plot(summary (modelc),main= '',log = T)
 
 
@@ -724,18 +746,23 @@ sumrcs2<-data.frame(summary(modelc))
 
 sumrcs2.new<-sumrcs2[grep("Hazard.Ratio",rownames(sumrcs2)),]
 
-row.names(sumrcs2.new)<-c("agebl","sex","packyears","livesalone","charlsonbl","hybl","sebl","mmsecat - <24:28-30 ","mmsecat - 24-27:28-30")
+row.names(sumrcs2.new)<-c("Age","Sex","Smoking history in pack-years","Lives alone","Charlson co-morbidity index","Hoehn and Yahr Scale","Schwab and England Activities of Daily Living (ADL) Scale","Mini Mental State Examination (MMSE) test - <24:28-30 ","Mini Mental State Examination (MMSE) test - 24-27:28-30")
 
 
 sumrcs2.new%>%
   select(Effect,Lower.0.95,Upper.0.95)%>%
-  rename("Hazard ratio"=Effect)%>%
-   kable(caption='\\label{tab:coxout} Summary of estimated effects.',booktabs=T,linesep="",digits=1)
+  rename("Hazard ratio"=Effect,"The 95% lower confidence limits"=Lower.0.95,"The 95% upper confidence limits"=Upper.0.95)%>%
+   kable(caption='Summary of estimated effects.',booktabs=T,linesep="",digits=1)
   
-
 ```
 
-Table \@ref(tab:coxout) shows the hazard ratio confidence interval of variable "sex", "livesalone", "charlsonbl", "hybl", and "sebl" include one. Hence, they are not statistical significance. The hazard of being admitted into institution for female is 11.8% higher than male. And for patients live alone the hazard is 22.1% higher than those live with someone at baseline. And patients with one higher level in Hoehn & Yahr disease stage at baseline will increase the hazard by 29.9%. However, patients with one level higher in Charlson co-morbidity index or Schwab & England ADL score at baseline, their hazard ratio of being admitted into institution will decrease 84.4% and 71.1% respectively. 
+Table \@ref(tab:coxout) shows 
+
+
+
+
+
+shows the hazard ratio confidence interval of variable "sex", "livesalone", "charlsonbl", "hybl", and "sebl" include one. Hence, they are not statistical significance. The hazard of being admitted into institution for female is 11.8% higher than male. And for patients live alone the hazard is 22.1% higher than those live with someone at baseline. And patients with one higher level in Hoehn & Yahr disease stage at baseline will increase the hazard by 29.9%. However, patients with one level higher in Charlson co-morbidity index or Schwab & England ADL score at baseline, their hazard ratio of being admitted into institution will decrease 84.4% and 71.1% respectively. 
 
 
 On the contrary, the effects of "agebl", "packyears" and "mmsecat" are statistical significance. The hazard ratio of patients who are one year old older than others at baseline visit is 2.01. Hence, every one year older, the hazard of being admitted into institution increases 100.5%. And for patients'  one more pack in annual smoking history, the hazard of being admitted into institution increases 18.3%. And patients with higher minimental state examination score at baseline are tend to have less hazard. Patients with minimental state examination score at baseline less than 24 will have 211.7% more hazard of entering institution than those with score at baseline equal or larger than 28 and less than 30, and those score between 24 to 27 will have 85.3% more hazard than those with score equal or larger than 28 and less than 30. 

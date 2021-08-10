@@ -64,7 +64,16 @@ nocite: '@*'
 
 ## Abstract
 
-When patients with Parkinson’s disease lose their ability to take care of themselves, and carers are no longer able to look after them at home, they will need long-term care. The risk factors for being admitted to a nursing home are unclear and there are few published studies. The aim of this work is to identify the incidence of institutionalisation and the risk factors for institutionalisation using data from a prospective incident cohort of parkinsonism in North East Scotland. The cohort study collects annual follow-up data of 575 participants from 2002 to 2020 with the baseline visit time from 2002 to 2010, around Aberdeen, Scotland. By using the reverse Kaplan-Meier estimate method, the study found that the median time to institutionalization of patients with Parkinson's disease (11.8 years) is 4.7 times longer than Atypical parkinsonism (2.5 years). The results from the Cox regression showed that patients with mild dementia have the highest risk for entering institutionalization (HR=3.1) and ageing increasing the need of the long-term care (HR=2). While the sex of patients (HR=1.1), smoking habits (HR=1.2) and whether living alone (HR=1.2) are all not high-risk factors, since their 95% confidence interval all contain one. Therefore, older patients with mild dementia, especially Atypical parkinsonism patients, are more likely need long-term care. 
+When patients with Parkinson’s disease lose their ability to take care of themselves, and carers are no longer able to look after them at home, they will need long-term care. The risk factors for being admitted to a nursing home are unclear and there are few published studies. The aim of this work is to identify the incidence of institutionalization and the risk factors for institutionalization using data from a prospective incident cohort of parkinsonism in North East Scotland. This prospective cohort study has collected annual follow-up data from 575 participants from Aberdeen, Scotland, since 2002.  
+
+
+with the baseline visit time from 2002 to 2010.
+
+
+Using the reverse Kaplan-Meier method, the median time to institutionalization of patients with Parkinson’s disease (11.8 years) was 4.7 times longer than Atypical parkinsonism (2.5 years). The results from the Cox regression showed that patients with mild dementia (versus )are at highest risk for entering institutionalization (HR=3.1) and ageing increasing the need of the long-term care (HR=2). While the sex of patients (HR=1.1), smoking habits (HR=1.2) and whether living alone (HR=1.2) are all not high-risk factors, since their 95% confidence interval all contain one. Therefore, older patients with mild dementia, especially Atypical parkinsonism patients, are more likely need long-term care.
+
+
+
 
 
 
@@ -307,34 +316,35 @@ grid.arrange(plot1, plot2, plot3,ncol=3, nrow=1)
 **Kaplan-Meier estimation** 
 
 
-```{r KM}
+```{r reKM}
 
-KM2<-survfit(Surv(tt/365.25,cens)~diagnosiscat,data=data)
+data$cens.followup<-1-data$cens
+
+reverse.KM<-survfit(Surv(tt/365.25,cens.followup)~diagnosiscat,data=data)
 
 # KM2
 
-data.frame(groups= c("Parkinson's disease","Atypical parkinsonism","Control"),n=c(201,114,260),events=c(71,69,45),median=c(11.8,2.5,NA),LCL=c(9.3,1.8,14.8),UCL=c(NA,4.2,NA))%>%
-  kable(caption='Kaplan-Meier estimate of the median survival time to institutionalization.',booktabs=T,linesep="",digits=2) %>%
-  footnote(alphabet = c ("The time is year and the events of interest is institutionalisation;",
+data.frame(groups= c("Parkinson's disease","Atypical parkinsonism","Control"),n=c(201,114,260),median=c(9.26,4.41,10.78),LCL=c(8.30,3.33,10.40),UCL=c(11.80,5.78,11.07))%>%
+  kable(caption='Reverse Kaplan-Meier estimate of the median follow-up time.',booktabs=T,linesep="",digits=2) %>%
+  footnote(alphabet = c ("The time is year",
                "LCL is the 95% lower confidence limits;", 
-               "UCL is the 95% upper confidence limits;",
-               "The median survival time and the upper 95% confidence limit for control group are both undefined, hence it is indicated by a missing value NA."))
+               "UCL is the 95% upper confidence limits;"
+               ))
   
 
 ```
-Table \@ref(tab:KM) shows the median survival time for PD patients entering long-term care facility (11.8 years) is 4.7 times longer than atypical parkinsonism patients (2.5 years). To better visualized the estimation, we plot the Kaplan-Maier survival curve.
+Table \@ref(tab:reKM) shows the median follow-up time for PD patients (9.26 years) is 2.1 times longer than atypical parkinsonism patients (4.41 years). 
 
 
 ```{r KMplot, fig.align = "center",fig.cap = "\\label { } Kaplan-Maier survival curve.", fig.pos ='H'}
 
+KM<-survfit(Surv(tt/365.25,cens)~diagnosiscat,data=data)
 
-
-ggsurvplot(KM2,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("Parkinson's disease","Atypical parkinsonism","Control"))
+ggsurvplot(KM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("Parkinson's disease","Atypical parkinsonism","Control"))
 
 
 ```
-The fig \@ref(fig:KMplot) shows that at the beginning the survival probability of entering the institutionalisation is overlap between PD group and control group, however the survival probability for atypical parkinsonism group drops very quick. And when the follow time around 5 years, the atypical parkinsonism group's KM curve is not that smooth as before, which means most patients with atypical parkinsonism have already been in institutionalisation. The KM curve for PD patients is smooth and the survival probability is higher than atypical parkinsonism group all the time. Hence, patients with PD have longer independent living time than patients with atypical parkinsonism. 
-
+The fig \@ref(fig:KMplot) shows that at the beginning the survival probability of entering the institutionalisation is overlap between PD group and control group, however the survival probability for atypical parkinsonism group drops very quick. And when the follow time around 5 years, the atypical parkinsonism group's KM curve is not that smooth as before, which means most patients with atypical parkinsonism have already been in institutionalisation. The KM curve for PD patients is smooth and the survival probability is higher than atypical parkinsonism group all the time. Hence, patients with PD have longer independent living time than patients with atypical parkinsonism. And the median survival time for PD patients entering long-term care facility (11.8 years) is 4.7 times longer than atypical parkinsonism patients (2.5 years).
 
 
 **The incidence rate**

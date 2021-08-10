@@ -193,6 +193,17 @@ data$tt<-as.Date(as.character(data$t), format="%Y-%m-%d")-
 data$tt<-as.numeric(data$tt)
 
 data$year<-data$tt/365.25
+
+
+# str(data)
+
+data$sex<-factor(data$sex,
+                        levels = c(0,1),
+                        labels = c("male", "female"))
+
+data$livesalone<-factor(data$livesalone,
+                        levels = c(0,1),
+                        labels = c("no", "yes"))
 ```
 
 ```{r data2}
@@ -523,6 +534,10 @@ pmm.new<-as.mids(long)
 ```
 
 
+
+
+
+
 **Identify the risk factors**
 
 
@@ -567,6 +582,9 @@ data.frame(Model=c("Full Model","Model without Hoehn & Yahr disease stage at bas
 
 ```
 Table \@ref(tab:modelselect) shows that the $R^2$ of these three model are the same and the heuristic shrinkage are all very close to one. Therefore, these three models are all fitted the data well and the noise is very low. And the model without UPDRS part 3 (motor) score has the lowest AIC and BIC value. Due to this study only has 140 events and to avoid over fitting, we choose the model without UPDRS part 3 (motor) score.
+
+
+
 
 
 ```{r testcox}
@@ -733,12 +751,7 @@ data.frame(Model=c("Linear model","RCS model with 3 knots in age","RCS model wit
 Table \@ref(tab:modelselect2) shows that all these four models fit the data well as their heuristic shrinkage are all very close to one. And there is only little difference between $R^2$, AIC and BIC value of models with or without RCS terms. And the linear model has the lowest BIC value and the second lowest AIC value. Therefore, since the simplest model is just as good as the models with RCS terms, we choose the linear model.
 
 
-```{r eval=FALSE}
-#coxoutplot,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Hazard ratios and confidence bars for effects of predictors in model.", fig.pos ='H'
-plot(summary (modelc),main= '',log = T)
 
-
-```
 
 ```{r coxout}
 
@@ -746,19 +759,38 @@ sumrcs2<-data.frame(summary(modelc))
 
 sumrcs2.new<-sumrcs2[grep("Hazard.Ratio",rownames(sumrcs2)),]
 
-row.names(sumrcs2.new)<-c("Age","Sex","Smoking history in pack-years","Lives alone","Charlson co-morbidity index","Hoehn and Yahr Scale","Schwab and England Activities of Daily Living (ADL) Scale","Mini Mental State Examination (MMSE) test - <24:28-30 ","Mini Mental State Examination (MMSE) test - 24-27:28-30")
+row.names(sumrcs2.new)<-c("Age","Smoking history in pack-years","Charlson co-morbidity index","Hoehn and Yahr Scale","Schwab and England Activities of Daily Living (ADL) Scale","Sex","livesalone","Mini Mental State Examination (MMSE) test - <24:28-30 ","Mini Mental State Examination (MMSE) test - 24-27:28-30")
 
 
-sumrcs2.new%>%
-  select(Effect,Lower.0.95,Upper.0.95)%>%
-  rename("Hazard ratio"=Effect,"The 95% lower confidence limits"=Lower.0.95,"The 95% upper confidence limits"=Upper.0.95)%>%
-   kable(caption='Summary of estimated effects.',booktabs=T,linesep="",digits=1)
+
+
+#sumrcs2.new%>%
+#  select(Effect,Lower.0.95,Upper.0.95)%>%
+#  rename("Hazard ratio"=Effect,"The 95% lower confidence limits"=Lower.0.95,"The 95% upper confidence limits"=Upper.0.95)%>%
+#  kable(caption='Summary of estimated effects.',booktabs=T,linesep="",digits=2)
+
+
+read.csv("Hazard ratio.csv")%>%
+  rename("Characteristic"="ï..Characteristic","Hazard ratio and the 95% confidence interval"="Hazard.ratio.and.the.95..confidence.interval")%>%
+  kable(caption='Summary of estimated effects.',booktabs=T,linesep="",digits=2)
+
+
+
   
 ```
 
-Table \@ref(tab:coxout) shows that patients' with with mild dementia (less than 24 score in MMSE test) have the highest hazard ratio (HR=3.1) compare to patients with normal cognitive function (MMSE test score larger than 28). The decline in cognitive function (MMSE test score from 24 to 27) increase the risk of entering the nursing home (HR=1.9). The second highest risk for patient's need of long-term care is ageing (HR=2.0). However, patient's sex, smoking habit and whether lives alone all don't have significant effect on the chance of entering into institutionalisation as their 95% hazard ratio confidence interval all include one and the hazard ratio are all closed to one. Woman have smoking habit and lives alone tend to have higher need of long-term care. For the patients' annual clinical examinations of disease stage (Hoehn and Yahr Scale), disability (Schwab and England Activities of Daily Living (ADL) Scale), and comorbid conditions (Charlson co-morbidity index) are all not statistical significant as their 95% hazard ratio confidence interval all include one. The point estimate hazard ratio indicates that less independence patients (lower percentages in Schwab and England ADL Scale) and more serious disease stage patients have higher chance of being admitted into nursing home. However, patients with more serious comorbid conditions have less chance entering into long term care facilities. 
+Table \@ref(tab:coxout) shows that patients' with with mild dementia (less than 24 score in MMSE test) have the highest hazard ratio (HR=3.12) compare to patients with normal cognitive function (MMSE test score larger than 28). The decline in cognitive function (MMSE test score from 24 to 27) increase the risk of entering the nursing home (HR=1.85). The second highest risk for patient's need of long-term care is ageing (HR=2.01). The slightly significant risk factor is smoking habit as its 95% lower confidence interval just above one and the hazard ratio is closed to one (HR=1.18). However, patient's sex and whether lives alone are both don't have significant effect on the chance of entering into institutionalisation as their 95% hazard ratio confidence interval both include one. Woman have smoking habit and lives alone tend to have higher need of long-term care. For the patients' annual clinical examinations of disease stage (Hoehn and Yahr Scale), disability (Schwab and England Activities of Daily Living (ADL) Scale), and comorbid conditions (Charlson co-morbidity index) are all not statistical significant as their 95% hazard ratio confidence interval all include one. The point estimate hazard ratio indicates that less independence patients (lower percentages in Schwab and England ADL Scale) and more serious disease stage patients have higher chance of being admitted into nursing home. However, patients with more serious comorbid conditions have less chance entering into long term care facilities. 
+
+```{r coxoutplot,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Hazard ratios and confidence bars for risk factors in model.", fig.pos ='H'}
 
 
+text<-"Notes:\nagebl is age; packyears is smoking history in pack-years;\ncharlsonbl is Charlson co-morbidity index; hybl is Hoehn and Yahr Scale;\nsebl is Schwab and England Activities of Daily Living (ADL) Scale;\nmmsecat is Mini Mental State Examination (MMSE) test."
+par(mar = c(8,5,3,3))
+plot(summary (modelc),main= '',log = T)
+mtext(text, side = 1, line = 5, cex = 0.8, adj = 0) 
+```
+
+The \@ref(fig:coxoutplot) shows the estimated hazard ratios of patients' default setting of predictors at baseline visit. Every 10 years older for patients, the risk of entering the nursing home will be double. The risk of institutionalisation for patients who smoke 23 packs in a year only slight higher than patients without smoking habit. Every two Charlson co-morbidity index higher for patients, the need of institutionalisation is decrease around 20%. Patients with one more stage of Hoehn and Yahr Scale or 30 lower percentage score in Schwab and England ADL Scale will increase around 25% risk of institutionalisation. 
 
 
 ```{r nomogram, eval=FALSE}
@@ -797,7 +829,7 @@ include_graphics(img1_path)
 This study found that patients with atypical parkinsonism have 5.3 times higher incidence rate of entering the long-term care facilities and 4.7 times shorter median survival time to institutionalisation than patients with Parkinson’s disease (PD). The highest hazard ratio risk factor is mild dementia (HR=3.1), follows with ageing (HR=2.0) and cognitive function declines (HR=1.2), and these three risk factors are three statistical significance as their 95% confidence interval don't include one. Female patients who live alone and have smoking habit are more likely need long-term care. And patients with more serious disability and disease stage have higher chance of admitting into nursing home. However, patients with more serious comorbid conditions tend to have less chance of entering institutionalisation. 
 
 
-
+The 
 
 
 

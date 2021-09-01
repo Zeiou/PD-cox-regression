@@ -165,6 +165,7 @@ library(png)
 library(bookdown)
 library(foreign)
 library(kableExtra)
+library(patchwork)#arrange survival plot
 
 # install.packages('Hmisc')
 ```
@@ -282,6 +283,34 @@ data.sum%>%
 ```
 
 Table \@ref(tab:datasum) shows the population in this study is elderly participants as most of them are over 70 years old and the sex ratio between male and female are around 1.5. Both age and sex distributions are similar in these three groups. There are more individuals have smoking habits and living alone in the control group, while heavier smoker in atypical parkinsonism group. And less living alone patients in PD group than others. In short, the demographic information of participants are very similar among these three group with slightly difference in smoking habit and whether living alone. 
+
+
+```{r eval=FALSE}
+
+data$mmsecat<-cut(data$mmsebltotal,c(0,23,27,30),labels = c("<24","24-27","28-30"))
+
+MMSEKM<-survfit(Surv(tt/365.25,cens)~mmsecat,data=data)
+
+MMSEKMplot<-ggsurvplot(MMSEKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("MMSE:<24","MMSE:24-27","MMSE:28-30"))
+
+
+
+aloneKM<-survfit(Surv(tt/365.25,cens)~livesalone,data=data)
+
+aloneKMplot<-ggsurvplot(aloneKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("live with other","live alone"))
+
+
+sexKM<-survfit(Surv(tt/365.25,cens)~sex,data=data)
+
+sexKMplot<-ggsurvplot(sexKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("male","female"))
+
+
+(aloneKMplot$plot | sexKMplot$plot) / MMSEKMplot$plot
+
+
+```
+
+
 
 
 
@@ -798,7 +827,7 @@ read.csv("Hazard ratio.csv")%>%
   
 ```
 
-Table \@ref(tab:coxout) shows that patients with mild dementia (less than 24 score in MMSE test) have the highest hazard ratio (HR=3.12) compare to patients with normal cognitive function (MMSE test score larger than 28). The decline in cognitive function (MMSE test score from 24 to 27) increase the risk of entering the nursing home (HR=1.85). The second highest risk for patient's need of long-term care is ageing (HR=2.01). The slightly significant risk factor is smoking habit as its 95% lower confidence interval just above one and the hazard ratio is closed to one (HR=1.18). However, patient's sex and whether lives alone are both don't have significant effect on the chance of entering into institutionalisation as their 95% hazard ratio confidence interval both include one. Woman have smoking habit and lives alone tend to have higher need of long-term care. For the patients' annual clinical examinations of disease stage (Hoehn and Yahr Scale), disability (Schwab and England Activities of Daily Living (ADL) Scale), and comorbid conditions (Charlson co-morbidity index) are all not statistical significant as their 95% hazard ratio confidence interval all include one. The point estimate hazard ratio indicates that less independence patients (lower percentages in Schwab and England ADL Scale) and more serious disease stage patients have higher chance of being admitted into nursing home. However, patients with more serious comorbid conditions have less chance entering into long term care facilities. 
+Table \@ref(tab:coxout) shows that patients with probable dementia (less than 24 score in MMSE test) have the highest hazard ratio (HR=3.12) compare to patients with normal cognitive function (MMSE test score larger than 28). The probable cognitive impairment (MMSE test score from 24 to 27) increase the risk of entering the nursing home (HR=1.85). The second highest risk for patient's need of long-term care is ageing (HR=2.01). The slightly significant risk factor is smoking habit as its 95% lower confidence interval just above one and the hazard ratio is closed to one (HR=1.18). However, patient's sex and whether lives alone are both don't have significant effect on the chance of entering into institutionalisation as their 95% hazard ratio confidence interval both include one. Woman have smoking habit and lives alone tend to have higher need of long-term care. For the patients' annual clinical examinations of disease stage (Hoehn and Yahr Scale), disability (Schwab and England Activities of Daily Living (ADL) Scale), and comorbid conditions (Charlson co-morbidity index) are all not statistical significant as their 95% hazard ratio confidence interval all include one. The point estimate hazard ratio indicates that less independence patients (lower percentages in Schwab and England ADL Scale) and more serious disease stage patients have higher chance of being admitted into nursing home. However, patients with more serious comorbid conditions have less chance entering into long term care facilities. 
 
 ```{r coxoutplot,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Hazard ratios and confidence bars for risk factors in model.", fig.pos ='H'}
 
@@ -845,15 +874,18 @@ include_graphics(img1_path)
 ## Discussion 
 
 
-This study found that patients with atypical parkinsonism have 5.3 times higher incidence rate of entering the long-term care facilities and 4.7 times shorter median follow-up time to institutionalisation than patients with Parkinson’s disease (PD). The highest hazard ratio risk factor was probable dementia (HR=3.1), followed with 10 years ageing (HR=2.0) and probable cognitive impairment (HR=1.2). And these three risk factors were three statistical significance as their 95% confidence interval didn't include one. Female patients who live alone with heavy smoking habit were more likely need long-term care. And patients with more serious disability or disease stage had higher chance of admitting into nursing home. However, patients with more serious comorbid conditions tended to have less chance of entering institutionalisation. 
+This study found that patients with atypical parkinsonism have 5.3 times higher incidence rate (27.6 per 100 person-years) of entering the long-term care facilities and 4.7 times shorter median follow-up time to institutionalisation (2.5 years) than patients with Parkinson’s disease (PD). The highest hazard ratio risk factor was probable dementia (HR=3.1), followed with 10 years ageing (HR=2.0) and probable cognitive impairment (HR=1.2). And these three risk factors were three statistical significance as their 95% confidence interval didn't include one. Female patients who live alone with heavy smoking habit were more likely need long-term care. And patients with more serious disability or disease stage had higher chance of admitting into nursing home. However, patients with more serious comorbid conditions tended to have less chance of entering institutionalisation. 
 
 
 The PINE study is population-representative cohort of newly diagnosed patients with degenerative or vascular parkinsonism in Aberdeen, Scotland. Since study follows the patients from diagnosis to entered the institutionalisation, there is less bias between the study population. And PINE study is a long-term follow up study (the median follow-up time in PD group is 9.26 years, atypical parkinsonism group is 4.41 years, and control group is 10.78 years) with 575 patients and only 6 patients lost follow up. Compared to the previous four-year prospective study of 178 community-dwelling subjects in PD [@pred2000], our study has longer follow-up time and 3.23 times more patients involved. However, due to the degenerative or vascular parkinsonism is more common in elderly than young people. The PINE study is a elderly cohort study, the median age is 76.8 years old and only 14 patients' age is under 50 years old. Therefore, this study results may not represent the institutionalisation risk of young patients. 
 
 
-This study used multiple imputation method to imputed  patients’ missing data: 7 missing data in smoking history (pack-years), 26 missing data in MMSE test score at the baseline and 58 missing data in MMSE test score at year one. Compared to single imputation, multiple imputation is more robust. In the previous studies, they didn't report the missing data and what kind of methods they used to deal with missing data [@pred2000; @pred2015]. And we used cox regression to investigate the risk factor of institutionalisation. Because the PD is a slowly progressive disorder and from diagnosis to entering nursing home usually take years. Therefore, during the follow-up study, it may lost to follow-up patients or patients may die before entering long-term care facilities. And cox regression is a model from time-to-event outcome. Compared to logistic regression, the cox regression include the time variable and can represent event/censor data. Therefore, for the study that has more chance of censoring, the cox regression has more advantage than logistic regression. In the nationwide retrospective cohort study [@pred2015], they used logistic regression to analyse a large cohort (469005 patients) and didn't report how many missing or lost to follow-up. And in this study, we tried to keep numeric data in continuous instead setting cut-off points. Because setting cut-off points (no based on clinician advices) in continuous data will lost information and the model will have more bias. For example, the prospective study in Norway [@pred2000] set cut-off points in age and found that PD patients who older than 72 years old will have 3.5 times higher risk of nursing home admission than those younger or equal to 72 years old. Their model result means for patient who is just turned 73 and who was in last month of 72, their risk is can 3.5 times different. While in our study, we kept age as continuous data and found every 10 years ageing the risk of entering nursing home will be double. Keeping data as continuous can allow clinician to make more precisely predict and the prediction model is less bias. Furthermore, in our study, we chose the variable based on clinician suggestions instead of selecting statistics significant variables by statistics methods. In the Norway study [@pred2000], they used bivariate Cox analyses to select variables and transformed continuous data into dichotomous data, hence their 95% confidence interval of relative risk (in the model result) was very wide. Our model is more robust due to the 95% confidence interval of hazard ratio is narrow. 
+This study used multiple imputation method to imputed  patients’ missing data: 7 missing data in smoking history (pack-years), 26 missing data in MMSE test score at the baseline and 58 missing data in MMSE test score at year one. Compared to single imputation, multiple imputation is more robust. In the previous studies, they didn't report the missing data and what kind of methods they used to deal with missing data [@pred2000; @pred2015]. And we used cox regression to investigate the risk factor of institutionalisation. Because the PD is a slowly progressive disorder and from diagnosis to entering nursing home usually take years. Therefore, during the follow-up study, it may lost to follow-up patients or patients may die before entering long-term care facilities. And cox regression is a model from time-to-event outcome. Compared to logistic regression, the cox regression include the time variable and can represent event/censor data. Therefore, for the study that has more chance of censoring, the cox regression has more advantage than logistic regression. In the nationwide retrospective cohort study [@pred2015], they used logistic regression to analyse a large cohort (469005 patients) and didn't report how many missing or lost to follow-up. And in this study, we tried to keep numeric data in continuous instead setting cut-off points. Because setting cut-off points (no based on clinician advices) in continuous data will lost information and the model will have more bias. For example, the prospective study in Norway [@pred2000] set cut-off points in age and found that PD patients who older than 72 years old will have 3.5 times higher risk of nursing home admission than those younger or equal to 72 years old. Their model result means for patient who is just turned 73 and who was in last month of 72, their risk is can 3.5 times different. While in our study, we kept age as continuous data and found every 10 years ageing the risk of entering nursing home will be double. Keeping data as continuous can allow clinician to make more precisely predict and the prediction model is less bias. Furthermore, in our study, we chose the variable based on clinician suggestions instead of selecting statistics significant variables by statistics methods. In the Norway study [@pred2000], they used bivariate Cox analyses to select variables and transformed continuous data into dichotomous data, hence their 95% confidence interval of relative risk (in the model result) was very wide. Our model is more robust due to the 95% confidence interval of hazard ratio is narrow. The only continuous data we changed into category is MMSE. The cut-off points in MMSE are based on the clinician suggestion and the KM survival curves of these three MMSE group to the institutionalisation are separated. And, in order to make model more robust, we kept the MMSE as continuous data when we performed multiple imputation and only changed it as category when built Cox regression model. 
 
-{Only cut off is MMSE and said why}
+
+In our study, we found that the risk of female entering nursing home is only slightly higher than male (HR=1.12) and sex is not a significant risk factor (95% CI include one) to the institutionalisation. This result also found in the previous study in Norway [@pred2000]. However, the incidence rate of PD for male is higher than female [@IncidencePD] and male-to-female ratio is around 3:2 [@Lancet2015]. Therefore, male has higher risk of PD, but same risk as female to the nursing home. And many studies showed that patients with smoking habit have less risk of PD than those who never smoke [@EpidemiologyPD]. But the biological basis of this association is poorly understood, one possible reason is nicotine has a neuroprotective action and may stimulate dopamine release [@SmokePD]. But, we found only heavy smoker will have slightly significant higher risk of entering the long-term care facilities because the hazard ratio between non-smokers and patients who smoke 23 pack-years is 1.18. It means if heavey smoker patients do not reduce their smoking times after diagnosed with PD or atypical parkinsonism, they will have higher risk of entering nursing home. Different to previous studies found that lives alone is a risk factor to institutionalisation [@pred2000], we found living alone is not a statistical significant risk factor as the 95% confidence interval include one. And in PINE study, the number of patients who live with others (97 individuals) is 2.3 times more than those who live alone (43 individuals) in institutionalisation. Hence, for PINE study, living alone patients are less common in institutionalisation. This is may because the local social services system provide help and extend patients' living at home time. Therefore, patients only enter the nursing home when the social care cannot take care of them. Furthermore, the measurement of Parkinson's symptoms progression (Hoehn and Yahr Scale) and independence of daily activities (Schwab and England ADL Scale) are both not significant while the cognitive function (MMSE test) is the most important risk factor shows that despite patients may have disability in life but as long as patients' cognitive is still normal, the chance of they can take care by others or by themselves is higher than those who have probable dementia. Therefore, treatment of cognitive impairment may extend patients' survival time to long-term care facilities. In short, our study found that cognitive impairment and old age are the most important risk factor for patients entering the institutionalisation. And for further study, it can investigate the relationship between local social services for living alone patients and the risk of entering in long-term care facilities. For clinicians, if a newly diagnosed atypical parkinsonism patient has cognitive impairment, then this patient has highest risk of entering the institutionalisation and should plan management earlier. 
+
+
 
 
 
@@ -862,7 +894,6 @@ This study used multiple imputation method to imputed  patients’ missing data:
 
  
 
- 
 
 
 
@@ -871,7 +902,13 @@ This study used multiple imputation method to imputed  patients’ missing data:
 
 
 
-```{r}
+
+
+
+
+
+
+```{r eval=FALSE}
 my_skim <- skim_with(base = sfl(n = length))
 
 data2%>%
@@ -879,6 +916,25 @@ data2%>%
   dplyr::select(agebl)%>%
   my_skim()
   
+
+
+data$mmsecat<-cut(data$mmsebltotal,c(0,23,27,30),labels = c("<24","24-27","28-30"))
+
+MMSEKM<-survfit(Surv(tt/365.25,cens)~mmsecat,data=data)
+
+ggsurvplot(MMSEKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("MMSE:<24","MMSE:24-27","MMSE:28-30"))
+
+
+
+aloneKM<-survfit(Surv(tt/365.25,cens)~livesalone,data=data)
+
+ggsurvplot(aloneKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv")
+
+data2%>%
+  filter(data2$cens==1)%>%
+  group_by(livesalone)%>%
+  count(livesalone)
+
 
 
 ```

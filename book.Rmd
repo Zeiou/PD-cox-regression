@@ -210,6 +210,19 @@ data$sex<-factor(data$sex,
 data$livesalone<-factor(data$livesalone,
                         levels = c(0,1),
                         labels = c("no", "yes"))
+
+data<-data%>%
+  filter(data$tt>0)
+
+```
+
+
+
+```{r count}
+data%>%
+  filter(!is.na(dateinstitution))%>%
+  group_by(diagnosiscat)%>%
+  summarise(n=n())
 ```
 
 ```{r data2}

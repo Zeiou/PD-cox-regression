@@ -1,0 +1,11 @@
+﻿Characteristic,Hazard ratio with 95% confidence interval
+Age (10 years),"1.90 (1.43, 2.52)"
+Smoking history in pack-years,"1.09 (0.95, 1.25)"
+Charlson co-morbidity index,"0.95 (0.71, 1.26)"
+UPDRS part 3 (motor) score,"1.41 (0.97, 2.05)"
+Schwab and England Activities of Daily Living Scale,"0.97 (0.74, 1.27)"
+Sex - female:male,"0.86 (0.57, 1.31)"
+Lives alone - yes:no,"1.44 (0.94, 2.21)"
+Mini Mental State Examination test - <24:28-30,"2.59 (1.43, 4.72)"
+Mini Mental State Examination test - 24-27:28-30,"1.48 (0.89, 2.46)"
+Diagnosis - Atypical parkinsonism: PD,"3.00 (1.83,4.93)"

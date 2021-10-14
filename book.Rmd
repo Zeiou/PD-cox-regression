@@ -64,7 +64,21 @@ nocite: '@*'
 
 ## Abstract
 
-When patients with Parkinson’s disease lose their ability to take care of themselves, and carers are no longer able to look after them at home, they will need long-term care. The risk factors for being admitted to a nursing home are unclear and there are few published studies. The aim of this work is to identify the incidence of institutionalization and the risk factors for institutionalization using data from a prospective incident cohort of parkinsonism in North East Scotland. This prospective cohort study has collected annual follow-up data from 575 participants from Aberdeen, Scotland, since 2002. And the median follow-up time of patients with Parkinson’s disease (9.26 years) was 2.1 times longer than Atypical parkinsonism (4.41 years). Using the Kaplan-Meier method, the median time to institutionalization of patients with Parkinson’s disease (11.8 years) was 4.7 times longer than Atypical parkinsonism (2.5 years). The results from the Cox regression showed that compared to patients with normal cognitive function, patients with mild dementia versus patients are at highest risk for entering institutionalization (HR=3.1). And every 10 years ageing increasing, the need of the long-term care was double (HR=2). Sex and living alone were not found to be associated with institutionalisation. Therefore, older patients with mild dementia, especially Atypical parkinsonism patients, are more likely need long-term care.
+Background
+
+When patients with parkinsonism lose their ability to take care of themselves, and insufficient care is available at home, they will need long-term care in a nursing home or other institution (institutionalisation). The risk factors for institutionalisation are unclear and there are few published studies. We aimed to identify the incidence of, and the risk factors for, institutionalization in Parkinson's disease (PD) and atypical parkinsonism.
+
+Methods
+
+We analysed data from a prospective population-based incidence cohort of parkinsonism in North East Scotland (the PINE study). 556 participants(Parkinson's disease, N=200; atypical parkinsonism, N=98; controls, N=258), recruited between 2002 and 2009, were prospectively followed life-long to May 2020 with data collection on place of residence. We calculated the incidence of institutionalisation and used Cox regression to determine baseline predictors of institutionalisation. 
+
+Results
+
+Over a median follow-up time 9.3 years in Parkinson’s disease and 4.4 years in atypical parkinsonism, 70 with PD, 53 with atypical parkinsonism, and 43 controls became institutionalised. The incidence rates of institutionalisation per 100 person-years in PD, atypical parkinsonism and controls were 5.2, 20.8, and 1.8 respectively. The Kaplan-Meier median time to institutionalization was 11.8 years in PD,  3.5 years in atypical parkinsonism. Multivariable Cox regression showed that atypical parkinsonism [HR versus PD (95% CI)=3.02 (1.84,4.96)], increasing age [HR for 10-year increase (95% CI)=1.89 (1.43,2.51)], poorer cognition [HR for MMSE<24 versus MMSE>27 (95% CI)=2.60 (1.43, 4.72)] were independently associated with higher hazards of institutionalization. Sex, Charlson co-morbidity index, smoking history, living alone, UPDRS part 3 (motor) score, and Schwab and England scale, were not associated with institutionalization. 
+
+Conclusion
+
+Institutionalisation is more frequent in parkinsonism, particularly atypical parkinsonism than in controls. Atypical parkinsonism, older age and poorer cognition were independent predictors. 
 
 
 
@@ -74,50 +88,52 @@ When patients with Parkinson’s disease lose their ability to take care of them
 
 ## Introduction
 
+Parkinson’s disease (PD) and atypical parkinsonism are neurodegenerative disorders. The cause of PD is unknown, and both the genetic and environmental factors affect it. Moreover, it is difficult to diagnose PD and there are no treatments that can slow the underlying neurodegeneration, although there are effective symptomatic treatments, principally levodopa and other dopaminergic drugs. As the disease progresses, features which are resistant to dopaminergic therapies often become troublesome, including both motor (dysphagia, postural instability, freezing of gait and falls), and non-motor features (urinary incontinence, orthostatic hypotension, and dementia). These symptoms reduce patients’ quality of life and may lead to the loss of the ability to live independently. Care may be provided at home by relatives or professional carers, but this is not always available or sufficient to maintain living at home. Hence, many patients will require long-term care in an institution, such as a nursing home [@Lancet2015]. 
 
-Parkinson’s disease (PD) and atypical parkinsonism are neurodegenerative disorders. The cause of PD is unknown and both the genetic and environmental factors affect it. Moreover, it is difficult to diagnose PD and there are no treatments that can slow the neurodegenerative process. As the disease progresses, the need for care in PD patients will increase. In the late stage, the dopaminergic therapies are lack of efficiency to the motor symptoms (dysphagia, postural instability, freezing of gait and falls), and the common non-motor features appear (urinary symptoms, orthostatic hypotension, and dementia). The motor and non-motor features in PD patients are heterogeneous, but they all reduce patients’ quality of life and the independent living ability. Hence, many patients will require long-term care in an institution, such as a nursing home. However, the management strategies for PD patients in late stage are poor [@Lancet2015]. Several studies have investigated risk factors for institutionalisation. The first study was a retrospective case-control study with only 11 PD patients and found hallucinations was the risk factor for nursing home placement [@pred1993]. Then, a four-year prospective population-based study was carried out in western Norway [@pred2000], which followed 178 community-dwelling subjects in PD from baseline to nursing home admission, and found the highest risk were hallucinations, cognitive impairment and old age. And a nationwide retrospective cohort study followed 469055 elderly PD patients from 2002 to December 2005 and found woman and black individuals with PD were more likely to enter a nursing facility residence compared with men and white individuals [@pred2015]. However, no previous studies have reported the incidence of institutionalisation in PD and atypical parkinsonism in a population-representative cohort. No previous studies have investigated risk factors in a population-representative cohort in parkinsonism. This study will use data from Parkinsonism incidence in North-East Scotland (PINE) study. We will first identify the incidence of institutionalization in PD and atypical parkinsonism. Then we will identify the risk factors for institutionalization in PD and atypical parkinsonism. The results from this study will enable clinicians to provide more personalized and timely management strategies to help PD patients.
+Only a few studies have investigated risk factors for institutionalisation. The first study was a retrospective case-control study with only 11 PD patients and found hallucinations was the risk factor for nursing home placement  [@pred1993]. Then, a four-year prospective population-based prevalence study was carried out in western Norway [@pred2000], which followed 178 community-dwelling subjects in PD from baseline to nursing home admission, and found the highest risk were hallucinations, cognitive impairment and old age. A nationwide retrospective cohort study followed 469055 elderly PD patients in the US from 2002 to December 2005 and found women and black individuals with PD were more likely to enter a nursing facility residence compared with men and white individuals [@pred2015]. However, no previous inception studies have reported the incidence of institutionalisation in PD or its risk factors. To our knowledge, no previous studies have investigated institutionalisation in atypical parkinsonian syndromes other than dementia with Lewy bodies. 
+
+In the late stage of PD, the economic burden for patients is the cost of home care instead of drug therapy [@USburden;@UKburden]. And a study in Norway showed that if clinicians can help to delay PD patients being admitted into nursing home for 3 months, it can save approximating drug therapy yearly cost for patients [@Norway]. Therefore, finding the risk factors for institutionalization can help PD patients and health care providers reduce the economic burden by extending their independent living ability. The results from this study will enable clinicians to provide more personalized and timely management strategies to help PD patients. Using data from Parkinsonism incidence in North-East Scotland (PINE) study, a population-based incidence cohort, we aimed to: 
+
+* Identify the incidence of institutionalization in PD and atypical parkinsonism and compare with age and sex matched controls. 
+* Identify the risk factors for institutionalization in PD and atypical parkinsonism. 
+
 
 
 ## Methods
 
-**Study population, design, and clinical characteristics**
+**Study population and design**
+
+The Parkinsonism incidence in North-East Scotland (PINE) study is a prospective and population-based incidence cohort that sought to identify and follow all newly diagnosed patients with degenerative or vascular parkinsonism in Aberdeen, Scotland between 2002-4 and 2006-9 [@PINE]. All incidence patients were invited to undergo lifelong in-person annual follow-up. An age-sex matched control group was also recruited. At baseline, and at each annual visit, data are collected on demographics, clinical history, and non-motor symptoms, and a structured clinical examination and several questionnaires.  Data on key outcomes are collected, includingsurvival, dependency, dementia, and institutionalization up to 2020 [@Field2016]. In this study, there are 201 PD patients, 114 atypical parkinsonism patients (progressive supranuclear palsy, corticobasal degeneration, multiple system atrophy, and vascular parkinsonism) and 260 control individuals. The baseline visit time was from November 2002 to June 2010, and the last follow up time was April 2020. 185 individuals entered (45 in control group) an institution, 420 deaths occurred (142 in control group) and 6 were lost to follow up (3 in PD and 3 in control group).
+
+**Potential prognostic factors**
+
+Parkinson’s rating scales are used to assess patients’ symptoms of the condition and evaluate treatment. Clinicians assign a value depending on a patients’ particular feature information. In our study, there are three rating scales and one cognitive function measurement:
+
+* The Unified Parkinson’s Disease Rating Scale (UPDRS): it has four parts, the first three sections evaluate the degree of disability and the fourth section evaluates any complications of treatment. And the UPDRS part 3 is motor examination and higher score indicates increase severity (0-4 rating scale). The UPDRS is often used with the Hoehn and Yahr Scale and the Schwab and England Activities of Daily Living (ADL) Scale [@Ratingscales]. 
+
+* The Hoehn and Yahr Scale: it is used to measure the progress of Parkinson’s symptoms and the level of disability. It includes stages 0 to 5, where stage 0 means no signs of disease and stage 5 means the patient needs a wheelchair or is bedridden. 
+
+* The Schwab and England ADL Scale: it is used to measure patient independence of daily activities through a percentage figure, where the higher the percentage the higher the level of independence. Patients’ comorbid conditions and cognitive function were also measured. Charlson co-morbidity index categorizes patients’ comorbid conditions by assigned a weight from 1 to 6 to each condition and it includes 16 conditions [@Charlson]. *
+
+* The Mini Mental State Examination (MMSE) is used to assess the severity of cognitive impairment and the score of MMSE ranges from zero to 30 [@MMSE1]. And, we divided the MMSE into three categories: less than 24 (probable dementia), from 24 to 27 (probable cognitive impairment) and from 28 to 30 (normal cognitive function). The MMSE score less than 24 is commonly used to indicate dementia and the 27/28 threshold reflects the mean MMSE score in normal healthy adults of 27.8 [@MMSE2].
 
 
+The annual clinical examination includes: (i) parkinsonian impairment (UPDRS part3 (motor) score); (ii) disease stage (Hoehn and Yahr Scale); (iii) disability (Schwab and England Activities of Daily Living (ADL) Scale); (iv) comorbid conditions (Charlson co-morbidity index); (v) cognitive function (Mini Mental State Examination (MMSE) test). The demographic information of patients in baseline visit includes: (i) age; (ii) sex; (iii) smoking history in pack-years; (v) whether lives alone or not. 
 
-The Parkinsonism incidence in North-East Scotland (PINE) study is a prospective and population-based incident cohort that follows all newly diagnosed patients with degenerative or vascular parkinsonism in Aberdeen, Scotland. The cohort also has an age-sex matched control group and has collected annual patient data on survival, disability, and institutionalization from 2002 to 2020 [@Field2016]. The patients’ information updates each year and for those who died, the details about death are collected from death certificates and primary care and secondary care records. In this study, there are 201 PD patients, 114 atypical parkinsonism patients (a group of neurodegenerative disorders with many similar features to PD) and 260 control individuals. The baseline visit time was from November 2002 to June 2010, and the last follow up time was April 2020. And 185 individuals entered (45 in control group) institutionalization, 420 death (142 in control group) and 6 lost to follow up (3 in PD and 3 in control group).
-
-Parkinson’s rating scales are used to assess patients’ symptoms of the condition and evaluate treatment. Clinicians assign a value depending on a patients’ particular feature information. The Unified Parkinson’s Disease Rating Scale (UPDRS) has four parts, the first three sections evaluate the degree of disability and the fourth section evaluates any complications of treatment. And the UPDRS part 3 is motor examination and higher score indicates increase severity (0-4 rating scale). The UPDRS is often used with the Hoehn and Yahr Scale and the Schwab and England Activities of Daily Living (ADL) Scale [@Ratingscales]. The Hoehn and Yahr Scale is used to measure the progress of Parkinson’s symptoms and the level of disability. It includes stages 0 to 5, where stage 0 means no signs of disease and stage 5 means the patient needs a wheelchair or is bedridden. The Schwab and England ADL Scale is used to measure patient independence of daily activities through a percentage figure, where the higher the percentage the higher the level of independence. Patients’ comorbid conditions and cognitive function were also measured. Charlson co-morbidity index categorizes patients’ comorbid conditions by assigned a weight from 1 to 6 to each condition and it includes 16 conditions [@Charlson]. The Mini Mental State Examination (MMSE) is used to assess the severity of cognitive impairment and the score of MMSE ranges from zero to 30 [@MMSE1]. And, we divided the MMSE into three categories: less than 24 (probable dementia), from 24 to 27 (probable cognitive impairment) and from 28 to 30 (normal cognitive function). The MMSE score less than 24 is commonly used to indicate dementia and the 27/28 threshold reflects the mean MMSE score in normal healthy adults of 27.8 [@MMSE2].
-
-The annual clinical examination includes: (i) parkinsonian impairment (UPDRS part 3); (ii) disease stage (Hoehn and Yahr Scale); (iii) disability (Schwab and England Activities of Daily Living (ADL) Scale); (iv) comorbid conditions (Charlson co-morbidity index); (v) cognitive function (Mini Mental State Examination (MMSE) test). The demographic information of patients in baseline visit includes: (i) age; (ii) sex; (iii) smoking history in pack-years; (v) whether lives alone or not. 
-
-
-```{r eval=FALSE,echo=FALSE}
-
-#data$n.death<-ifelse(!is.na(datedeath),1,0)
-
-#data%>%
-#  group_by(diagnosiscat)%>%
-#  summarise(sum=sum(n.death))
-  
-
-#data$n.lost<-ifelse(!is.na(data$datelost),1,0)
-
-#data%>%
-#  group_by(diagnosiscat)%>%
-#  summarise(sum=sum(n.lost))
- 
-```
 
 
 **Outcome**
 
-The event of interest is institutionalisation, which is defined as entry to a nursing home, residential home, or long-stay hospital ward. Hence, the date of institutionalisation is the date of entry into the institution. Patients were censored at the date when they were lost to follow, died without being institutionalised, or if they were alive at the end of follow-up and were not admitted to an institution. The follow-up time is the difference between the event/censoring time and the date of baseline visit. In total, there are 575 participants, 315 patients with PD or atypical parkinsonism, and 140 events.
+The event of interest is institutionalisation, which is defined as entry to a nursing home, residential home, or long-stay hospital ward. Hence, the date of institutionalisation is the date of entry into the institution. Place of residence was ascertained at each annual visit and at death. If the participant had been institutionalised the date was confirmed with the patient, the next of kin, or the institution itself. Patients were censored at the date when they were lost to follow, died without being institutionalised, or if they were alive at the end of follow-up and were not admitted to an institution. The follow-up time is the difference between the event/censoring time and the date of baseline visit. In total, there are  556 participants,  298 patients with PD or atypical parkinsonism, and 123 events in PD or atypical parkinsonism group and 43 in control group.
 
 **Statistical analysis**
 
+*Kaplan-Meier survival curves*
 
-The Kaplan-Meier (KM) estimated survival function was plotted and used to find the median time to institutionalization of patients with PD or atypical parkinsonism and those in the control group. KM estimate is a nonparametric estimation [@KM] of cumulative survival probability, it gives the survival probability of every unique event time. At each time the event occurs for a patient, the cumulative survival probability is calculated by one minus the number of individuals who enter the institution divided by the number of patients at risk. Therefore, at the begin of time zero, the cumulative survival probability is always one and the survival probability will change over time. Separate KM survival curves were plotted to show survival over time, and incidence rates were calculated for each of these three groups. The incidence rates were calculated as the total number of event in each group divided by 100 times the sum of follow- up time (year) in each group. 
 
+The Kaplan-Meier (KM) estimated survival function was plotted and used to calculate the median time to institutionalization of patients with PD or atypical parkinsonism and those in the control group. KM estimate is a nonparametric estimation [@KM] of cumulative survival probability., It gives the survival probability of every unique event time. At each time the event occurs for a patient, the cumulative survival probability is calculated by one minus the number of individuals who enter an institution divided by the number of patients at risk. Therefore, at time zero, the cumulative survival probability is always one and the survival probability will change over time. Separate KM survival curves were plotted to show survival over time, and incidence rates were calculated for each of these three groups. The incidence rates per 100 person-years were calculated as the total number of events in each group divided by 100 times the sum of follow- up time (year) in each group.
+
+*Multiple imputation*
 
 This study aims to identify risk factors for institutionalization for PD and atypical parkinsonism patients. There are 7 individuals missing the data of smoking history in pack-years (2.2%), 26 individuals missing the data of MMSE test score at the baseline (8.3%) and 58 individuals missing the data of MMSE test score at year one (18.4%). Since the data was incomplete, the cluster of missing data was plotted to see what variables tend to miss together. Then the pattern of missing data was plotted to see how the missing data is connected. There are three types of missing data [@misstype], missing completely at random (MCAR), missing at random (MAR), and missing not at random (MNAR). MCAR is when the probability of being missing doesn't depend on the observed variable. MAR occurs when the probability of being missing depends on observed information. If the reason of missing probability is unknown, then the data is MNAR. In this study, the assumption of missing data was missing at random (MAR), hence we used the multiple imputation to impute patients’ missing data by predictive mean matching method with multivariate imputation by chained equations (MICE) algorithm [@mice]. The multiple imputation procedure uses observed data to impute the missing data and the predictive mean matching method does not require assumptions around the distribution of missing variables. For example, patients without the MMSE test score at baseline can be imputed by their MMSE test score at year one and all other observed information of them. The imputed data draws repeating from the posterior probability distribution of missing data given the observed information. There were 33 patients (10.5%) missing with MMSE test score at baseline and smoking history in pack-years, hence, the imputation times was 10. Because the MICE algorithm uses Markov chain Monte Carlo (MCMC) method, we plotted the parameters against the iteration number to determine whether the MICE algorithm has converged [@convergence]. Convergence was diagnosed as the plot showed no trend. The goodness-of-fit of the multiple imputation model were checked by the density plot of imputed versus observed data.
  
@@ -165,7 +181,7 @@ library(foreign)
 library(kableExtra)
 library(patchwork)#arrange survival plot
 
-# install.packages('Hmisc')
+#install.packages('patchwork')
 ```
 
 ```{r options}
@@ -204,96 +220,48 @@ data$year<-data$tt/365.25
 # str(data)
 
 data$sex<-factor(data$sex,
-                        levels = c(0,1),
-                        labels = c("male", "female"))
+                levels = c(0,1),
+                labels = c("male", "female"))
 
 data$livesalone<-factor(data$livesalone,
                         levels = c(0,1),
                         labels = c("no", "yes"))
 
+
 data<-data%>%
-  filter(data$tt>0)
+  filter(data$tt>0) #556
 
 ```
 
 
 
-```{r count}
-data%>%
-  filter(!is.na(dateinstitution))%>%
-  group_by(diagnosiscat)%>%
-  summarise(n=n())
-```
 
 ```{r data2}
 
 data2<- subset(data,!(diagnosiscat %in% c("Control")))
-```
 
-```{r eval=FALSE}
-
-my_skim <- skim_with(base = sfl(n = length))
-
-agebl.sum<-data%>%
-  group_by(diagnosiscat)%>%
-  dplyr::select(agebl)%>%
-  my_skim()%>%
-  transmute(Variable=skim_variable,Group=diagnosiscat,n=n,Mean=numeric.mean,SD=numeric.sd,Min=numeric.p0,Median=numeric.p50,Max=numeric.p100,IQR=numeric.p75-numeric.p25)
+data2$group<-ifelse(data2$diagnosiscat=="Atypical parkinsonism",1,0)   # (,yes,no) Atypical parkinsonism=1, Parkinson's disease=0
 
 
-data$sex.mf<-ifelse(sex==0,"male","female")
-
-
-sex.sum<-data%>%
-  group_by(diagnosiscat,sex.mf)%>%
-  dplyr::summarise(n=n())%>%
-  mutate(percentage=paste0(round(100*n/sum(n),2),'%'))
-
-
-
-my_skim <- skim_with(base = sfl(n = length))
-
-packyears.sum<-data%>%
-  group_by(diagnosiscat)%>%
-  dplyr::select(packyears)%>%
-  my_skim()%>%
-    transmute(Variable=skim_variable,Group=diagnosiscat,Mean=numeric.mean,SD=numeric.sd,Median=numeric.p50,Max=numeric.p100,Q75=numeric.p75,Q25=numeric.p25)
-
-
-
-data$eversmok.yn<-ifelse(eversmok==0,"no","yes")
-
-eversmok<-data%>%
-  group_by(diagnosiscat,eversmok.yn)%>%
-  dplyr::summarise(n=n())%>%
-  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))%>%
-  transmute(eversmok= eversmok.yn, n=n,percentage=percentage)
-  
-
-data$livesalone.yn<-ifelse(livesalone==1,"yes","no")
-
-livesalone.sum<-data%>%
-  group_by(diagnosiscat,livesalone.yn)%>%
-  dplyr::summarise(n=n())%>%
-  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
-
+data2$group<-factor(data2$group,
+                    levels = c(0,1),
+                    labels = c("Parkinson's disease","Atypical parkinsonism"))
 
 ```
+
 
 **Describe of data**
 
 ```{r datasum}
 
 data.sum<-read.csv("demographic summary.csv")%>%
-  rename("Characteristic"=ï..Characteristic,"Parkinson’s disease (N=201)"=Parkinsonâ..s.disease..N.201.,"Atypical parkinsonism (N=114)"=Atypical.parkinsonism..N.114.,"Control (N=260)"=Control..N.260.)
+  rename("Characteristic"=ï..Characteristic,"Parkinson’s disease (N=201)"=Parkinsonâ..s.disease..N.200.,"Atypical parkinsonism (N=114)"=Atypical.parkinsonism..N.98.,"Control (N=260)"=Control..N.258.)
 
 data.sum%>%
   kable(caption='\\label{tab:datasum} Summary demographic information of participants.',booktabs=T,linesep="") 
-
-
 ```
 
-Table \@ref(tab:datasum) shows the population in this study is elderly participants as most of them are over 70 years old and the sex ratio between male and female are around 1.5. Both age and sex distributions are similar in these three groups. There are more individuals have smoking habits and living alone in the control group, while heavier smoker in atypical parkinsonism group. And less living alone patients in PD group than others. In short, the demographic information of participants are very similar among these three group with slightly difference in smoking habit and whether living alone. 
+Table \@ref(tab:datasum) shows that 70 (35%) PD patients, 53 (54.1%) atypical patients and 43 (16.7%) patients in control entered institutionalisation. And 401 deaths occurred (140 in control group) and 6 were lost to follow up (3 in PD and 3 in control group). The population in this study is elderly participants as most of them are over 70 years old and the sex ratio between male and female are around 1.5. Both age and sex distributions are similar in these three groups. There are more individuals have smoking habits and living alone in the control group, while heavier smoker in atypical parkinsonism group. And less living alone patients in PD group than others. In short, the demographic information of participants are very similar among these three group with slightly difference in smoking habit and whether living alone. 
 
 
 ```{r MMSEKM, fig.align = "center",fig.cap = "\\label { } Kaplan-Maier survival curves of MMSE groups.", fig.pos ='H'}
@@ -311,64 +279,6 @@ The fig \@ref(fig:MMSEKM) shows that the KM curves of three MMSE groups are all 
 
 
 
-```{r eval=FALSE}
-
-data$mmsecat<-cut(data$mmsebltotal,c(0,23,27,30),labels = c("<24","24-27","28-30"))
-
-MMSEKM<-survfit(Surv(tt/365.25,cens)~mmsecat,data=data)
-
-MMSEKMplot<-ggsurvplot(MMSEKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("MMSE:<24","MMSE:24-27","MMSE:28-30"))
-
-
-data%>%
-  group_by(mmsecat)%>%
-  count()
-
-
-
-aloneKM<-survfit(Surv(tt/365.25,cens)~livesalone,data=data)
-
-aloneKMplot<-ggsurvplot(aloneKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("live with other","live alone"))
-
-
-sexKM<-survfit(Surv(tt/365.25,cens)~sex,data=data)
-
-sexKMplot<-ggsurvplot(sexKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("male","female"))
-
-
-(aloneKMplot$plot | sexKMplot$plot) / MMSEKMplot$plot
-
-
-```
-
-
-
-
-
-
-```{r  eval=FALSE}
-
-#ageboxplot, fig.height=4, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Boxplots of patients' age in Parkinson’s disease and Atypical parkinsonism.", fig.pos ='H'
-
-plot1<-ggplot(data=data2,aes(y=agebl,x=diagnosiscat))+
-  geom_boxplot()+
-  ylab("Age at baseline visit")+
-  xlab("Diagnoses group")
-
-plot2<-ggplot(data=data2,aes(y=agedx,x=diagnosiscat))+
-  geom_boxplot()+
-  ylab("Age at diagnosis of parkinsonian syndrome")+
-  xlab("Diagnoses group")
-
-
-plot3<-ggplot(data=data2,aes(agesymptomonset,x=diagnosiscat))+
-  geom_boxplot()+
-  ylab("Age at onset of parkinsonian symptoms")+
-  xlab("Diagnoses group")
-
-grid.arrange(plot1, plot2, plot3,ncol=3, nrow=1)
-
-```
 
  
 **Kaplan-Meier estimation** 
@@ -382,13 +292,13 @@ reverse.KM<-survfit(Surv(tt/365.25,cens.followup)~diagnosiscat,data=data)
 
 # KM2
 
-data.frame(groups= c("Parkinson's disease","Atypical parkinsonism","Control"),n=c(201,114,260),median=c(9.26,4.41,10.78),LCL=c(8.30,3.33,10.40),UCL=c(11.80,5.78,11.07))%>%
+data.frame(groups= c("Parkinson's disease","Atypical parkinsonism","Control"),n=c(200,98,258),median=c(9.26,4.41,10.78),LCL=c(8.30,3.33,10.40),UCL=c(11.08,5.78,11.07))%>%
   kable(caption='Reverse Kaplan-Meier estimate of the median follow-up time.',booktabs=T,linesep="",digits=2) %>%
   footnote(alphabet = c ("The time is year",
                "LCL is the 95% lower confidence limits;", 
                "UCL is the 95% upper confidence limits;"
                ))
-  
+
 
 ```
 Table \@ref(tab:reKM) shows the median follow-up time for PD patients (9.26 years) is 2.1 times longer than atypical parkinsonism patients (4.41 years). 
@@ -398,23 +308,25 @@ Table \@ref(tab:reKM) shows the median follow-up time for PD patients (9.26 year
 
 KM<-survfit(Surv(tt/365.25,cens)~diagnosiscat,data=data)
 
-ggsurvplot(KM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("Parkinson's disease","Atypical parkinsonism","Control"))
 
+ggsurv<-ggsurvplot(KM,
+           ylab="Survival probability of institutionalisation",
+           xlab="Survival years",
+           data,legend="top",
+           surv.median.line = "hv",
+           risk.table = T,
+           risk.table.y.text.col = F,
+           risk.table.y.text = T,
+           risk.table.col = "strata",
+           linetype = "strata",
+           ggtheme = theme_bw(),
+           legend.labs=c("Parkinson's disease","Atypical parkinsonism","Control"))
 
+print(ggsurv, 
+      surv.plot.height = 0.7,
+      risk.table.height = 0.3)
 ```
-The fig \@ref(fig:KMplot) shows that at the beginning the survival probability of entering the institutionalisation is overlap between PD group and control group, however the survival probability for atypical parkinsonism group drops very quick. And when the follow time around 5 years, the atypical parkinsonism group's KM curve is not that smooth as before, which means most patients with atypical parkinsonism have already been in institutionalisation. The KM curve for PD patients is smooth and the survival probability is higher than atypical parkinsonism group all the time. Hence, patients with PD have longer independent living time than patients with atypical parkinsonism. And the median survival time for PD patients entering long-term care facility (11.8 years) is 4.7 times longer than atypical parkinsonism patients (2.5 years).
-
-
-```{r }
-
-#data$mmsecat<-cut(data$mmsebltotal,c(0,9,19,23,30),labels = c("<9","10-19","20-24", "24-30"))
-  
-  
-#KM<-survfit(Surv(tt/365.25,cens)~mmsecat,data=data)
-
-#ggsurvplot(KM,data)
-
-```
+The fig \@ref(fig:KMplot) shows that at the beginning the survival probability of entering the institutionalisation is overlap between PD group and control group, however the survival probability for atypical parkinsonism group drops very quickly. The KM curve of PD patients is above atypical parkinsonism KM curve all the time. And number at risk table shows only 2 patients didn’t enter the institutionalisation in atypical parkinsonism group.  Hence, patients with PD had longer independent living time than patients with atypical parkinsonism. And the median survival time for PD patients entering long-term care facility (11.8 years) was 3.4 times longer than atypical parkinsonism patients (3.5 years).
 
 
 **The incidence rates**
@@ -439,78 +351,41 @@ Table \@ref(tab:incidence) shows that atypical parkinsonism group (27.6 per 100 
 **Multiple imputation**
 
 
-
-```{r ,eval=FALSE}
-
-#### Correlation of predictors
-
-# ggcorr(data2[,c(6:18)], label=F)
-
-# fig.align = "center",fig.cap = "\\label { } Corrleation plot.", fig.pos ='H'
-
-# From the fig \@ref(fig:colplot), we can see the correlation between variable "agebl", "agedx", and "agesymptomonset" is one. Therefore, to avoid multicollinearity, only variable "agebl" will be included in the imputation model.
-```
-
-
-
-
 ```{r missplot, fig.align = "center",fig.cap = "\\label { } Cluster analysis showing which predictors tend to be missing on the same patients.", fig.pos ='H'}
 
-plot(naclus(data2[,c(6:18)]))
+data3<-data2
+
+data3<-rename(data3,c("Age at baseline visit"=agebl, "Age at diagnosis of parkinsonian syndrome"=agedx,"Age at onset of of parkinsonian symptoms"=agesymptomonset,"Smoking history in pack-years"=packyears,"ever smoke"=eversmok,"Lives alone"=livesalone,"Charlson co-morbidity index"=charlsonbl,"UPDRS part3 (motor) score"=updrsblpart3,"Hoehn and Yahr Scale"=hybl,"Schwab and England ADL Scale"=sebl,"MMSE at baseline"=mmsebltotal,"MMSE at year 1"=mmseyr1total))
+
+
+
+plot(naclus(data3[,c(6:18)]))
 
 ```
 
 From the fig \@ref(fig:missplot), we can see that Mini Mental State Examination test score at baseline and Mini Mental State Examination test score at year 1 are likely to be found missing in the same patients. 
 
- 
-```{r eval=FALSE}
-
-explanatory<-c("packyears","mmsebltotal","mmseyr1total")
-dependent<- c("cens","tt")
-
-fit1<-data2%>%
-  ff_glimpse(dependent,explanatory)
-
-data.frame(Variable=c("smoking history in pack-years","minimental state examination score at baseline","minimental state examination score at year 1"),n=c(308,289,257),missing_n=c(7,26,58),missing_percent=c("2.2%","8.3%","18.4%")) %>%
-  kable(caption='\\label{tab:mistable1}  Summary of missing data.',booktabs=T,linesep="",digits=1)
-
-
-#Table \@ref(tab:mistable1) shows that there are `r sum(is.na(data2$packyears))` missing in the variable of smoking history in pack-years. For minimental state examination score, `r sum(is.na(data2$mmsebltotal))` missing at baseline and `r sum(is.na(data2$mmseyr1total))` missing at year 1. 
-
-```
-
-
 
 ```{r misspattern, fig.align = "center",fig.cap = "\\label { } Missing data pattern.", fig.pos ='H'}
 
-explanatory<-c("packyears","mmsebltotal","mmseyr1total")
+explanatory<-c("Smoking history in pack-years","MMSE at baseline","MMSE at year 1")
 dependent<- c("cens","tt")
 
-mispattern<-data2 %>% 
+mispattern<-data3 %>% 
   missing_pattern(explanatory)
 
 ```
-The fig \@ref(fig:misspattern) is the visualisation of this missing pattern output, where the blue cubic means observed and red cubic means missing. From the fig \ref{fig:misspattern}, we can see that 26 patients missing with the minimental state examination score at baseline and 7 patients missing with smoking history in pack-years. The missing pattern is general and connected through the first row. The first column shows the frequency of each pattern and the number of missing entries in each pattern shows in the last column. For example, the first row means there are 241 patients in the dataset with all three observed variables. 
+The fig \@ref(fig:misspattern) is the visualisation of this missing pattern output, where the blue cubic means observed and red cubic means missing. From the fig \ref{fig:misspattern}, we can see that 24 patients missing with the minimental state examination score at baseline and 6 patients missing with smoking history in pack-years. The missing pattern is general and connected through the first row. The first column shows the frequency of each pattern and the number of missing entries in each pattern shows in the last column. For example, the first row means there are 237 patients in the dataset with all three observed variables. 
 
-
-
-```{r ,eval=FALSE}
-
-# as.data.frame(mispattern)%>%
-#  rename(" "=V4)%>%
-#  kable(caption='\\label{tab:mistable2}  Summary of missing data pattern.',booktabs=T,linesep="",digits=2)
-```
 
 ```{r pmm}
 
-data2$diagnosiscatbinary<-ifelse(data2$diagnosiscat=="Atypical parkinsonism",0,1)   # (,yes,no) Atypical parkinsonism=0, Parkinson's disease=1
 
-pmm<-mice(data2[,c(4,6,9:18,25:26)],method="pmm",seed=81420,m=10,print=F)
+
+pmm<-mice(data2[,c(6,9:18,25:26,28)],method="pmm",seed=81420,m=10,print=F)
 
 
 ```
-
-
 
 
 ```{r convergence, fig.align = "center",fig.cap = "\\label{ } Mean and standard deviation of the synthetic values plotted against iteration number for the imputed data.", fig.pos ='H'}
@@ -531,52 +406,6 @@ densityplot(pmm,~ mmsebltotal,xlab=" Mini Mental State Examination test score at
 ```
 
 From the fig \@ref(fig:densityplot1), we can see that the distribution of observed and imputed data is similar.
-
-```{r eval=FALSE}
-
-#densityplot2, fig.height=5, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Density plot of non-zero observed (blue) and the m=10 densities per variable calculated from the imputed data (thin red lines) of packyears.", fig.pos ='H'
-
-imp.packyears<-pmm[["imp"]][["packyears"]]
-
-
-packyearsnozero<-subset(data2,packyears>0)
-
-
- plot(density(packyearsnozero$packyears),col="darkblue",main=" ", xlab = "packyears",xlim=c(-100,200),ylim=c(0.000,0.025))
-for (i in 1:10) {
-  lines(density(imp.packyears[,i] ),col="deeppink3")
-}
- 
-#In this study, the `r nrow(packyearsnozero)` patients with missing “packyears” variable are all smokers, which means pack years should be larger than zero. Therefore, fig \@ref(fig:densityplot2) shows the distribution for those with non-zero "packyears". We can see that the distribution between observed and imputed data is different.
-
-#The discrepancies may be caused by a bad imputation model, by a missing data mechanism that is not MCAR or by a combination of both. To further compare the distributions of observed and imputed data of "packyears", we use the diagnostic tool proposed by @Diagnostic2016. The idea is that under MAR the conditional distributions should be similar if the assumed model for creating multiple imputations has a good fit. 
-
-```
-
-
-```{r eval=FALSE}
-#diagnostic, fig.align = "center",fig.cap = "\\label{ } Packyears against missingness probability for observed and imputed values.", fig.pos ='H'
-
-
-fit<-with(pmm,glm(ici(pmm)~agebl+sex+packyears+eversmok+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsebltotal+mmseyr1total+cens+tt,family = binomial))
-
-# agebl+agesymptomonset+sex+packyears+eversmok+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsebltotal+mmseyr1total+cens+tt
-
-ps<-rep(rowMeans(sapply(fit$analyses,fitted.values)),pmm$m +1)
-
-xyplot(pmm, packyears~ps | as.factor(.imp),
-       xlab="Probability that record is incomplete",
-       ylab="Packyears",
-       pch=c(1,19),
-       col=mdc(1:2))
-
-
-#The fig \@ref(fig:diagnostic) shows that the distributions of the blue and red points are quite similar, as expected under MAR. Therefore, the imputation model has a good fit.
-
-```
-
-
-
 
 
 ```{r mmsecat}
@@ -615,8 +444,6 @@ pmm.new<-as.mids(long)
 
 
 
-
-
 **Identify the risk factors**
 
 
@@ -626,11 +453,11 @@ pmm.new<-as.mids(long)
 dd<-datadist(long)
 options(datadist='dd')
 
-modela<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsecat),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)  #full
+modela<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)  #full
 
-modelb<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) #without hybl
+modelb<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) #without hybl
 
-modelc<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) #without updrsblpart3
+modelc<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) #without updrsblpart3
 
 ```
 
@@ -655,15 +482,12 @@ BIC2<-BIC(modelb)  #without hybl
 BIC3<-BIC(modelc) #without updrs
 
 
-data.frame(Model=c("Full Model","Model without Hoehn & Yahr disease stage at baseline","Model without UPDRS part 3 (motor) score") , 'Nagelkerke R-squared' = c(0.383,0.379,0.383),AIC = c(AIC1,AIC2,AIC3), BIC = c(BIC1,BIC2,BIC3))%>%
+data.frame(Model=c("Full Model","Model without Hoehn & Yahr disease stage","Model without UPDRS part 3 (motor) score") , 'Nagelkerke R-squared' = c(0.36,0.36,0.36),AIC = c(AIC1,AIC2,AIC3), BIC = c(BIC1,BIC2,BIC3))%>%
   kable(caption='Model tests and discrimination indexes.',booktabs=T,linesep="",digits=2)
 
 
 ```
-Table \@ref(tab:modelselect) shows that the $R^{2}_{N}$ of these three models are the same and the model without UPDRS part 3 (motor) score has the lowest AIC and BIC value. Due to this study only has 140 events and to avoid over fitting, we choose the model without UPDRS part 3 (motor) score.
-
-
-
+Table \@ref(tab:modelselect) shows that the $R^{2}_{N}$ of these three models are the same and the model without Hoehn & Yahr disease stage has the lowest AIC and BIC value. Due to only has 123 events in PD or atypical parkinsonism group and to avoid over fitting, we choose the model without Hoehn & Yahr disease stage. 
 
 
 ```{r testcox}
@@ -680,7 +504,7 @@ for (i in 1:10){
 test_names<- paste("test.ph",1:10,sep="")   # create names first
 
 for (i in 1:10){
-    test.ph_df<-cox.zph(coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat,data=get(paste0("pmm.new",i))),transform = "km")   # data=get(paste0("pmm.new",i))
+    test.ph_df<-cox.zph(coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat+group,data=get(paste0("pmm.new",i))),transform = "km")   # data=get(paste0("pmm.new",i))
     assign(test_names[i], test.ph_df)
 }
 
@@ -689,47 +513,18 @@ test.ph<-unlist(test.ph10[["table"]])
 
 test.ph<-as.data.frame(test.ph)
   
-rownames(test.ph)<-c("Age","Sex","Smoking history in pack-years","Lives alone","Charlson co-morbidity index","Hoehn and Yahr Scale","Schwab and England Activities of Daily Living (ADL) Scale","Mini Mental State Examination (MMSE) test","Global") 
+rownames(test.ph)<-c("Age","Sex","Smoking history in pack-years","Lives alone","Charlson co-morbidity index","UPDRS part 3 (motor) score","Schwab and England Activities of Daily Living (ADL) Scale","Mini Mental State Examination (MMSE) test","Atypical parkinsonism vs PD group","Global") 
 
 
 test.ph %>%
    kable(caption='\\label{tab:testcox} PH assumption test results.',booktabs=T,linesep="",digits=2)
 
 
-```
-
-Table \@ref(tab:testcox) shows an example of proportional hazards (PH) assumption, we can see that except for "Schwab and England Activities of Daily Living (ADL) Scale", all predictors' p-value is larger than 0.05. It indicates that only the "Schwab and England ADL Scale" effect changes significantly over time. However, the p-value of global PH assumption test is larger than 0.05. Hence there is not enough evidence to reject the null hypothesis of proportional hazards. And the p-value of global PH assumption test are all larger than 0.05 in all 10 imputed datasets. Hence, the PH assumption is valid. 
-
-
-
-```{r,eval=FALSE}
-plot(cox.zph(coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat,data=pmm.new10),transform = "km"),var="sebl")
-
-
-# fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat+sebl:tt),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)
-
 
 
 ```
 
-```{r,eval=FALSE}
-
-#page 545
-
-z<-predict(modelc,type = 'terms')
-z.sebl<-z[,7]
-z.other<-z[,-7]
-f.ia<-cph(Surv(data2$tt,data2$cens)~z.sebl*z.other)
-anova(f.ia)
-
-```
-
-
-
-
-
-
-
+Table \@ref(tab:testcox) shows the results of proportional hazards (PH) assumption testing, we can see that all variables’ p-value is larger than 0.05. Hence there is not enough evidence to reject the null hypothesis that the proportional hazards are constant and the PH assumption is valid.
 
 ```{r martingale,fig.align = "center",fig.cap = "\\label{ } Martingale residuals versus continuous predictors.", fig.pos ='H'}
 
@@ -755,10 +550,10 @@ plot2<- ggplot(pmm.new1,aes(packyears, rr.0)) +
          ylab("residuals")+
          ylim(c(-2,2))   
 
-plot3<-ggplot(pmm.new1,aes(hybl, rr.0)) + 
+plot3<-ggplot(pmm.new1,aes(updrsblpart3, rr.0)) + 
         geom_point(cex=1) +
         geom_smooth(method = "loess", se = T)+
-        xlab("Hoehn and Yahr Scale")+
+        xlab("UPDRS part 3 (motor) score")+
         ylab("Martingale residuals")+
         ylim(c(-2,2))
 
@@ -790,13 +585,28 @@ From the \@ref(fig:martingale) we can see that "Smoking history in pack-years" a
 
 ```{r rcs,results = 'hide'}
 
-modelc1<-fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with age as 3 knot rcs
+modelc1<-fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with age as 3 knot rcs
 
 
-modelc2<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+rcs(sebl,3)+mmsecat),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with sebl as 3 knot rcs
+modelc2<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+rcs(updrsblpart3,3)+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with updrsblpart3 as 3 knot rcs
 
 
-modelc3<-fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+hybl+rcs(sebl,3)+mmsecat),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with age and sebl as 3 knot rcs
+modelc3<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+rcs(sebl,3)+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with sebl as 3 knot rcs Choose
+
+
+modelc4<-fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+rcs(updrsblpart3,3)+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with age and updrsblpart3  as 3 knot rcs
+
+
+modelc5<-fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+updrsblpart3+rcs(sebl,3)+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with age and sebl as 3 knot rcs
+
+modelc6<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+rcs(updrsblpart3,3)+rcs(sebl,3)+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with and updrsblpart3 and sebl as 3 knot rcs
+
+
+modelc7<-fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+rcs(updrsblpart3,3)+rcs(sebl,3)+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with age and updrsblpart3 and sebl as 3 knot rcs
+
+
+
+
 
 ```
 
@@ -805,25 +615,41 @@ modelc3<-fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+ch
 modelc1
 modelc2
 modelc3
+modelc4
+modelc5
+modelc6
+modelc7
 
 ```
 
 
 ```{r modelselect2}
-AIC.C<-AIC(modelc)    # chose one,without updrs
-AIC.C1<-AIC(modelc1)  # with age as 3 knot rcs
-AIC.C2<-AIC(modelc2)  # with sebl as 3 knot rcs
-AIC.C3<-AIC(modelc3)  # with age and sebl as 3 knot rcs
+AIC.b<-AIC(modelb)    # linear
 
-BIC.C<-BIC(modelc)   # chose one,without updrs
-BIC.C1<-BIC(modelc1)  # with age as 3 knot rcs
-BIC.C2<-BIC(modelc2)  # with sebl as 3 knot rcs
-BIC.C3<-BIC(modelc3)  # with age and sebl as 3 knot rcs
+
+BIC.b<-BIC(modelb)   # linear
+
+
+AICb1<-AIC(modelc1)
+AICb2<-AIC(modelc2)
+AICb3<-AIC(modelc3)
+AICb4<-AIC(modelc4)
+AICb5<-AIC(modelc5)
+AICb6<-AIC(modelc6)
+AICb7<-AIC(modelc7)
+
+BICb1<-BIC(modelc1)
+BICb2<-BIC(modelc2)
+BICb3<-BIC(modelc3)
+BICb4<-BIC(modelc4)
+BICb5<-BIC(modelc5)
+BICb6<-BIC(modelc6)
+BICb7<-BIC(modelc7)
 
 
 # restricted cubic splines (RCS)
 
-data.frame(Model=c("Linear model","RCS model with 3 knots in age","RCS model with 3 knots in Schwab and England Activities of Daily Living (ADL) Scale","RCS model with 3 knots both in age and Schwab and England Activities of Daily Living (ADL) Scale") , 'Nagelkerke R-squared' = c(0.383,0.383,0.387,0.387),AIC = c(AIC.C,AIC.C1,AIC.C2,AIC.C3), BIC = c(BIC.C,BIC.C1,BIC.C2,BIC.C3))%>%
+data.frame(Model=c("Linear model","RCS model with 3 knots in age","RCS model with 3 knots in UPDRS part 3 (motor) score","RCS model with 3 knots in  Schwab and England ADL Scale","RCS model with 3 knots in age and UPDRS part 3 (motor) score","RCS model with 3 knots in age and Schwab and England ADL Scale","RCS model with 3 knots in UPDRS part 3 (motor) score and Schwab and England ADL Scale","RCS model with 3 knots in age and UPDRS part 3 (motor) score and Schwab and England ADL Scale") , 'Nagelkerke R-squared' = c(0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36),AIC = c(AIC.b,AICb1,AICb2,AICb3,AICb4,AICb5,AICb6,AICb7), BIC = c(BIC.b,BICb1,BICb2,BICb3,BICb4,BICb5,BICb6,BICb7))%>%
   kable(caption=' Compare model with and without Restricted cubic splines (RCS).',booktabs=T,linesep="",digits=2)
 
 ```
@@ -834,13 +660,11 @@ Table \@ref(tab:modelselect2) shows that there is only little difference between
 
 ```{r coxout}
 
-sumrcs2<-data.frame(summary(modelc))
-
+sumrcs2<-data.frame(summary(modelb))
 sumrcs2.new<-sumrcs2[grep("Hazard.Ratio",rownames(sumrcs2)),]
 
-row.names(sumrcs2.new)<-c("Age","Smoking history in pack-years","Charlson co-morbidity index","Hoehn and Yahr Scale","Schwab and England Activities of Daily Living (ADL) Scale","Sex","livesalone","Mini Mental State Examination (MMSE) test - <24:28-30 ","Mini Mental State Examination (MMSE) test - 24-27:28-30")
 
-
+row.names(sumrcs2.new)<-c("Age","Smoking history in pack-years","Charlson co-morbidity index","UPDRS part 3 (motor) score","Schwab and England Activities of Daily Living (ADL) Scale","Sex - female:male","livesalone - yes:no","Mini Mental State Examination (MMSE) test - <24:28-30 ","Mini Mental State Examination (MMSE) test - 24-27:28-30","Group - Atypical parkinsonism:PD")
 
 
 #sumrcs2.new%>%
@@ -850,55 +674,41 @@ row.names(sumrcs2.new)<-c("Age","Smoking history in pack-years","Charlson co-mor
 
 
 read.csv("Hazard ratio.csv")%>%
-  rename("Characteristic"="ï..Characteristic","Hazard ratio and the 95% confidence interval"="Hazard.ratio.and.the.95..confidence.interval")%>%
+  rename("Characteristic"="ï..Characteristic","Hazard ratio and the 95% confidence interval"="Hazard.ratio.with.95..confidence.interval")%>%
   kable(caption='Summary of estimated effects.',booktabs=T,linesep="",digits=2)
+
 
 
 
   
 ```
 
-Table \@ref(tab:coxout) shows that patients with probable dementia (less than 24 score in MMSE test) have the highest hazard ratio (HR=3.12) compare to patients with normal cognitive function (MMSE test score larger than 28). The probable cognitive impairment (MMSE test score from 24 to 27) increase the risk of entering the nursing home (HR=1.85). The second highest risk for patient's need of long-term care is ageing (HR=2.01). The slightly significant risk factor is smoking habit as its 95% lower confidence interval just above one and the hazard ratio is closed to one (HR=1.18). However, patient's sex and whether lives alone are both don't have significant effect on the chance of entering into institutionalisation as their 95% hazard ratio confidence interval both include one. Woman have smoking habit and lives alone tend to have higher need of long-term care. For the patients' annual clinical examinations of disease stage (Hoehn and Yahr Scale), disability (Schwab and England Activities of Daily Living (ADL) Scale), and comorbid conditions (Charlson co-morbidity index) are all not statistical significant as their 95% hazard ratio confidence interval all include one. The point estimate hazard ratio indicates that less independence patients (lower percentages in Schwab and England ADL Scale) and more serious disease stage patients have higher chance of being admitted into nursing home. However, patients with more serious comorbid conditions have less chance entering into long term care facilities. 
+Table \@ref(tab:coxout) shows that the significate risk factors were increasing age for 10 yeas [HR=1.89 (1.43,2.51)], MMSE score less than 24 [HR versus MMSE>27 =2.60 (1.43, 4.72)], and being diagnosed as atypical parkinsonism [HR versus PD = 3.02 (1.84,4.96)]. Since their 95% confidence interval didn’t include one, they were independently associated with institutionalisation. 
+
+Patients with less than 24 score in MMSE indicates poor cognition and had 2.6 times higher risk of entering the institutionalisation than patients with normal cognition. And the chance for atypical parkinsonism patients being admitted into institutionalisation was 3 times higher than PD patients. Patients’ risk of being entered into the institutionalisation increase with age, however, patient’s sex and whether lives alone were both not associated with this risk as their 95% hazard ratio confidence interval both include one. 
+
+For the patients’ clinical examinations of parkinsonian impairment (UPDRS part3 (motor) score), disability (Schwab and England Activities of Daily Living (ADL) Scale), and comorbid conditions (Charlson co-morbidity index) were all not statistically significant as their 95% hazard ratio confidence interval all include one. The point estimate hazard ratio indicated that less independence patients (lower percentages in Schwab and England ADL Scale) and more serious disability patients had higher chance of being admitted into institutionalisation. However, patients with more serious comorbid conditions had less chance being entered into long term care facilities.
+
 
 ```{r coxoutplot,out.width="70%",fig.align = "center",fig.cap = "\\label{ } Hazard ratios and confidence bars for risk factors in model.", fig.pos ='H'}
 
 
 text<-"Notes:\nagebl is age; packyears is smoking history in pack-years;\ncharlsonbl is Charlson co-morbidity index; hybl is Hoehn and Yahr Scale;\nsebl is Schwab and England Activities of Daily Living (ADL) Scale;\nmmsecat is Mini Mental State Examination (MMSE) test."
 par(mar = c(8,5,3,3))
-plot(summary (modelc),main= '',log = T)
-mtext(text, side = 1, line = 5, cex = 0.8, adj = 0) 
-```
-
-The \@ref(fig:coxoutplot) shows the estimated hazard ratios of patients' default setting of predictors at baseline visit. Every 10 years older for patients, the risk of entering the nursing home will be double. The risk of institutionalisation for patients who smoke 23 packs in a year only slightly higher than patients without smoking habit. Every two Charlson co-morbidity index higher for patients, the need of institutionalisation is decrease around 20%. Patients with one more stage of Hoehn and Yahr Scale or 30 lower percentage score in Schwab and England ADL Scale will increase around 25% risk of institutionalisation. 
+plot(summary (modelb),main= '',log = T)
+mtext(text, side = 1, line = 5, cex = 1.1, adj = 0) 
 
 
-```{r nomogram, eval=FALSE}
+data%>%
+  group_by(diagnosiscat)%>%
+  filter(!is.na(datelost))%>%
+  count()
 
-
-
-surv <- Survival(modelc)
-surv5 <- function(x) surv(5*365,lp=x)
-surv8 <- function(x) surv(8*365,lp=x)
-
-
-plot(nomogram(modelc, 
-              fun=list(surv5, surv8), 
-              funlabel=c('5-year survival', '8-year survival')))
+163/200
 
 ```
 
-
-
-```{r, eval=FALSE}
-
-
-img1_path<-"nomogram.png"
-img1<-readPNG(img1_path,native = T,info = T)
-# attr(img1,"info")
-include_graphics(img1_path)
-```
-
-
+The \@ref(fig:coxoutplot) shows the hazard ratio in continuous characteristic. We can see that every 10 years older for patients, double the risk of entering the nursing home. However, the risk of institutionalisation between patients who smoked 22 packs in a year and patients without smoking habit was no significant difference. 
 
 
 
@@ -911,7 +721,7 @@ This study found that patients with atypical parkinsonism have 5.3 times higher 
 The PINE study is population-representative cohort of newly diagnosed patients with degenerative or vascular parkinsonism in Aberdeen, Scotland. Since study follows the patients from diagnosis to enter the institutionalisation, there is less bias between the study population. And PINE study is a long-term follow up study (the median follow-up time in PD group is 9.26 years, atypical parkinsonism group is 4.41 years, and control group is 10.78 years) with 575 patients and only 6 patients lost follow up. Compared to the previous four-year prospective study of 178 community-dwelling subjects in PD [@pred2000], our study has longer follow-up time and 3.23 times more patients involved. However, due to the degenerative or vascular parkinsonism is more common in elderly than young people. The PINE study is a elderly cohort study, the median age is 76.8 years old and only 14 patients' age is under 50 years old. Therefore, this study results may not represent the institutionalisation risk of young patients. 
 
 
-This study used multiple imputation method to imputed  patients’ missing data: 7 missing data in smoking history (pack-years), 26 missing data in MMSE test score at the baseline and 58 missing data in MMSE test score at year one. Compared to single imputation, multiple imputation is more robust. In the previous studies, they didn't report the missing data and what kind of methods they used to deal with missing data [@pred2000; @pred2015]. And we used cox regression to investigate the risk factor of institutionalisation. Because the PD is a slowly progressive disorder and from diagnosis to entering nursing home usually take years. Therefore, during the follow-up study, it may lost to follow-up patients or patients may die before entering long-term care facilities. And cox regression is a model from time-to-event outcome. Compared to logistic regression, the cox regression includes the time variable and can represent event/censor data. Therefore, for the study that has more chance of censoring, the cox regression has more advantage than logistic regression. In the nationwide retrospective cohort study [@pred2015], they used logistic regression to analyse a large cohort (469005 patients) and didn't report how many missing or lost to follow-up. And in this study, we tried to keep numeric data in continuous instead setting cut-off points. Because setting cut-off points (no based-on clinician advices) in continuous data will lost information and the model will have more bias. For example, the prospective study in Norway [@pred2000] set cut-off points in age and found that PD patients who older than 72 years old will have 3.5 times higher risk of nursing home admission than those younger or equal to 72 years old. Their model result means for patient who is just turned 73 and who was in last month of 72, their risk is can 3.5 times different. While in our study, we kept age as continuous data and found every 10 years ageing the risk of entering nursing home will be double. Keeping data as continuous can allow clinician to make more precisely predict and the prediction model is less bias. Furthermore, in our study, we chose the variable based on clinician suggestions instead of selecting statistics significant variables by statistics methods. In the Norway study [@pred2000], they used bivariate Cox analyses to select variables and transformed continuous data into dichotomous data, hence their 95% confidence interval of relative risk (in the model result) was very wide. Our model is more robust due to the 95% confidence interval of hazard ratio is narrow. The only continuous data we changed into category is MMSE. The cut-off points in MMSE are based on the clinician suggestion and the KM survival curves of these three MMSE group to the institutionalisation are separated. And, in order to make model more robust, we kept the MMSE as continuous data when we performed multiple imputation and only changed it as category when built Cox regression model. 
+This study used multiple imputation method to imputed  patients’ missing data: 7 missing data in smoking history (pack-years), 26 missing data in MMSE test score at the baseline and 58 missing data in MMSE test score at year one. Compared to single imputation, multiple imputation is more robust. In the previous studies [@pred2000; @pred2015], they didn't report the missing data and what kind of methods they used to deal with missing data. And we used cox regression to investigate the risk factor of institutionalisation. Because the PD is a slowly progressive disorder and from diagnosis to entering nursing home usually take years. Therefore, during the follow-up study, it may lost to follow-up patients or patients may die before entering long-term care facilities. And cox regression is a model from time-to-event outcome. Compared to logistic regression, the cox regression includes the time variable and can represent event/censor data. Therefore, for the study that has more chance of censoring, the cox regression has more advantage than logistic regression. In the nationwide retrospective cohort study [@pred2015], they used logistic regression to analyse a large cohort (469005 patients) and didn't report how many missing or lost to follow-up. And in this study, we tried to keep numeric data in continuous instead setting cut-off points. Because setting cut-off points (no based-on clinician advices) in continuous data will lost information and the model will have more bias. For example, the prospective study in Norway [@pred2000] set cut-off points in age and found that PD patients who older than 72 years old will have 3.5 times higher risk of nursing home admission than those younger or equal to 72 years old. Their model result means for patient who is just turned 73 and who was in last month of 72, their risk is can 3.5 times different. While in our study, we kept age as continuous data and found every 10 years ageing the risk of entering nursing home will be double. Keeping data as continuous can allow clinician to make more precisely predict and the prediction model is less bias. Furthermore, in our study, we chose the variable based on clinician suggestions instead of selecting statistics significant variables by statistics methods. In the Norway study [@pred2000], they used bivariate Cox analyses to select variables and transformed continuous data into dichotomous data, hence their 95% confidence interval of relative risk (in the model result) was very wide. Our model is more robust due to the 95% confidence interval of hazard ratio is narrow. The only continuous data we changed into category is MMSE. The cut-off points in MMSE are based on the clinician suggestion and and the mean MMSE score in normal healthy adults showed in previous study [@MMSE2]. In order to make model more robust, we kept the MMSE as continuous data when we performed multiple imputation and only changed it as category when built Cox regression model. 
 
 
 In our study, we found that the risk of female entering nursing home is only slightly higher than male (HR=1.12) and sex is not a significant risk factor (95% CI include one) to the institutionalisation. This result also found in the previous study in Norway [@pred2000]. However, the incidence rate of PD for male is higher than female [@IncidencePD] and male-to-female ratio is around 3:2 [@Lancet2015]. Therefore, male has higher risk of PD, but same risk as female to the nursing home. And many studies showed that patients with smoking habit have less risk of PD than those who never smoke [@EpidemiologyPD]. But the biological basis of this association is poorly understood, one possible reason is nicotine has a neuroprotective action and may stimulate dopamine release [@SmokePD]. But, we found only heavy smoker will have slightly significant higher risk of entering the long-term care facilities because the hazard ratio between non-smokers and patients who smoke 23 pack-years is 1.18. It means if heavey smoker patients do not reduce their smoking times after diagnosed with PD or atypical parkinsonism, they will have higher risk of entering nursing home. Different to previous studies found that lives alone is a risk factor to institutionalisation [@pred2000], we found living alone is not a statistical significant risk factor as the 95% confidence interval include one. And in PINE study, the number of patients who live with others (97 individuals) is 2.3 times more than those who live alone (43 individuals) in institutionalisation. Hence, for PINE study, living alone patients are less common in institutionalisation. This may because the local social services system provide help and extend patients' living at home time. Therefore, patients only enter the nursing home when the social care cannot take care of them. Furthermore, the measurement of Parkinson's symptoms progression (Hoehn and Yahr Scale) and independence of daily activities (Schwab and England ADL Scale) are both not significant while the cognitive function (MMSE test) is the most important risk factor shows that despite patients may have disability in life but as long as patients' cognitive is still normal, the chance of they can take care by others or by themselves is higher than those who have probable dementia. Therefore, treatment of cognitive impairment may extend patients' survival time to long-term care facilities. In short, our study found that cognitive impairment and old age are the most important risk factor for patients entering the institutionalisation. And for further study, it can investigate the relationship between local social services for living alone patients and the risk of entering in long-term care facilities. For clinicians, if a newly diagnosed atypical parkinsonism patient has cognitive impairment, then this patient has highest risk of entering the institutionalisation and should plan management earlier. 
@@ -962,9 +772,14 @@ aloneKM<-survfit(Surv(tt/365.25,cens)~livesalone,data=data)
 ggsurvplot(aloneKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv")
 
 data2%>%
-  filter(data2$cens==1)%>%
+  filter(data2$cens==1)%>%  #cens=1 event happened
   group_by(livesalone)%>%
   count(livesalone)
+
+
+
+
+
 
 
 

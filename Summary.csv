@@ -1,0 +1,12 @@
+﻿Characteristic,Parkinson’s disease (N=201),Atypical parkinsonism (N=114),Control (N=260)
+"Age at baseline (years), mean(SD)",72.7 (10.3),78.7 (7.4),75.5 (9.3)
+"Age at baseline (years), range",37.5-91.4,55.1-92.6,44.2-95.5
+"Male, n (%)",123 (61.2%),71 (63.3%),159 (61.2%)
+"Female, n (%)",78 (38.8%),43 (37.7%),101 (38.9%)
+"Smoking history in pack-years, median (IQR)","0.0 (0.0,15.05)","2.5 (0.0,32.4)","4.1 (0.0,28.5)"
+"No smoking, n (%)",109 (54.2%),47 (41.2%),103 (39.6%)
+"Smoking, n (%)",92 (45.8%),67 (58.8%),138 (53.1%)
+"Missing data of smoking, n (%)",0.0 (0.0%),0.0 (0.0%),19 (7.3%)
+"No Living alone, n (%)",151 (75.1%),78 (68.4%),171 (65.8%)
+"Living alone, n (%)",50 (24.9%),36 (31.6%),86 (33.1%)
+"Missing data of living alone, n (%)",0.0 (0.0%),0.0 (0.0%),3 (1.2%)

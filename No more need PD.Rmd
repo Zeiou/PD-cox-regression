@@ -1,0 +1,279 @@
+---
+title: "Not need anymore PD"
+author: "Yan Li"
+date: "12/10/2021"
+output: html_document
+---
+
+
+```{r eval=FALSE,echo=FALSE}
+
+#data$n.death<-ifelse(!is.na(datedeath),1,0)
+
+#data%>%
+#  group_by(diagnosiscat)%>%
+#  summarise(sum=sum(n.death))
+  
+
+#data$n.lost<-ifelse(!is.na(data$datelost),1,0)
+
+#data%>%
+#  group_by(diagnosiscat)%>%
+#  summarise(sum=sum(n.lost))
+ 
+```
+
+```{r count}
+data%>%
+  filter(!is.na(dateinstitution))%>%
+  group_by(diagnosiscat)%>%
+  summarise(n=n())
+```
+
+```{r, eval=FALSE}
+data%>%
+  group_by(diagnosiscat)%>%
+  count()
+
+
+my_skim <- skim_with(base = sfl(n = length))
+
+agebl.sum<-data%>%
+  group_by(diagnosiscat)%>%
+  dplyr::select(agebl)%>%
+  my_skim()%>%
+  transmute(Variable=skim_variable,Group=diagnosiscat,n=n,Mean=numeric.mean,SD=numeric.sd,Min=numeric.p0,Median=numeric.p50,Max=numeric.p100,IQR=numeric.p75-numeric.p25)
+
+
+sex.sum<-data%>%
+  group_by(diagnosiscat,sex)%>%
+  dplyr::summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),2),'%'))
+
+
+
+my_skim <- skim_with(base = sfl(n = length))
+
+packyears.sum<-data%>%
+  group_by(diagnosiscat)%>%
+  dplyr::select(packyears)%>%
+  my_skim()%>%
+    transmute(Variable=skim_variable,Group=diagnosiscat,Mean=numeric.mean,SD=numeric.sd,Median=numeric.p50,Max=numeric.p100,Q75=numeric.p75,Q25=numeric.p25)
+
+
+
+data$eversmok.yn<-ifelse(eversmok==0,"no","yes")
+
+eversmok<-data%>%
+  group_by(diagnosiscat,eversmok.yn)%>%
+  dplyr::summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))%>%
+  transmute(eversmok= eversmok.yn, n=n,percentage=percentage)
+  
+
+
+livesalone.sum<-data%>%
+  group_by(diagnosiscat,livesalone)%>%
+  dplyr::summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
+
+
+
+
+```
+
+```{r eval=FALSE}
+
+data$mmsecat<-cut(data$mmsebltotal,c(0,23,27,30),labels = c("<24","24-27","28-30"))
+
+MMSEKM<-survfit(Surv(tt/365.25,cens)~mmsecat,data=data)
+
+MMSEKMplot<-ggsurvplot(MMSEKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("MMSE:<24","MMSE:24-27","MMSE:28-30"))
+
+
+data%>%
+  group_by(mmsecat)%>%
+  count()
+
+
+
+aloneKM<-survfit(Surv(tt/365.25,cens)~livesalone,data=data)
+
+aloneKMplot<-ggsurvplot(aloneKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("live with other","live alone"))
+
+
+sexKM<-survfit(Surv(tt/365.25,cens)~sex,data=data)
+
+sexKMplot<-ggsurvplot(sexKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("male","female"))
+
+
+(aloneKMplot$plot | sexKMplot$plot) / MMSEKMplot$plot
+
+
+```
+
+
+```{r  eval=FALSE}
+
+#ageboxplot, fig.height=4, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Boxplots of patients' age in Parkinson’s disease and Atypical parkinsonism.", fig.pos ='H'
+
+plot1<-ggplot(data=data2,aes(y=agebl,x=diagnosiscat))+
+  geom_boxplot()+
+  ylab("Age at baseline visit")+
+  xlab("Diagnoses group")
+
+plot2<-ggplot(data=data2,aes(y=agedx,x=diagnosiscat))+
+  geom_boxplot()+
+  ylab("Age at diagnosis of parkinsonian syndrome")+
+  xlab("Diagnoses group")
+
+
+plot3<-ggplot(data=data2,aes(agesymptomonset,x=diagnosiscat))+
+  geom_boxplot()+
+  ylab("Age at onset of parkinsonian symptoms")+
+  xlab("Diagnoses group")
+
+grid.arrange(plot1, plot2, plot3,ncol=3, nrow=1)
+
+```
+
+
+```{r }
+
+#data$mmsecat<-cut(data$mmsebltotal,c(0,9,19,23,30),labels = c("<9","10-19","20-24", "24-30"))
+  
+  
+#KM<-survfit(Surv(tt/365.25,cens)~mmsecat,data=data)
+
+#ggsurvplot(KM,data)
+
+```
+
+
+```{r ,eval=FALSE}
+
+#### Correlation of predictors
+
+# ggcorr(data2[,c(6:18)], label=F)
+
+# fig.align = "center",fig.cap = "\\label { } Corrleation plot.", fig.pos ='H'
+
+# From the fig \@ref(fig:colplot), we can see the correlation between variable "agebl", "agedx", and "agesymptomonset" is one. Therefore, to avoid multicollinearity, only variable "agebl" will be included in the imputation model.
+```
+
+
+```{r eval=FALSE}
+
+explanatory<-c("packyears","mmsebltotal","mmseyr1total")
+dependent<- c("cens","tt")
+
+fit1<-data2%>%
+  ff_glimpse(dependent,explanatory)
+
+data.frame(Variable=c("smoking history in pack-years","minimental state examination score at baseline","minimental state examination score at year 1"),n=c(308,289,257),missing_n=c(7,26,58),missing_percent=c("2.2%","8.3%","18.4%")) %>%
+  kable(caption='\\label{tab:mistable1}  Summary of missing data.',booktabs=T,linesep="",digits=1)
+
+
+#Table \@ref(tab:mistable1) shows that there are `r sum(is.na(data2$packyears))` missing in the variable of smoking history in pack-years. For minimental state examination score, `r sum(is.na(data2$mmsebltotal))` missing at baseline and `r sum(is.na(data2$mmseyr1total))` missing at year 1. 
+
+```
+
+
+```{r ,eval=FALSE}
+
+# as.data.frame(mispattern)%>%
+#  rename(" "=V4)%>%
+#  kable(caption='\\label{tab:mistable2}  Summary of missing data pattern.',booktabs=T,linesep="",digits=2)
+```
+
+
+```{r eval=FALSE}
+
+#densityplot2, fig.height=5, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Density plot of non-zero observed (blue) and the m=10 densities per variable calculated from the imputed data (thin red lines) of packyears.", fig.pos ='H'
+
+imp.packyears<-pmm[["imp"]][["packyears"]]
+
+
+packyearsnozero<-subset(data2,packyears>0)
+
+
+ plot(density(packyearsnozero$packyears),col="darkblue",main=" ", xlab = "packyears",xlim=c(-100,200),ylim=c(0.000,0.025))
+for (i in 1:10) {
+  lines(density(imp.packyears[,i] ),col="deeppink3")
+}
+ 
+#In this study, the `r nrow(packyearsnozero)` patients with missing “packyears” variable are all smokers, which means pack years should be larger than zero. Therefore, fig \@ref(fig:densityplot2) shows the distribution for those with non-zero "packyears". We can see that the distribution between observed and imputed data is different.
+
+#The discrepancies may be caused by a bad imputation model, by a missing data mechanism that is not MCAR or by a combination of both. To further compare the distributions of observed and imputed data of "packyears", we use the diagnostic tool proposed by @Diagnostic2016. The idea is that under MAR the conditional distributions should be similar if the assumed model for creating multiple imputations has a good fit. 
+
+```
+
+
+```{r eval=FALSE}
+#diagnostic, fig.align = "center",fig.cap = "\\label{ } Packyears against missingness probability for observed and imputed values.", fig.pos ='H'
+
+
+fit<-with(pmm,glm(ici(pmm)~agebl+sex+packyears+eversmok+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsebltotal+mmseyr1total+cens+tt,family = binomial))
+
+# agebl+agesymptomonset+sex+packyears+eversmok+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsebltotal+mmseyr1total+cens+tt
+
+ps<-rep(rowMeans(sapply(fit$analyses,fitted.values)),pmm$m +1)
+
+xyplot(pmm, packyears~ps | as.factor(.imp),
+       xlab="Probability that record is incomplete",
+       ylab="Packyears",
+       pch=c(1,19),
+       col=mdc(1:2))
+
+
+#The fig \@ref(fig:diagnostic) shows that the distributions of the blue and red points are quite similar, as expected under MAR. Therefore, the imputation model has a good fit.
+
+```
+
+
+```{r,eval=FALSE}
+plot(cox.zph(coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat,data=pmm.new10),transform = "km"),var="sebl")
+
+
+# fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat+sebl:tt),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)
+
+
+
+```
+
+```{r,eval=FALSE}
+
+#page 545
+
+z<-predict(modelc,type = 'terms')
+z.sebl<-z[,7]
+z.other<-z[,-7]
+f.ia<-cph(Surv(data2$tt,data2$cens)~z.sebl*z.other)
+anova(f.ia)
+
+```
+
+```{r nomogram, eval=FALSE}
+
+
+
+surv <- Survival(modelc)
+surv5 <- function(x) surv(5*365,lp=x)
+surv8 <- function(x) surv(8*365,lp=x)
+
+
+plot(nomogram(modelc, 
+              fun=list(surv5, surv8), 
+              funlabel=c('5-year survival', '8-year survival')))
+
+```
+
+
+```{r, eval=FALSE}
+
+
+img1_path<-"nomogram.png"
+img1<-readPNG(img1_path,native = T,info = T)
+# attr(img1,"info")
+include_graphics(img1_path)
+```

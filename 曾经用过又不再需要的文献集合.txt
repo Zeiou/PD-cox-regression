@@ -1,0 +1,9 @@
+@manual{MMSE,
+author = {{Alzheimer's Association}},
+year = {2021},
+title = {How is Alzheimer's Disease Diagnosed?},
+titleaddon = {[Online]},
+url = {https://www.alz.org/alzheimers-dementia/diagnosis/medical_tests},
+urldate = {15 June 2021}}
+
+这是用于说明，The MMSE score of Alzheimer’s patients drops around two to four points averagely each year 

@@ -259,12 +259,20 @@ data.sum<-read.csv("demographic summary.csv")%>%
 
 data.sum%>%
   kable(caption='\\label{tab:datasum} Summary demographic information of participants.',booktabs=T,linesep="") 
+
+
+
+
+
+
 ```
 
 Table \@ref(tab:datasum) shows that 70 (35%) PD patients, 53 (54.1%) atypical patients and 43 (16.7%) patients in control entered institutionalisation. And 401 deaths occurred (140 in control group) and 6 were lost to follow up (3 in PD and 3 in control group). The population in this study is elderly participants as most of them are over 70 years old and the sex ratio between male and female are around 1.5. Both age and sex distributions are similar in these three groups. There are more individuals have smoking habits and living alone in the control group, while heavier smoker in atypical parkinsonism group. And less living alone patients in PD group than others. In short, the demographic information of participants are very similar among these three group with slightly difference in smoking habit and whether living alone. 
 
 
-```{r MMSEKM, fig.align = "center",fig.cap = "\\label { } Kaplan-Maier survival curves of MMSE groups.", fig.pos ='H'}
+```{r eval=FALSE}
+
+# MMSEKM,fig.align = "center",fig.cap = "\\label { } Kaplan-Maier survival curves of MMSE groups.", fig.pos ='H'
 
 data$mmsecat<-cut(data$mmsebltotal,c(0,23,27,30),labels = c("<24","24-27","28-30"))
 
@@ -293,7 +301,7 @@ reverse.KM<-survfit(Surv(tt/365.25,cens.followup)~diagnosiscat,data=data)
 # KM2
 
 data.frame(groups= c("Parkinson's disease","Atypical parkinsonism","Control"),n=c(200,98,258),median=c(9.26,4.41,10.78),LCL=c(8.30,3.33,10.40),UCL=c(11.08,5.78,11.07))%>%
-  kable(caption='Reverse Kaplan-Meier estimate of the median follow-up time.',booktabs=T,linesep="",digits=2) %>%
+  kable(caption='Reverse Kaplan-Meier estimate of the median follow-up time to institutionalisation.',booktabs=T,linesep="",digits=2) %>%
   footnote(alphabet = c ("The time is year",
                "LCL is the 95% lower confidence limits;", 
                "UCL is the 95% upper confidence limits;"
@@ -382,6 +390,8 @@ The fig \@ref(fig:misspattern) is the visualisation of this missing pattern outp
 
 
 
+
+
 pmm<-mice(data2[,c(6,9:18,25:26,28)],method="pmm",seed=81420,m=10,print=F)
 
 
@@ -392,6 +402,9 @@ pmm<-mice(data2[,c(6,9:18,25:26,28)],method="pmm",seed=81420,m=10,print=F)
 # pmm$visitSequence
 
 plot(pmm)
+
+
+
 
 ```
 From fig \@ref(fig:convergence), we can see that there are no obvious trends. Hence, the MICE algorithm has converged.
@@ -442,6 +455,21 @@ pmm.new<-as.mids(long)
 
 ```
 
+
+
+```{r age10}
+
+
+
+long$age10<-long$agebl/10
+                        
+
+
+pmm.new<-as.mids(long)
+
+
+
+```
 
 
 **Identify the risk factors**
@@ -521,6 +549,10 @@ test.ph %>%
 
 
 
+#test.ph.plot<-cox.zph(coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat+group,data=pmm.new10),transform = "km") 
+
+
+#plot(test.ph.plot)
 
 ```
 
@@ -679,7 +711,17 @@ read.csv("Hazard ratio.csv")%>%
 
 
 
+modelb
 
+
+modelb.new<-fit.mult.impute((Surv(tt,cens)~age10+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)
+
+
+exp(0.5939)
+
+exp(0.5939-1.96*0.1333)
+
+exp(0.5939+1.96*0.1333)
   
 ```
 

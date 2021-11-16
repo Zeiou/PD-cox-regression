@@ -180,6 +180,7 @@ library(bookdown)
 library(foreign)
 library(kableExtra)
 library(patchwork)#arrange survival plot
+library(sjlabelled)
 
 #install.packages('patchwork')
 ```
@@ -386,11 +387,9 @@ mispattern<-data3 %>%
 The fig \@ref(fig:misspattern) is the visualisation of this missing pattern output, where the blue cubic means observed and red cubic means missing. From the fig \ref{fig:misspattern}, we can see that 24 patients missing with the minimental state examination score at baseline and 6 patients missing with smoking history in pack-years. The missing pattern is general and connected through the first row. The first column shows the frequency of each pattern and the number of missing entries in each pattern shows in the last column. For example, the first row means there are 237 patients in the dataset with all three observed variables. 
 
 
+
+
 ```{r pmm}
-
-
-
-
 
 pmm<-mice(data2[,c(6,9:18,25:26,28)],method="pmm",seed=81420,m=10,print=F)
 
@@ -463,7 +462,11 @@ pmm.new<-as.mids(long)
 
 long$age10<-long$agebl/10
                         
+long$packyears10<-long$packyears/10
 
+long$updr3.10<-long$updrsblpart3/10
+
+long$sebl10<-long$sebl/10
 
 pmm.new<-as.mids(long)
 
@@ -518,6 +521,26 @@ data.frame(Model=c("Full Model","Model without Hoehn & Yahr disease stage","Mode
 Table \@ref(tab:modelselect) shows that the $R^{2}_{N}$ of these three models are the same and the model without Hoehn & Yahr disease stage has the lowest AIC and BIC value. Due to only has 123 events in PD or atypical parkinsonism group and to avoid over fitting, we choose the model without Hoehn & Yahr disease stage. 
 
 
+
+
+
+```{r label}
+
+labs<-c("Beta(t) for Age",
+        "Beta(t) for Sex","Beta(t) for Smoking history in pack-years",
+        "Beta(t) for Lives alone",
+        "Beta(t) for Charlson co-morbidity index","Beta(t) for UPDRS part 3 (motor) score",
+        "Beta(t) for Schwab and England ADL Scale",
+        "Beta(t) for Mini Mental State Examination test",
+        "Beta(t) for Diagnosis")
+
+data.label<-set_label(data2[,c(6,9,10,12:14,16,17,28)],label=labs)
+
+
+colnames(data2)
+
+```
+
 ```{r testcox}
 
 
@@ -548,13 +571,62 @@ test.ph %>%
    kable(caption='\\label{tab:testcox} PH assumption test results.',booktabs=T,linesep="",digits=2)
 
 
+test.ph.plot<-cox.zph(coxph(Surv(tt/365.25,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat+group,data=pmm.new10),transform = "km") 
 
-#test.ph.plot<-cox.zph(coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat+group,data=pmm.new10),transform = "km") 
 
 
-#plot(test.ph.plot)
+
+plot(test.ph.plot,ylab = label(data.label))
+
+
+
+
+p1<-ggcoxzph(test.ph.plot,var=1,ylab ="Beta(t) for Age",caption = NULL)+
+  theme_survminer(font.main = 8,font.y = 8,font.x = 8,axis.text.x = element_text(size = 1))
+
+p2<-ggcoxzph(test.ph.plot,var=2,ylab = "Beta(t) for Sex",caption = NULL)+
+  theme_survminer(font.main = 8,font.y = 8,font.x = 8,axis.text.x = element_text(size = 1))
+
+p3<-ggcoxzph(test.ph.plot,var=3,ylab = "Beta(t) for Smoking history in pack-years",caption = NULL )+
+  theme_survminer(font.main = 8,font.y = 8,font.x = 8,axis.text.x = element_text(size = 1))
+
+p4<-ggcoxzph(test.ph.plot,var=4,ylab = "Beta(t) for Lives alone",caption = NULL )+
+  theme_survminer(font.main = 8,font.y = 8,font.x = 8,axis.text.x = element_text(size = 1))
+
+p5<-ggcoxzph(test.ph.plot,var=5,ylab = "Beta(t) for Charlson co-morbidity index",caption = NULL)+
+  theme_survminer(font.main = 8,font.y = 8,font.x = 8,axis.text.x = element_text(size = 1))
+
+p6<-ggcoxzph(test.ph.plot,var=6,ylab = "Beta(t) for UPDRS part 3 (motor) score",caption = NULL )+
+  theme_survminer(font.main = 8,font.y = 8,font.x = 8,axis.text.x = element_text(size = 1))
+
+p7<-ggcoxzph(test.ph.plot,var=7,ylab = "Beta(t) for Schwab and England ADL Scale",caption = NULL )+
+  theme_survminer(font.main = 8,font.y = 8,font.x = 8,axis.text.x = element_text(size = 1))
+
+p8<-ggcoxzph(test.ph.plot,var=8,ylab = "Beta(t) for Mini Mental State Examination test",caption = NULL )+
+  theme_survminer(font.main = 8,font.y = 8,font.x = 8,axis.text.x = element_text(size = 1))
+
+p9<-ggcoxzph(test.ph.plot,var=9,ylab = "Beta(t) for Diagnosis",caption = NULL)+
+  theme_survminer(font.main = 8,font.y = 8,font.x = 8,axis.text.x = element_text(size = 1))
+
+p1<-p1[["1"]]
+p2<-p2[["2"]]
+p3<-p3[["3"]]
+p4<-p4[["4"]]
+p5<-p5[["5"]]
+p6<-p6[["6"]]
+p7<-p7[["7"]]
+p8<-p8[["8"]]
+p9<-p9[["9"]]
+
+p1+p2+p3
+p4+p5+p6
+p7+p8+p9
+
+
 
 ```
+
+
 
 Table \@ref(tab:testcox) shows the results of proportional hazards (PH) assumption testing, we can see that all variables’ p-value is larger than 0.05. Hence there is not enough evidence to reject the null hypothesis that the proportional hazards are constant and the PH assumption is valid.
 
@@ -711,19 +783,29 @@ read.csv("Hazard ratio.csv")%>%
 
 
 
-modelb
 
 
-modelb.new<-fit.mult.impute((Surv(tt,cens)~age10+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)
+
+modelb.new<-fit.mult.impute((Surv(tt,cens)~age10+sex+packyears10+livesalone+charlsonbl+updr3.10+sebl10+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)
 
 
-exp(0.5939)
+modelb.new
 
-exp(0.5939-1.96*0.1333)
 
-exp(0.5939+1.96*0.1333)
   
 ```
+
+```{r }
+
+round(exp(0.2024),2)
+
+round(exp(-0.0163-1.96*0.0692),2)
+
+round(exp(-0.0163+1.96*0.0692),2)
+
+
+```
+
 
 Table \@ref(tab:coxout) shows that the significate risk factors were increasing age for 10 yeas [HR=1.89 (1.43,2.51)], MMSE score less than 24 [HR versus MMSE>27 =2.60 (1.43, 4.72)], and being diagnosed as atypical parkinsonism [HR versus PD = 3.02 (1.84,4.96)]. Since their 95% confidence interval didn’t include one, they were independently associated with institutionalisation. 
 

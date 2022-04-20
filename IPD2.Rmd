@@ -1,0 +1,1310 @@
+---
+title: "IPD"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r library}
+library(dplyr)
+library(tidyr)
+library(Hmisc)
+library(jomo)
+library(haven)
+library(lubridate)
+library(finalfit)
+library(mice)
+library(mitools)
+library(rms)
+library(mitml)
+library(survminer)
+library(patchwork)
+library(ggplot2)
+library(GGally)
+library(gridExtra)
+library(kableExtra)
+library(metafor)
+```
+
+```{r data}
+data<-read_dta("PICC institutionalisation.dta")
+
+write.csv(data,"data.csv",row.names = F)  # need to be csv file, otherwise it fails
+
+datanew<-read.csv("data.csv")  #import data again
+
+
+#age at baseline, sex, smoking status, co-morbidity, living alone, type of accommodation, presence of hallucinations, presence of cognitive symptoms, falls, MDS-UPDRS part III score (converted from UPDRS part III as applicable), H&Y stage, MMSE score, Schwab and England scale
+
+#presence of hallucinations needs mdsupdrsbl102hallucinations and updrsblitem2thoughtdisorders
+
+#presence of cognitive symptoms needs mdsupdrsbl101cognitive and updrsblitem1intellectual
+
+#co-morbidity is charlsonbl? updrsblitem13falling is falls?
+
+
+data1<-datanew%>%
+  select(study,idpicc,originalid, agebl, sex, smoking, charlsonbl,livesalonebl,accommodationbl,mdsupdrsbl102hallucinations,updrsblitem2thoughtdisorders,mdsupdrsbl101cognitive,updrsblitem1intellectual,updrsblitem13falling,mdsupdrspart3bltotalconvertedasa,hybl,mmsebltotal,sebl,institutionalised,dateinstitution,datediagnosis,datevisitbl,datelastknownalive,datedeath,datelost,enddateinstitutionalised)  
+
+
+#Create index for hallucinations
+
+data1$updrshallucinations<-ifelse(data1$mdsupdrsbl102hallucinations>0,1,0)  # 1=yes,0=no
+
+data1$updrsthoughtdisorders<-ifelse(data1$updrsblitem2thoughtdisorders>1,1,0)  # 1=yes (2-4),0=no (0-1)
+
+data1<-data1 %>%
+      mutate(hallucinationsindex=updrshallucinations)%>%           
+      mutate(hallucinationsindex=coalesce(hallucinationsindex,updrsthoughtdisorders)) #if updrshallucinations not find then use updrsthoughtdisorders
+
+
+#---------------------Former cognitive index-------------------
+
+#Create index for cognitive symptoms
+
+#data1$updrscognitive<-ifelse(data1$mdsupdrsbl101cognitive==0,0,
+#                             ifelse(data1$mdsupdrsbl101cognitive==1,1,2)
+#                             )  # 0=no,1=no impact ADL, 2=impact ADL
+
+#data1$updrsintellectual<-ifelse(data1$updrsblitem2thoughtdisorders==0,0,
+#                             ifelse(data1$updrsblitem2thoughtdisorders==1,1,2)
+#                             ) # 0=no,1=no impact ADL, 2=impact ADL
+
+
+#------------Former only change to yes and no----------
+
+#data1$updrscognitive<-ifelse(data1$mdsupdrsbl101cognitive==0,0,1) # 0=no,1=yes the max=3
+
+#data1$updrsintellectual<-ifelse(data1$updrsblitem2thoughtdisorders==0,0,1) #0=no,1=yes the max=3
+
+#data1<-data1 %>%
+#      mutate(cognitiveindex=updrscognitive)%>%           
+#      mutate(cognitiveindex=coalesce(cognitiveindex,updrsintellectual))  # 0=no,1=yes 
+
+
+#----------Now change into only 0/1, not maximum=3, now max=1---------
+
+table(data1$mdsupdrsbl101cognitive)
+table(data1$updrsblitem2thoughtdisorders)
+
+data1$mdsupdrsbl101cognitive[data1$mdsupdrsbl101cognitive>1&!is.na(data1$mdsupdrsbl101cognitive)]<-1
+data1$updrsblitem2thoughtdisorders[data1$updrsblitem2thoughtdisorders>1&!is.na(data1$updrsblitem2thoughtdisorders)]<-1
+
+data1<-data1 %>%
+      mutate(cognitiveindex=mdsupdrsbl101cognitive)%>%           
+      mutate(cognitiveindex=coalesce(cognitiveindex,updrsblitem2thoughtdisorders))  # 0=no,1=yes 
+
+table(data1$cognitiveindex) #no 656, yes 263
+
+
+
+#create index for falls
+
+#------------------Former only change levels--------------
+#data1$fall<-ifelse(data1$updrsblitem13falling>0,1,0) # 1=yes,0=no
+
+#-----------------Now change to 0/1 in the first, max=1------------
+
+data1$updrsblitem13falling[data1$updrsblitem13falling>1&!is.na(data1$updrsblitem13falling)]<-1
+
+#table(data1$updrsblitem13falling)
+
+
+data1$study<-factor(data1$study,
+                    levels = c(1,2,3,4,5,6),
+                    labels= c("CamPalGN","ICICLE","NYPUM","PICNICS","ParkWest","PINE"))
+
+summary(data1$study)  
+
+data1$sex<-factor(data1$sex,
+                  levels = c(0,1),
+                  labels = c("male","female"))
+
+#---------Former smoking with 3 levels--------
+
+#data1$smoking <- factor(data1$smoking, 
+#                    levels=c(1,2,3),
+#                    labels=c("current smoker", "Ex smoker", "never smoker"))
+
+#--------Change smoking into binary factor--------
+
+#data1$smoking<-ifelse(data1$smoking==3,0,1)  #3 is never smoker, 1&2 are current/Ex smoker
+
+#data1$smoking <- factor(data1$smoking, 
+#                    levels=c(0,1),
+#                    labels=c("Never smoker", "Curren/Ex smoker"))
+
+#----------Now change smoking into max=1, only 0/1-------------
+
+
+data1$smoking[data1$smoking<3&!is.na(data1$smoking)]<-1  #Ever smoker
+data1$smoking[data1$smoking==3&!is.na(data1$smoking)]<-0  #Never smoker
+#table(data1$smoking)
+
+data1$smoking <- factor(data1$smoking, 
+                        levels=c(0,1),
+                        labels=c("Never smoker", "Curren/Ex-smoker"))
+
+
+data1$livesalonebl<-factor(data1$livesalonebl,
+                           levels=c(0,1),
+                           labels = c("lives alone","lives with other(s)"))
+
+
+data1$fall<-factor(data1$updrsblitem13falling,
+                   levels = c(0,1),
+                   labels = c("no","yes")) 
+
+
+
+data1$hallucinationsindex<-factor(data1$hallucinationsindex,
+                                  levels = c(0,1),
+                                  labels = c("no","yes"))  
+
+
+
+#------------------------------Former cognitive index--------------
+#data1$cognitiveindex<-factor(data1$cognitiveindex,
+#                            levels = c(0,1,2),
+#                            labels = c("no","no impact ADL","impact ADL"))
+
+#-----------------------------Yes and no----------------
+
+data1$cognitiveindex<-factor(data1$cognitiveindex,
+                            levels = c(0,1),
+                            labels = c("no","yes"))
+
+
+
+data1$accommodationbl<-factor(data1$accommodationbl,
+                              levels = c(1,2,3,4),
+                              labels = c("At home","Nursing home","Other","Sheltered housing")) 
+
+#accommodationbl missing with 287 variables, should we still use it? I think we cannot include it
+
+
+#Remove patients already in nursing home,but only 2, PICNICS 445 A07 and PINE 1248 P586
+#data3<-data1%>%
+# filter(data1$accommodationbl=="Nursing home")
+#summary(data3$study)
+
+
+
+
+
+summary(data1)
+
+```
+
+
+```{r data_summary}
+
+
+#age at baseline, sex, smoking status, co-morbidity, living alone, type of accommodation, presence of hallucinations, presence of cognitive symptoms, falls, MDS-UPDRS part III score (converted from UPDRS part III as applicable), H&Y stage, MMSE score, Schwab and England scale
+
+data1%>%
+  group_by(study)%>%
+  summarise(round(mean(agebl),1),round(sd(agebl),1))
+
+data1%>%
+  group_by(study,sex)%>%
+  summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
+
+
+data1%>%
+  select(study,hybl)%>%
+  group_by(study)%>%
+  summarise(median(hybl),IQR(hybl))
+
+
+data1%>%
+  group_by(study,livesalonebl)%>%
+  summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
+
+
+data1%>%
+  group_by(study,smoking)%>%
+  summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
+
+data1%>%
+  select(study,charlsonbl)%>%
+  group_by(study)%>%
+  summarise(median(charlsonbl,na.rm = T),IQR(charlsonbl,na.rm = T),n=sum(is.na(charlsonbl)),n.prop=sum(is.na(charlsonbl))/n())
+
+
+data1%>%
+  group_by(study,accommodationbl)%>%
+  summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
+
+
+data1%>%
+  group_by(study,hallucinationsindex)%>%
+  summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
+
+
+data1%>%
+  group_by(study,cognitiveindex)%>%
+  summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
+
+
+data1%>%
+  count(cognitiveindex)%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
+
+
+data1%>%
+  group_by(study,fall)%>%
+  summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
+
+
+data1%>%
+  select(study,mdsupdrspart3bltotalconvertedasa)%>%
+  group_by(study)%>%
+  summarise(median(mdsupdrspart3bltotalconvertedasa,na.rm = T),IQR(mdsupdrspart3bltotalconvertedasa,na.rm = T),n=sum(is.na(mdsupdrspart3bltotalconvertedasa)),n.prop=sum(is.na(mdsupdrspart3bltotalconvertedasa))/n())
+
+
+
+data1%>%
+  select(study,mmsebltotal)%>%
+  group_by(study)%>%
+  summarise(median(mmsebltotal,na.rm = T),IQR(mmsebltotal,na.rm = T),n=sum(is.na(mmsebltotal)),n.prop=sum(is.na(mmsebltotal))/n())
+
+data1%>%
+  select(study,sebl)%>%
+  group_by(study)%>%
+  summarise(median(sebl,na.rm = T),IQR(sebl,na.rm = T),n=sum(is.na(sebl)),n.prop=sum(is.na(sebl))/n())
+```
+
+
+
+```{r follow-up}
+
+data1<-data1 %>%
+  mutate(t=dateinstitution)%>%           
+  mutate(t=coalesce(t,enddateinstitutionalised))
+
+
+sum(is.na(data1$t)) #38 missing, patients do not have date of institution/ end date of institution 
+
+data2<-data1 #create a backup data
+
+#Remove those patients with missing t, 1109-38=1071
+
+data1<-data1%>%
+  filter(!is.na(t)) #now 1071 patients in data
+
+data1$cens<-ifelse(is.na(data1$dateinstitution),0,1)  #censor=1
+
+data1$tt<-as.Date(as.character(data1$t), format="%Y-%m-%d")-
+                as.Date(as.character(data1$datevisitbl), format="%Y-%m-%d")
+
+data1$tt<-as.numeric(data1$tt)
+
+data1$year<-data1$tt/365.25
+
+#Problem is the date of death is later than date of lost or patients date of lost is the date of baseline visit
+#Only keep those follow-up time >0
+
+data4<-data1%>%
+  filter(data1$tt>0) #1045 removed 26 patients 
+
+
+summary(data2$study)
+summary(data1$study)
+summary(data4$study) 
+
+
+
+```
+
+```{r missing pattern}
+
+
+#Not RUN
+#colnames(data4)
+
+data5<-data4[,c(1:9,15:25,28:35)] #Only keep variables needed
+
+colnames(data5)
+
+summary(data5)
+
+
+#missing data: smoking (12),charlsonbl (524), livesalonebl (589), accommodationbl (399),  mdsupdrspart3bltotalconvertedasa (8), mmsebltotal (22) , sebl (404),  hallucinationsindex (167),  cognitiveindex (168), fall(440)
+
+
+#colnames(data5)
+
+data.rename<-data5%>%
+  rename("Age at baseline"=agebl,"Sex"=sex, "Smoking"=smoking,
+         "Charlson co-morbidity index"=charlsonbl,"Lives alone"= livesalonebl,"Accommodation"= accommodationbl, 
+         "UPDRS part3 (motor) score"=mdsupdrspart3bltotalconvertedasa,"Hoehn and Yahr Scale"=hybl,"MMSE at baseline"=mmsebltotal,"Schwab and England ADL Scale"=sebl,
+         "Hallucinations"=hallucinationsindex,"Cognitive symptoms"= cognitiveindex,
+         "Falls"=fall
+         )
+
+explanatory<-c("Smoking","UPDRS part3 (motor) score","MMSE at baseline","Cognitive symptoms","Falls,","Schwab and England ADL Scale")
+dependent<- c("cens","tt")
+
+mispattern<-data.rename %>% 
+  missing_pattern(explanatory)
+
+plot(naclus(data.rename[,c(4:7,10:13,22:23)]))
+
+#mean age and sd.age for people with complete and any missing
+#missing fall, mean age proportion of sex
+
+
+
+
+```
+
+
+```{r event/incidence}
+
+data5%>%
+  group_by(study)%>%
+  summarise(sum(cens))
+
+
+
+data5%>%
+  group_by(study)%>%
+  summarise('Incidence rate'=paste(round(sum(cens)/as.numeric(sum(year))*100,1),' per 100 person-years'))
+
+```
+
+```{r Reverse Kaplan-Meier estimate of the median follow-up time}
+
+data5$cens.followup<-1-data5$cens
+reverse.KM<-survfit(Surv(year,cens.followup)~study,data=data5)
+
+```
+
+```{r KMplot}
+
+KM<-survfit(Surv(year,cens)~study,data=data5)
+
+ggsurv<-ggsurvplot(KM,
+           ylab="Survival probability of institutionalisation",
+           xlab="Survival years",
+           legend="top",
+           surv.median.line = "hv",
+           risk.table = T,
+           risk.table.y.text.col = F,
+           risk.table.y.text = T,
+           risk.table.col = "strata",
+           linetype = "strata",
+           ggtheme = theme_bw(),
+           legend.labs=c("CamPalGN","ICICLE","NYPUM","PICNICS","ParkWest","PINE"))
+
+print(ggsurv, 
+      surv.plot.height = 0.7,
+      risk.table.height = 0.3)
+
+
+
+ggsurvplot(KM,
+           ylab="Survival probability of institutionalisation",
+           xlab="Survival years",
+           legend="top",
+           surv.median.line = "hv",
+           legend.labs=c("CamPalGN","ICICLE","NYPUM","PICNICS","ParkWest","PINE"))
+
+
+```
+
+```{r jomo}
+
+#missing data: smoking (12),charlsonbl (524), mdsupdrspart3bltotalconvertedasa (8), mmsebltotal (22) , sebl (404),  cognitiveindex (168), fall(440)
+
+#table(data4$cognitiveindex)
+#table(data4$hallucinationsindex)
+#No missing: agebl,sex,hybl
+
+
+
+
+
+data6<-subset(data5,data5$study!="ICICLE")
+
+#summary(data6)
+#missing data: smoking (11),charlsonbl (524), mdsupdrspart3bltotalconvertedasa (8), mmsebltotal (22) , sebl (269),  cognitiveindex (33), fall(305).
+
+
+data6$cons<-1
+
+data6$event<-1-data6$cens #create event index, 1=event
+                          #data5$cens, 1=cens
+
+data6$nelsonaalen<-nelsonaalen(data6,tt,event)
+
+Y<- data6[,c("smoking",
+             "mdsupdrspart3bltotalconvertedasa","mmsebltotal",
+             "cognitiveindex","fall")] #"sebl","charlsonbl"
+
+
+X<-data6[,c("cons","agebl","sex","hybl","nelsonaalen")] #adding Nelson-Aalen estimate
+
+clus<-data6$study
+
+impdry<-jomo.MCMCchain(Y=Y,X=X,clus = clus,nburn = 2)
+
+set.seed(17821)
+imp1 <- jomo.MCMCchain(Y = Y, X = X, clus = clus, nburn = 5000)
+
+
+#head(imp1$collectbeta) # check beta
+
+
+#plot trace for each parameter value
+
+plot(imp1$collectbeta[1, 1, 1:5000], type = "l", ylab = expression(beta["mdsupdrspart3,0"]),
+     xlab = "Iteration number" )
+
+plot(imp1$collectbeta[1, 2, 1:5000], type = "l", ylab = expression(beta["mmse,0"]),
+     xlab = "Iteration number" )
+
+#plot(imp1$collectbeta[1, 3, 1:5000], type = "l", ylab = expression(beta["sebl,0"]),
+#     xlab = "Iteration number" ) 
+
+#plot(imp1$collectbeta[1, 4, 1:5000], type = "l", ylab = expression(beta["charlsonbl,0"]),
+#     xlab = "Iteration number" ) 
+
+plot(imp1$collectbeta[1, 3, 1:5000], type = "l", ylab = expression(beta["smoke1,0"]),
+     xlab = "Iteration number" ) 
+
+#plot(imp1$collectbeta[1, 4, 1:5000], type = "l", ylab = expression(beta["smoke2,0"]),
+#     xlab = "Iteration number" ) 
+
+plot(imp1$collectbeta[1, 4, 1:5000], type = "l", ylab = expression(beta["cognitiveindex.1,0"]),
+     xlab = "Iteration number" ) 
+
+#plot(imp1$collectbeta[1, 6, 1:5000], type = "l", ylab = expression(beta["cognitiveindex.2,0"]),
+#     xlab = "Iteration number" ) 
+
+plot(imp1$collectbeta[1, 5, 1:5000], type = "l", ylab = expression(beta["fall.1,0"]),
+     xlab = "Iteration number" ) 
+
+
+
+
+#plot trace for cov matrix element
+#imp1$collectomega[,,1] #check the row and col name
+#Category variable don't need to plot, just a straight line
+
+plot(imp1$collectomega[1, 1, 1:5000], type = "l", ylab = expression(omega[mdsupdrspart3,1,1]^2),
+     xlab = "Iteration number" )
+
+plot(imp1$collectomega[2, 2, 1:5000], type = "l", ylab = expression(omega[mmse,1,1]^2),
+     xlab = "Iteration number" )
+
+#plot(imp1$collectomega[3, 3, 1:5000], type = "l", ylab = expression(omega[sebl,1,1]^2),
+#     xlab = "Iteration number" )
+
+#plot(imp1$collectomega[4, 4, 1:5000], type = "l", ylab = expression(omega[charlsonbl,1,1]^2),
+#     xlab = "Iteration number" )
+
+# Capture the state of the sampler as starting values for the second set of iterations:
+beta.start <- imp1$collectbeta[,,5000] # capture the fixed parameter values
+l1cov.start <- imp1$collectomega[,,5000] # capture the level-1 covariance matrix values
+start.imp <- imp1$finimp.latnorm # capture the final imputed data set 
+
+
+
+#Re-run the same function for a larger number of iterations
+imp2 <- jomo.MCMCchain(Y = Y, X = X, clus = clus, beta.start = beta.start, l1cov.start = l1cov.start,
+                       start.imp = start.imp, nburn = 5000)
+
+# Check the trace again
+
+
+
+
+plot(imp2$collectbeta[1, 1, 1:5000], type = "l", ylab = expression(beta["mdsupdrspart3,0"]),
+     xlab = "Iteration number" )
+
+plot(imp2$collectbeta[1, 2, 1:5000], type = "l", ylab = expression(beta["mmse,0"]),
+     xlab = "Iteration number" )
+
+#plot(imp2$collectbeta[1, 3, 1:5000], type = "l", ylab = expression(beta["sebl,0"]),
+#     xlab = "Iteration number" )
+
+#plot(imp2$collectbeta[1, 4, 1:5000], type = "l", ylab = expression(beta["charlsonbl,0"]),
+#     xlab = "Iteration number" ) 
+
+plot(imp2$collectbeta[1, 3, 1:5000], type = "l", ylab = expression(beta["smoke1,0"]),
+     xlab = "Iteration number" ) 
+
+#plot(imp2$collectbeta[1, 4, 1:5000], type = "l", ylab = expression(beta["smoke2,0"]),
+#     xlab = "Iteration number" ) 
+
+plot(imp2$collectbeta[1, 4, 1:5000], type = "l", ylab = expression(beta["cognitiveindex.1,0"]),
+     xlab = "Iteration number" ) 
+
+#plot(imp2$collectbeta[1, 6, 1:5000], type = "l", ylab = expression(beta["cognitiveindex.1,0"]),
+#     xlab = "Iteration number" ) 
+
+plot(imp2$collectbeta[1, 5, 1:5000], type = "l", ylab = expression(beta["fall.1,0"]),
+     xlab = "Iteration number" ) 
+
+
+#plot trace for cov matrix element
+
+plot(imp2$collectomega[1, 1, 1:5000], type = "l", ylab = expression(omega[mdsupdrspart3,1,1]^2),
+     xlab = "Iteration number" )
+
+plot(imp2$collectomega[2, 2, 1:5000], type = "l", ylab = expression(omega[mmse,1,1]^2),
+     xlab = "Iteration number" )
+
+#plot(imp2$collectomega[3, 3, 1:5000], type = "l", ylab = expression(omega[sebl,1,1]^2),
+#     xlab = "Iteration number" )
+
+#plot(imp2$collectomega[4, 4, 1:5000], type = "l", ylab = expression(omega[charlsonbl,1,1]^2),
+#     xlab = "Iteration number" )
+
+
+
+#collect posterior mean of cov matrix
+l1cov.guess <- apply(imp2$collectomega, c(1, 2), mean)
+
+#dim(imp2$collectomega[,,1])
+
+# Multiply by degrees of freedom to get scale matrix
+l1cov.prior <- l1cov.guess*5
+
+# Perform multilevel imputation:
+imp3 <- jomo(Y = Y, X = X, clus = clus, l1cov.prior = l1cov.prior, nburn = 5000, nbetween = 1000, nimp = 9 )  #How to chose nburn and nbetween? #The nimp is the precentage of missing? 
+
+
+
+sum(is.na(data5$smoking))+sum(is.na(data5$mdsupdrspart3bltotalconvertedasa))+sum(is.na(data5$mmsebltotal))+sum(is.na(data5$cognitiveindex))+sum(is.na(data5$fall)) #559
+
+559/(773*8) #9% missing
+
+
+
+
+```
+
+
+```{r }
+
+
+
+
+```
+
+
+
+
+```{r merge data}
+
+
+
+names(imp3)
+dim(imp3)
+#View original (partially observed) data:
+head(imp3)
+# View last imputation (the left most column is the row number):
+head(imp3[imp3$Imputation == 1,])
+
+#create id to merge the data 
+
+data5$id<-seq(nrow(data5))  
+
+data5.time<-data5%>%
+  select(id,year,cens,idpicc,institutionalised,t,tt)
+
+imp3.new<-merge(imp3,data5.time,by.x = "id",by.y = "id")
+
+
+```
+
+
+```{r prepare data before model}
+
+imp3.new$age10<-imp3.new$agebl/10
+
+imp3.new$mdsupdrs3.10<-imp3.new$mdsupdrspart3bltotalconvertedasa/10
+
+summary(imp3.new)  #mmse has >30
+
+imp3.new$mmsebltotal[imp3.new$mmsebltotal>30&!is.na(imp3.new$mmsebltotal)]<-30
+
+#summary(imp3.new) #check data again
+
+
+#I need to subset the data by study, and run the same model in different dataset then check PH and plot, at last need to use metafor package
+
+imp3.Cam<-imp3.new%>%
+  filter(clus=="CamPalGN")
+
+ImpCam<- jomo2mitml.list(imp3.Cam)
+
+#imp3.IC<-imp3.new%>%
+#  filter(clus=="ICICLE")
+
+#ImpIC<- jomo2mitml.list(imp3.IC)
+
+imp3.NY<-imp3.new%>%
+  filter(clus=="NYPUM")
+
+ImpNY<-jomo2mitml.list(imp3.NY)
+
+imp3.PIC<-imp3.new%>%
+  filter(clus=="PICNICS")
+
+ImpPIC<-jomo2mitml.list(imp3.PIC)
+
+imp3.PA<-imp3.new%>%
+  filter(clus=="ParkWest")
+
+ImpPA<-jomo2mitml.list(imp3.PA)
+
+imp3.PIN<-imp3.new%>%
+  filter(clus=="PINE")
+
+ImpPIN<-jomo2mitml.list(imp3.PIN)
+
+```
+
+```{r fall in IC PA}
+
+table(imp3.IC$fall,imp3.IC$Imputation)
+
+imp3.IC%>%
+  filter(Imputation!=0)%>%
+  group_by(Imputation,fall)%>%
+  summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
+
+
+imp3.PA%>%
+  filter(Imputation!=0)%>%
+  group_by(Imputation,fall)%>%
+  summarise(n=n())%>%
+  mutate(percentage=paste0(round(100*n/sum(n),1),'%'))
+
+
+str(imp3.PA$fall)
+
+```
+
+```{r correlation}
+
+imp3.new1<-imp3.new%>% 
+          filter(Imputation!=0)  #only get after imputation data
+
+ggcorr(imp3.new1[,c(2:5,10,12)], label=F)
+
+cor(imp3.new1[,c(2:5,10,12)])
+
+#MDS-UPDRS part3 and hybl correlation is 0.64>0.6
+
+#MDS-UPDRS part3 and sebl correlation is 0.58
+
+#However hybl is the only one all studies have this data
+
+#Fall and sebl need to choose one, and when model with fall, the estimate is ridiculous high.
+
+imp3.Cam1<-imp3.Cam%>%
+  filter(Imputation!=0)
+ggcorr(imp3.Cam1[,c(2:5,10,12)], label=F)
+cor(imp3.Cam1[,c(2:5,10,12)])
+#MDS-UPDRS part3 and hybl correlation 62%
+
+
+imp3.IC1<-imp3.IC%>%
+  filter(Imputation!=0)
+ggcorr(imp3.IC1[,c(2:5,10,12)], label=F)
+cor(imp3.IC1[,c(2:5,10,12)])
+
+
+imp3.NY1<-imp3.NY%>%
+  filter(Imputation!=0)
+ggcorr(imp3.NY1[,c(2:5,10,12)], label=F)
+cor(imp3.NY1[,c(2:5,10,12)])
+
+
+imp3.PA1<-imp3.PA%>%
+  filter(Imputation!=0)
+ggcorr(imp3.PA1[,c(2:5,10,12)], label=F)
+cor(imp3.PA1[,c(2:5,10,12)])
+#MDS-UPDRS part3 and hybl correlation 66%
+
+
+imp3.PIC1<-imp3.PIC%>%
+  filter(Imputation!=0)
+ggcorr(imp3.PIC1[,c(2:5,10,12)], label=F)
+cor(imp3.PIC1[,c(2:5,10,12)])
+#MDS-UPDRS part3 and hybl correlation 76%
+
+
+imp3.PIN1<-imp3.PIN%>%
+  filter(Imputation!=0)
+ggcorr(imp3.PIN1[,c(2:5,10,12)], label=F)
+cor(imp3.PIN1[,c(2:5,10,12)])
+#MDS-UPDRS part3 and hybl correlation 76%
+
+table(imp3.IC$fall)
+7/(132+7)
+
+```
+
+
+```{r Cox regression full model}
+#-------------Method 1---------------
+#imp.list<-imputationList(split(imp3.new, imp3.new$Imputation)[-1])
+#model1<-with(data=imp.list,coxph(Surv(year,cens)~age10+sex+smoking+fall+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+strata(clus)),x=T,y=T)  #stratified Cox regression                                                                                                                    #Efron approximation is defalut tied time
+# Pool results with Rubin
+#MIcombine(model1)
+#summary(MIcombine(model1))
+
+
+#----------------Method 2----------------
+
+#impList <- jomo2mitml.list(imp3.new)  #This is full dataset, I need split
+#class(impList)
+#model1<-with(data=impList,cph(Surv(year,cens)~age10+sex+smoking+fall+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+strat(clus)),x=T,y=T)# cph is strat not strata
+#testEstimates(model1)
+
+#-------------------------------
+
+
+model1.Cam<-with(data=ImpCam,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall),x=T,y=T)
+
+testEstimates(model1.Cam)
+
+model1.IC<-with(data=ImpIC,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall),x=T,y=T)
+testEstimates(model1.IC)
+#X matrix deemed to be singular; variable cognitiveindex=impact ADL data=ImpIC[[6]]]
+#cph(Surv(year,cens)~age10+sex+smoking+fall+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex,x=T,y=T,data=ImpIC[[6]])
+
+#xtabs(~cens+cognitiveindex,data=ImpIC[[6]]) #Problem is the dataset is a perfect classification
+
+model1.NY<-with(data=ImpNY,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall),x=T,y=T)
+testEstimates(model1.NY)
+
+model1.PA<-with(data=ImpPA,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall),x=T,y=T)
+testEstimates(model1.PA)
+
+model1.PIC<-with(data=ImpPIC,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall),x=T,y=T)
+testEstimates(model1.PIC)
+
+model1.PIN<-with(data=ImpPIN,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall),x=T,y=T)
+testEstimates(model1.PIN)
+
+
+summary(data5$study)
+
+```
+
+```{r Cox regression without fall}
+
+model2.Cam<-with(data=ImpCam,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl),x=T,y=T)
+
+testEstimates(model2.Cam)
+
+model2.IC<-with(data=ImpIC,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl),x=T,y=T)
+testEstimates(model2.IC)
+#X matrix deemed to be singular; variable cognitiveindex=impact ADL data=ImpIC[[6]]]
+#cph(Surv(year,cens)~age10+sex+smoking+fall+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex,x=T,y=T,data=ImpIC[[6]])
+
+#xtabs(~cens+cognitiveindex,data=ImpIC[[6]]) #Problem is the dataset is a perfect classification
+
+model2.NY<-with(data=ImpNY,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl),x=T,y=T)
+testEstimates(model2.NY)
+
+model2.PA<-with(data=ImpPA,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl),x=T,y=T)
+testEstimates(model2.PA)
+
+model2.PIC<-with(data=ImpPIC,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl),x=T,y=T)
+testEstimates(model2.PIC)
+
+model2.PIN<-with(data=ImpPIN,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl),x=T,y=T)
+testEstimates(model2.PIN)
+
+```
+
+
+
+```{r Cox regression without sebl charlsonbl}
+
+model2.Cam<-with(data=ImpCam,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+fall),x=T,y=T)
+testEstimates(model2.Cam)
+
+#model2.IC<-with(data=ImpIC,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+fall),x=T,y=T)
+#testEstimates(model2.IC)
+
+
+#table(imp3.IC$cognitiveindex,imp3.IC$Imputation)
+
+
+#X matrix deemed to be singular; variable cognitiveindex=impact ADL data=ImpIC[[6]]]
+#cph(Surv(year,cens)~age10+sex+smoking+fall+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex,x=T,y=T,data=ImpIC[[6]])
+
+#xtabs(~cens+cognitiveindex,data=ImpIC[[6]]) #Problem is the dataset is a perfect classification
+
+model2.NY<-with(data=ImpNY,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+fall),x=T,y=T)
+testEstimates(model2.NY)
+
+model2.PA<-with(data=ImpPA,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+fall),x=T,y=T)
+testEstimates(model2.PA)
+
+model2.PIC<-with(data=ImpPIC,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+fall),x=T,y=T)
+testEstimates(model2.PIC)
+
+model2.PIN<-with(data=ImpPIN,cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+fall),x=T,y=T)
+testEstimates(model2.PIN)
+
+```
+
+
+```{r PH assumption check without sebl charlsonbl}
+
+#Cam model  CamPalGN 
+
+test_names<- paste("testCam.ph",1:9,sep="")   # create names first
+
+for (i in 1:9){
+    testCam.ph_df<-cox.zph(coxph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+fall,data=ImpCam[[i]]),transform = "km") 
+    assign(test_names[i], testCam.ph_df)
+}
+
+round(unlist(testCam.ph3[["table"]]),2) 
+
+#----------------------------------
+
+#IC model    ICICLE
+
+#test_names<- paste("testIC.ph",1:9,sep="")   # create names first
+
+#for (i in 1:9){
+#testIC.ph_df<-cox.zph(coxph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl,data=ImpIC[[i]]),transform = "km") 
+#    assign(test_names[i], testIC.ph_df)
+#}
+
+#round(unlist(testIC.ph3[["table"]]),2)  
+
+
+#--------------------------
+
+#NY model  NYPUM  
+
+test_names<- paste("testNY.ph",1:9,sep="")   # create names first
+
+for (i in 1:9){
+    testNY.ph_df<-cox.zph(coxph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+fall,data=ImpNY[[i]]),transform = "km") 
+    assign(test_names[i], testNY.ph_df)
+}
+
+round(unlist(testNY.ph4[["table"]]),2)  
+
+
+#Problem in NYPUM, age violate the PH assumption,but global=0.20>0.05
+
+#------------------------------------
+
+#PIC model PICNICS 
+
+test_names<- paste("testPIC.ph",1:9,sep="")   # create names first
+
+for (i in 1:9){
+    testPIC.ph_df<-cox.zph(coxph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+fall,data=ImpPIC[[i]]),transform = "km") 
+    assign(test_names[i], testPIC.ph_df)
+}
+
+round(unlist(testPIC.ph3[["table"]]),2) 
+
+#smoking just reach 0.05
+#---------------------------------
+
+
+#PA model  ParkWest
+
+test_names<- paste("testPA.ph",1:9,sep="")   # create names first
+
+for (i in 1:9){
+    testPA.ph_df<-cox.zph(coxph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+fall,data=ImpPA[[i]]),transform = "km") 
+    assign(test_names[i], testPA.ph_df)
+}
+
+round(unlist(testPA.ph6[["table"]]),2) 
+
+
+#------------------------------------
+
+#PIN model  PINE
+
+test_names<- paste("testPIN.ph",1:9,sep="")   # create names first
+
+for (i in 1:9){
+    testPIN.ph_df<-cox.zph(coxph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+fall,data=ImpPIN[[i]]),transform = "km") 
+    assign(test_names[i], testPIN.ph_df)
+}
+
+round(unlist(testPIN.ph1[["table"]]),2) 
+
+#cognitive index <0.05, but Global is good
+```
+
+
+```{r PH plot}
+
+test.ph.plot<-cox.zph(coxph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl,data=ImpNY[[4]]),transform = "km") 
+
+ggcoxzph(test.ph.plot,var=1,ylab = "Beta(t) for age",caption = NULL)+
+  theme_survminer(font.main = 12,font.y = 12,font.x = 12,axis.text.x = element_text(size = 1))
+
+
+test.ph.plot<-cox.zph(coxph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl,data=ImpPIN[[1]]),transform = "km") 
+
+ggcoxzph(test.ph.plot,var=7,ylab = "Beta(t) for cognitiveindex",caption = NULL)+
+  theme_survminer(font.main = 12,font.y = 12,font.x = 12,axis.text.x = element_text(size = 1))
+
+```
+
+```{r logHR}
+
+#testEstimates(model1.Cam)
+#testEstimates(model1.IC)
+#testEstimates(model1.NY)
+#testEstimates(model1.PA)
+#testEstimates(model1.PIC)
+#testEstimates(model1.PIN)
+
+logHR.age<-c(testEstimates(model2.Cam)[[2]][1],testEstimates(model2.NY)[[2]][1],testEstimates(model2.PA)[[2]][1],testEstimates(model2.PIC)[[2]][1],testEstimates(model2.PIN)[[2]][1])
+
+SE.age<-c(testEstimates(model2.Cam)[[2]][9],testEstimates(model2.NY)[[2]][9],testEstimates(model2.PA)[[2]][9],testEstimates(model2.PIC)[[2]][9],testEstimates(model2.PIN)[[2]][9])
+
+
+
+logHR.sex<-c(testEstimates(model2.Cam)[[2]][2],testEstimates(model2.NY)[[2]][2],testEstimates(model2.PA)[[2]][2],testEstimates(model2.PIC)[[2]][2],testEstimates(model2.PIN)[[2]][2])
+
+SE.sex<-c(testEstimates(model2.Cam)[[2]][10],testEstimates(model2.NY)[[2]][10],testEstimates(model2.PA)[[2]][10],testEstimates(model2.PIC)[[2]][10],testEstimates(model2.PIN)[[2]][10])
+
+
+
+logHR.smoking<-c(testEstimates(model2.Cam)[[2]][3],testEstimates(model2.NY)[[2]][3],testEstimates(model2.PA)[[2]][3],testEstimates(model2.PIC)[[2]][3],testEstimates(model2.PIN)[[2]][3])
+
+SE.smoking<-c(testEstimates(model2.Cam)[[2]][11],testEstimates(model2.NY)[[2]][11],testEstimates(model2.PA)[[2]][11],testEstimates(model2.PIC)[[2]][11],testEstimates(model2.PIN)[[2]][11])
+
+
+
+logHR.mdsupdrs3<-c(testEstimates(model2.Cam)[[2]][4],testEstimates(model2.NY)[[2]][4],testEstimates(model2.PA)[[2]][4],testEstimates(model2.PIC)[[2]][4],testEstimates(model2.PIN)[[2]][4])
+
+SE.mdsupdrs3<-c(testEstimates(model2.Cam)[[2]][12],testEstimates(model2.NY)[[2]][12],testEstimates(model2.PA)[[2]][12],testEstimates(model2.PIC)[[2]][12],testEstimates(model2.PIN)[[2]][12])
+
+
+
+logHR.hybl<-c(testEstimates(model2.Cam)[[2]][5],testEstimates(model2.NY)[[2]][5],testEstimates(model2.PA)[[2]][5],testEstimates(model2.PIC)[[2]][5],testEstimates(model2.PIN)[[2]][5])
+
+SE.hybl<-c(testEstimates(model2.Cam)[[2]][13],testEstimates(model2.NY)[[2]][13],testEstimates(model2.PA)[[2]][13],testEstimates(model2.PIC)[[2]][13],testEstimates(model2.PIN)[[2]][13])
+
+
+
+logHR.mmse<-c(testEstimates(model2.Cam)[[2]][6],testEstimates(model2.NY)[[2]][6],testEstimates(model2.PA)[[2]][6],testEstimates(model2.PIC)[[2]][6],testEstimates(model2.PIN)[[2]][6])
+
+SE.mmse<-c(testEstimates(model2.Cam)[[2]][14],testEstimates(model2.NY)[[2]][14],testEstimates(model2.PA)[[2]][14],testEstimates(model2.PIC)[[2]][14],testEstimates(model2.PIN)[[2]][14])
+
+
+logHR.cognitive<-c(testEstimates(model2.Cam)[[2]][7],testEstimates(model2.NY)[[2]][7],testEstimates(model2.PA)[[2]][7],testEstimates(model2.PIC)[[2]][7],testEstimates(model2.PIN)[[2]][7])
+
+SE.cognitive<-c(testEstimates(model2.Cam)[[2]][15],testEstimates(model2.NY)[[2]][15],testEstimates(model2.PA)[[2]][15],testEstimates(model2.PIC)[[2]][15],testEstimates(model2.PIN)[[2]][15])
+
+
+#logHR.sebl<-c(testEstimates(model2.Cam)[[2]][8],testEstimates(model2.IC)[[2]][8],testEstimates(model2.NY)[[2]][8],testEstimates(model2.PA)[[2]][8],testEstimates(model2.PIC)[[2]][8],testEstimates(model2.PIN)[[2]][8])
+
+#SE.sebl<-c(testEstimates(model2.Cam)[[2]][17],testEstimates(model2.IC)[[2]][17],testEstimates(model2.NY)[[2]][17],testEstimates(model2.PA)[[2]][17],testEstimates(model2.PIC)[[2]][17],testEstimates(model2.PIN)[[2]][17])
+
+
+
+#logHR.charlsonbl<-c(testEstimates(model2.Cam)[[2]][9],testEstimates(model2.IC)[[2]][9],testEstimates(model2.NY)[[2]][9],testEstimates(model2.PA)[[2]][9],testEstimates(model2.PIC)[[2]][9],testEstimates(model2.PIN)[[2]][9])
+
+#SE.charlsonbl<-c(testEstimates(model2.Cam)[[2]][18],testEstimates(model2.IC)[[2]][18],testEstimates(model2.NY)[[2]][18],testEstimates(model2.PA)[[2]][18],testEstimates(model2.PIC)[[2]][18],testEstimates(model2.PIN)[[2]][18])
+
+
+logHR.fall<-c(testEstimates(model2.Cam)[[2]][8],testEstimates(model2.NY)[[2]][8],testEstimates(model2.PA)[[2]][8],testEstimates(model2.PIC)[[2]][8],testEstimates(model2.PIN)[[2]][8])
+
+
+SE.fall<-c(testEstimates(model2.Cam)[[2]][16],testEstimates(model2.NY)[[2]][16],testEstimates(model2.PA)[[2]][16],testEstimates(model2.PIC)[[2]][16],testEstimates(model2.PIN)[[2]][16])
+
+
+
+```
+
+```{r meta-analysis}
+library(meta)
+
+levels(data1$study)
+
+sumHR.age<-data.frame(study=c("CamPalGN","NYPUM","PICNICS","ParkWest","PINE"),logHR.age,SE.age)
+
+meta.age<-metagen(logHR.age, SE.age, study, data = sumHR.age,
+                       sm = "HR", method.tau = "REML", hakn = TRUE)
+
+forest(meta.age, comb.fixed = F,
+                 prediction = TRUE)
+
+
+sumHR.sex<-data.frame(study=c("CamPalGN","NYPUM","PICNICS","ParkWest","PINE"),logHR.sex,SE.sex)
+
+meta.sex<-metagen(logHR.sex, SE.sex, study, data = sumHR.sex,
+                       sm = "HR", method.tau = "REML", hakn = TRUE)
+
+forest(meta.sex, comb.fixed = F,
+                 prediction = TRUE)
+
+
+sumHR.smoking<-data.frame(study=c("CamPalGN","NYPUM","PICNICS","ParkWest","PINE"),logHR.smoking,SE.smoking)
+
+meta.smoking<-metagen(logHR.smoking, SE.smoking, study, data = sumHR.smoking,
+                       sm = "HR", method.tau = "REML", hakn = TRUE)
+
+forest(meta.smoking, comb.fixed = F,
+                 prediction = TRUE)
+
+
+
+sumHR.mdsupdrs3<-data.frame(study=c("CamPalGN","NYPUM","PICNICS","ParkWest","PINE"),logHR.mdsupdrs3,SE.mdsupdrs3)
+
+meta.mdsupdrs3<-metagen(logHR.mdsupdrs3, SE.mdsupdrs3, study, data = sumHR.mdsupdrs3,
+                       sm = "HR", method.tau = "REML", hakn = TRUE)
+
+forest(meta.mdsupdrs3, comb.fixed = F,
+                 prediction = TRUE)
+
+
+sumHR.hybl<-data.frame(study=c("CamPalGN","NYPUM","PICNICS","ParkWest","PINE"),logHR.hybl,SE.hybl)
+
+meta.hybl<-metagen(logHR.hybl, SE.hybl, study, data = sumHR.hybl,
+                       sm = "HR", method.tau = "REML", hakn = TRUE)
+
+forest(meta.hybl, comb.fixed = F,
+                 prediction = TRUE)
+
+
+sumHR.mmse<-data.frame(study=c("CamPalGN","NYPUM","PICNICS","ParkWest","PINE"),logHR.mmse,SE.mmse)
+
+meta.mmse<-metagen(logHR.mmse, SE.mmse, study, data = sumHR.mmse,
+                       sm = "HR", method.tau = "REML", hakn = TRUE)
+
+forest(meta.mmse, comb.fixed = F,
+                 prediction = TRUE)
+
+
+sumHR.cognitive<-data.frame(study=c("CamPalGN","NYPUM","PICNICS","ParkWest","PINE"),logHR.cognitive,SE.cognitive)
+
+meta.cognitive<-metagen(logHR.cognitive, SE.cognitive, study, data = sumHR.cognitive,
+                       sm = "HR", method.tau = "REML", hakn = TRUE)
+
+forest(meta.cognitive, comb.fixed = F,
+                 prediction = TRUE)
+
+
+
+
+sumHR.sebl<-data.frame(study=c("CamPalGN","ICICLE","NYPUM","PICNICS","ParkWest","PINE"),logHR.sebl,SE.sebl)
+
+meta.sebl<-metagen(logHR.sebl, SE.sebl, study, data = sumHR.sebl,
+                       sm = "HR", method.tau = "REML", hakn = TRUE)
+
+forest(meta.sebl, comb.fixed = F,
+                 prediction = TRUE)
+
+
+
+sumHR.charlsonbl<-data.frame(study=c("CamPalGN","ICICLE","NYPUM","PICNICS","ParkWest","PINE"),logHR.charlsonbl,SE.charlsonbl)
+
+meta.charlsonbl<-metagen(logHR.charlsonbl, SE.charlsonbl, study, data = sumHR.charlsonbl,
+                       sm = "HR", method.tau = "REML", hakn = TRUE)
+
+forest(meta.charlsonbl, comb.fixed = F,
+                 prediction = TRUE)
+
+
+sumHR.fall<-data.frame(study=c("CamPalGN","NYPUM","PICNICS","ParkWest","PINE"),logHR.fall,SE.fall)
+
+meta.fall<-metagen(logHR.fall, SE.fall, study, data = sumHR.fall,
+                       sm = "HR", method.tau = "REML", hakn = TRUE)
+
+forest(meta.fall, comb.fixed = F,
+                prediction = TRUE)
+
+#Problem with ICICLE data, if adding fall, the estiamte is too big, se.fall=9.0383904
+```
+
+
+
+```{r AIC BIC}
+
+
+AIC.Cam<-c()
+BIC.Cam<-c()
+for (i in 1:9) {
+  modelCam.loop <- cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall, data = ImpCam[[i]])
+  AIC.Cam[i] <- AIC(modelCam.loop)
+  BIC.Cam[i] <- BIC(modelCam.loop)
+}
+
+mean(AIC.Cam)
+mean(BIC.Cam)
+
+
+AIC.IC<-c()
+BIC.IC<-c()
+for (i in 1:9) {
+  modelIC.loop <- cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall, data = ImpIC[[i]])
+  AIC.IC[i] <- AIC(modelIC.loop)
+  BIC.IC[i] <- BIC(modelIC.loop)
+}
+
+mean(AIC.IC)
+mean(BIC.IC)
+
+
+
+AIC.NY<-c()
+BIC.NY<-c()
+for (i in 1:9) {
+  modelNY.loop <- cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall, data = ImpNY[[i]])
+  AIC.NY[i] <- AIC(modelNY.loop)
+  BIC.NY[i] <- BIC(modelNY.loop)
+}
+
+mean(AIC.NY)
+mean(BIC.NY)
+
+
+
+AIC.NY<-c()
+BIC.NY<-c()
+for (i in 1:9) {
+  modelNY.loop <- cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall, data = ImpNY[[i]])
+  AIC.NY[i] <- AIC(modelNY.loop)
+  BIC.NY[i] <- BIC(modelNY.loop)
+}
+
+mean(AIC.NY)
+mean(BIC.NY)
+
+
+
+AIC.PA<-c()
+BIC.PA<-c()
+for (i in 1:9) {
+  modelPA.loop <- cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall, data = ImpPA[[i]])
+  AIC.PA[i] <- AIC(modelPA.loop)
+  BIC.PA[i] <- BIC(modelPA.loop)
+}
+
+mean(AIC.PA)
+mean(BIC.PA)
+
+
+
+AIC.PIC<-c()
+BIC.PIC<-c()
+for (i in 1:9) {
+  modelPIC.loop <- cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall, data = ImpPIC[[i]])
+  AIC.PIC[i] <- AIC(modelPIC.loop)
+  BIC.PIC[i] <- BIC(modelPIC.loop)
+}
+
+mean(AIC.PIC)
+mean(BIC.PIC)
+
+
+AIC.PIN<-c()
+BIC.PIN<-c()
+for (i in 1:9) {
+  modelPIN.loop <- cph(Surv(year,cens)~age10+sex+smoking+mdsupdrs3.10+hybl+mmsebltotal+cognitiveindex+sebl+charlsonbl+fall, data = ImpPIN[[i]])
+  AIC.PIN[i] <- AIC(modelPIN.loop)
+  BIC.PIN[i] <- BIC(modelPIN.loop)
+}
+
+mean(AIC.PIN)
+mean(BIC.PIN)
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+```{r martingale plot}
+
+#Martingale residuals against the continuous predictor (28). Martingale residuals is the difference between the number of observed events and the number of expected events given in the model at each observed time point.  If the functional form in the fitted model is correct, these residuals should be symmetrically distributed with expected value 0
+
+
+#Need to plot by each study
+
+rr.0<-residuals(coxph(Surv(tt,cens)~1,data = data5),type="martingale")  #The data is before imputation, cos this is null model
+
+imp.complete1<-imp3.new%>%
+  filter(Imputation==1)      #First complete data set
+
+imp.complete1$rr.0<-rr.0
+
+plot1<-ggplot(imp.complete1,aes(age10, rr.0)) + 
+         geom_point(cex=1) +
+         geom_smooth(method = "loess", se = T)+
+         xlab("Age(10 years)")+
+         ylab("Martingale residuals")+
+         ylim(c(-2,2))
+
+plot2<- ggplot(imp.complete1,aes(mdsupdrs3.10, rr.0)) + 
+         geom_point(cex=1) +
+         geom_smooth(method = "loess", se = T) +
+         xlab("MDS-UPDRS part 3 score (per 10-point increase)")+
+         ylab("Martingale residuals")+
+         ylim(c(-2,2))   
+
+plot3<-ggplot(imp.complete1,aes(hybl, rr.0)) + 
+        geom_point(cex=1) +
+        geom_smooth(method = "loess", se = T)+
+        xlab("Hoehn and Yahr Scale")+
+        ylab("Martingale residuals")+
+        ylim(c(-2,2))
+
+plot4<- ggplot(imp.complete1,aes(mmsebltotal, rr.0)) + 
+        geom_point(cex=1) +
+        geom_smooth(method = "loess", se = T)+
+        xlab("Mini Mental State Examination test")+
+        ylab("Martingale residuals")+
+        ylim(c(-2,2))
+
+
+grid.arrange(plot1,plot2,plot3,plot4, ncol=2, nrow=2)
+
+```
+
+
+```{r meta-analysis }
+
+#random meta-analysis
+
+
+
+
+
+```

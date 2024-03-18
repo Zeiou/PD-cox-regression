@@ -1,0 +1,877 @@
+---
+title: "Chapter 2"
+output: html_document
+date: "2023-03-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F,eval = T,warning = F,message = F)
+```
+
+```{r library}
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(gridExtra)
+library(Hmisc)
+library(readstata13)
+library(survival)
+library(survminer)
+library(rms)
+library(skimr)
+library(finalfit)
+library(mice)
+library(ggplot2)
+library(GGally)
+library(png)
+library(foreign)
+library(kableExtra)
+library(patchwork)#arrange survival plot
+
+#install.packages('patchwork')
+```
+
+```{r }
+data<-read.dta13("updata3.dta",nonint.factors = T,missing.type = T)
+data[is.na(data)] <- NA  #575
+
+data%>%
+  group_by(diagnosis)%>%
+  summarise(n())
+
+(2/260)*100
+
+```
+
+```{r data}
+
+attach(data)
+
+data<-data %>%
+  mutate(t=dateinstitution)%>%           
+  mutate(t=coalesce(t,datelost))%>%
+  mutate(t=coalesce(t,datedeath))%>%
+  mutate(t=coalesce(t,datelastknownalive))
+
+# sum(is.na(data$t))
+
+data$cens<-ifelse(is.na(dateinstitution),0,1)
+
+
+data$tt<-as.Date(as.character(data$t), format="%Y-%m-%d")-
+                as.Date(as.character(data$datevisitbl), format="%Y-%m-%d")
+
+data$tt<-as.numeric(data$tt)
+
+data$year<-data$tt/365.25
+
+
+# str(data)
+
+data$sex<-factor(data$sex,
+                levels = c(0,1),
+                labels = c("male", "female"))
+
+data$livesalone<-factor(data$livesalone,
+                        levels = c(0,1),
+                        labels = c("no", "yes"))
+
+
+data<-data%>%
+  filter(data$tt>0) #556
+
+#A<-data%>%
+#  filter(data$tt<0 | data$tt<=0)
+
+#A%>%
+#  group_by(diagnosis)%>%
+#  summarise(sum(cens))
+
+
+
+data%>%
+  group_by(diagnosiscat)%>%
+  summarise(sum(casecontrol))
+
+
+
+```
+
+```{r }
+
+summary(data$diagnosiscat)
+
+```
+
+```{r data2}
+
+data2<- subset(data,!(diagnosiscat %in% c("Control")))
+
+data2$group<-ifelse(data2$diagnosiscat=="Atypical parkinsonism",1,0)   # (,yes,no) Atypical parkinsonism=1, Parkinson's disease=0
+
+
+data2$group<-factor(data2$group,
+                    levels = c(0,1),
+                    labels = c("Parkinson's disease","Atypical parkinsonism"))
+```
+
+
+
+```{r eval=FALSE}
+
+# MMSEKM,fig.align = "center",fig.cap = "\\label { } Kaplan-Maier survival curves of MMSE groups.", fig.pos ='H'
+
+data$mmsecat<-cut(data$mmsebltotal,c(0,23,27,30),labels = c("<24","24-27","28-30"))
+
+MMSEKM<-survfit(Surv(tt/365.25,cens)~mmsecat,data=data)
+
+ggsurvplot(MMSEKM,ylab="Survival probability of institutionalisation",xlab="Survival years",data,legend="top",surv.median.line = "hv",legend.labs=c("MMSE:<24","MMSE:24-27","MMSE:28-30"))
+
+
+#data3<-data2%>%
+#  group_by(diagnosiscat)%>%
+ # filter(!is.na(dateinstitution))%>%
+  #select(diagnosiscat,livesalone)
+
+#table(data3)
+
+
+#data4<-data2%>%
+#       group_by(diagnosiscat)%>%
+#       select(cens,diagnosiscat,livesalone)
+
+#table(data4)
+
+```
+
+ 
+**Kaplan-Meier estimation** 
+
+
+```{r reKM}
+
+data$cens.followup<-1-data$cens
+
+reverse.KM<-survfit(Surv(tt/365.25,cens.followup)~diagnosiscat,data=data)
+
+
+
+# KM2
+
+data.frame(groups= c("Parkinson's disease","Atypical parkinsonism","Control"),n=c(200,98,258),median=c(9.26,4.41,10.78),LCL=c(8.30,3.33,10.40),UCL=c(11.08,5.78,11.07))%>%
+  kable(caption='Reverse Kaplan-Meier estimate of the median follow-up time to institutionalisation.',booktabs=T,linesep="",digits=2) %>%
+  footnote(alphabet = c ("The time is year",
+               "LCL is the 95% lower confidence limits;", 
+               "UCL is the 95% upper confidence limits;"
+               ))
+
+
+```
+
+
+```{r reKM detalis}
+
+data$cens.followup<-1-data$cens
+
+reverse.KM.2<-survfit(Surv(tt/365.25,cens.followup)~diagnosis,data=data)
+
+#PSP/CBD
+
+
+#A<-data%>%
+#  filter(diagnosis=="Progressive supranuclear palsy"| diagnosis=="Corticobasal degeneration")
+
+#A$cen.followup<-1-A$cens
+
+#survfit(Surv(tt/365.25,cen.followup)~diagnosiscat,data=A)
+
+```
+
+
+```{r KMplot, fig.align = "center",fig.cap = "\\label { } Kaplan-Maier survival curve.", fig.pos ='H'}
+
+KM<-survfit(Surv(tt/365.25,cens)~diagnosiscat,data=data)
+
+
+ggsurv<-ggsurvplot(KM,
+           ylab="Cumulative probability of institutionalisation",
+           xlab="Time to institutionalisation (years)",
+           data,legend="top",
+           surv.median.line = "none", #"hv"
+           fun = "event",
+           conf.int = TRUE,
+           risk.table = T,
+           risk.table.y.text.col = F,
+           risk.table.y.text = T,
+           risk.table.col = "strata",
+           legend.labs=c("Parkinson's disease","Atypical parkinsonism","Control"),
+           linetype = "strata",
+           font.tickslab= c(12,"bold"),
+           font.legend = c(12, "bold"),
+           ggtheme = theme_classic2(base_size=12))
+
+
+
+ggsurv1<-ggpar(ggsurv, 
+      font.main = c(12, "bold"),
+      font.x = c(12, "bold"),
+      font.y = c(12, "bold"),
+      font.caption = c(12, "bold"), 
+      font.legend = c(12, "bold"))
+
+
+
+#png("KM.png",width = 5100,height =3400,res =600)
+print(ggsurv1, 
+      surv.plot.height = 0.65,
+      risk.table.height = 0.35)
+#dev.off()
+
+
+#jpeg("KM.jpeg",width = 5100,height =3400,res =600)
+#print(ggsurv1, 
+#      surv.plot.height = 0.65,
+#      risk.table.height = 0.35)
+#dev.off()
+
+
+data.AP<-data%>%
+  filter(diagnosiscat=="Atypical parkinsonism")
+
+
+#Progressive supranuclear palsy/Corticobasal degeneration change to same level
+#Dementia with Lewy bodies/Dementia with associated parkinsonism change to same level
+
+
+
+levels(data.AP$diagnosis)<-c("Control", "Progressive supranuclear palsy/Corticobasal degeneration","Dementia with Lewy bodies/Dementia with associated parkinsonism",
+                             "Dementia with Lewy bodies/Dementia with associated parkinsonism", "Drug-induced parkinsonism" ,"Drug-induced tremor",
+                             "Essential tremor", "Idiopathic Parkinson's Disease", "Isolated asymmetric tremor", "Isolated gait disorder", "Multiple system atrophy", "NULL", "Other","Parkinsonism (Unspecified)",
+                             "Progressive supranuclear palsy/Corticobasal degeneration","Tremor (other)","Vascular parkinsonism")
+
+
+KM.AP<-survfit(Surv(tt/365.25,cens)~diagnosis,data=data.AP)
+
+#png("KM-AP.jpeg",width = 8000,height =3400,res =600)
+
+ggsurv.AP<-ggsurvplot(KM.AP,
+           ylab="Cumulative probability of institutionalisation",
+           xlab="Time to institutionalisation (years)",
+           data,legend="top",
+           surv.median.line = "none",
+           fun = "event",
+           conf.int = TRUE,
+           risk.table = T,
+           risk.table.y.text.col = F,
+           risk.table.y.text = T,
+           risk.table.col = "strata",
+           legend.title = "Disease Category",
+           legend.labs=c("PSP/CBD","DLB/DAP","MSA","VP"),
+           linetype = "strata",
+           font.tickslab= c(12,"bold"),
+           font.legend = c(12, "bold"),
+           ggtheme = theme_classic2(base_size=12))
+
+ggsurvAP<-ggpar(ggsurv.AP, 
+      font.main = c(12, "bold"),
+      font.x = c(12, "bold"),
+      font.y = c(12, "bold"),
+      font.caption = c(12, "bold"), 
+      font.legend = c(12, "bold"))
+
+print(ggsurvAP, 
+      surv.plot.height = 0.65,
+      risk.table.height = 0.35)
+
+#dev.off()
+
+
+#Arragnge plot
+
+
+ggsurv<-ggsurvplot(KM,
+           ylab="Cumulative probability of institutionalisation",
+           xlab="Time to institutionalisation (years)",
+           data,legend="top",
+           surv.median.line = "none", #"hv"
+           fun = "event",
+           conf.int = TRUE,
+           risk.table = T,
+           risk.table.y.text.col = F,
+           risk.table.y.text = T,
+           risk.table.col = "strata",
+           legend.labs=c("Parkinson's disease","Atypical parkinsonism","Control"),
+           linetype = "strata",
+           font.tickslab= c(12,"bold"),
+           font.legend = c(12, "bold"),
+           ggtheme = theme_classic2(base_size=12))
+
+ggsurv1<-ggpar(ggsurv, 
+      font.main = c(12, "bold"),
+      font.x = c(12, "bold"),
+      font.y = c(12, "bold"),
+      font.caption = c(12, "bold"), 
+      font.legend = c(12, "bold"))
+
+ggsurv.AP<-ggsurvplot(KM.AP,
+           ylab="Cumulative probability of institutionalisation",
+           xlab="Time to institutionalisation (years)",
+           data,legend="top",
+           surv.median.line = "none",
+           fun = "event",
+           conf.int = TRUE,
+           risk.table = T,
+           risk.table.y.text.col = F,
+           risk.table.y.text = T,
+           risk.table.col = "strata",
+           #legend.title = "Strata",
+           legend.labs=c("PSP/CBD","DLB/DAP","MSA","VP"),
+           linetype = "strata",
+           font.tickslab= c(12,"bold"),
+           font.legend = c(12, "bold"),
+           ggtheme = theme_classic2(base_size=12))
+
+ggsurvAP<-ggpar(ggsurv.AP, 
+      font.main = c(12, "bold"),
+      font.x = c(12, "bold"),
+      font.y = c(12, "bold"),
+      font.caption = c(12, "bold"), 
+      font.legend = c(12, "bold"))
+
+splots<-list()
+
+splots[[1]]<-ggsurv1
+splots[[2]]<-ggsurvAP
+
+
+png("KM-joint.jpeg",width = 9000,height =4000,res =600)
+
+arrange_ggsurvplots(splots,print = T,ncol = 2,nrow = 1,risk.table.height = 0.35)
+
+dev.off()
+
+```
+
+
+**The incidence rates**
+
+```{r incidence}
+
+data%>%
+  group_by(diagnosiscat)%>%
+  summarise('Incidence rate'=paste(round(sum(cens)/as.numeric(sum(year))*100,1),' per 100 person-years'))%>%
+  rename(Group=diagnosiscat)%>%
+  kable(caption=' The incidence rate of institutionalisation.',booktabs=T,linesep="") 
+
+
+
+#SE
+
+data%>%
+  group_by(diagnosiscat)%>%
+  summarise(se=1/sum(cens)^(1/2))
+
+#ln(95%CI) = ln(rate)+/-1.96SE
+
+exp(log(5.1)-1.96*0.1195229)
+	
+```
+
+
+```{r incidence deatails}
+
+data%>%
+  group_by(diagnosis)%>%
+  summarise('Incidence rate'=paste(round(sum(cens)/as.numeric(sum(year))*100,1),' per 100 person-years'))%>%
+  rename(Group=diagnosis)%>%
+  kable(caption=' The incidence rate of institutionalisation.',booktabs=T,linesep="") 
+
+data%>%
+  group_by(diagnosis)%>%
+  summarise(sum(cens))
+
+
+data2%>%
+  group_by(diagnosis)%>%
+  summarise(N.total=n(),N.in=sum(cens),person.year=sum(year),incidence.rate=(sum(cens)/as.numeric(sum(year))*100))
+
+data%>%
+  group_by(diagnosiscat)%>%
+  summarise(N.total=n(),N.in=sum(cens),person.year=sum(year),incidence.rate=(sum(cens)/as.numeric(sum(year))*100))
+
+
+#PSP/CBD
+
+data%>%
+  filter(diagnosis=="Progressive supranuclear palsy"| diagnosis=="Corticobasal degeneration")%>%
+  summarise(rate=round(sum(cens)/as.numeric(sum(year))*100,1))
+
+#SE
+
+data2%>%
+  group_by(diagnosis)%>%
+  summarise(se=1/sum(cens)^(1/2),lower.ci=exp(log(sum(cens)/as.numeric(sum(year))*100)-1.96*1/sum(cens)^(1/2)),upper.ci=exp(log(sum(cens)/as.numeric(sum(year))*100)+1.96*1/sum(cens)^(1/2)))
+
+round(exp(log(2.6)+1.96*1),1)
+
+data%>%
+  group_by(diagnosiscat)%>%
+  summarise(se=1/sum(cens)^(1/2),lower.ci=exp(log(sum(cens)/as.numeric(sum(year))*100)-1.96*1/sum(cens)^(1/2)),upper.ci=exp(log(sum(cens)/as.numeric(sum(year))*100)+1.96*1/sum(cens)^(1/2)))
+
+#SE PSP/CBD
+
+data%>%
+  filter(diagnosis=="Progressive supranuclear palsy"| diagnosis=="Corticobasal degeneration")%>%
+  summarise(se=1/sum(cens)^(1/2),lower.ci=exp(log(sum(cens)/as.numeric(sum(year))*100)-1.96*1/sum(cens)^(1/2)),upper.ci=exp(log(sum(cens)/as.numeric(sum(year))*100)+1.96*1/sum(cens)^(1/2)))
+
+
+data%>%
+  filter(diagnosis=="Progressive supranuclear palsy"| diagnosis=="Corticobasal degeneration")%>%
+  summarise(N.total=n(),N.in=sum(cens),person.year=sum(year),incidence.rate=(sum(cens)/as.numeric(sum(year))*100))
+
+
+data%>%
+  filter(diagnosis=="Dementia with associated parkinsonism")%>%
+  summarise(N.total=n(),N.in=sum(cens),person.year=sum(year),incidence.rate=(sum(cens)/as.numeric(sum(year))*100))
+
+```
+
+
+**Multiple imputation**
+
+
+```{r missplot, fig.align = "center",fig.cap = "\\label { } Cluster analysis showing which predictors tend to be missing on the same patients.", fig.pos ='H'}
+
+data3<-data2
+
+data3<-rename(data3,c("Age at baseline visit"=agebl, "Age at diagnosis of parkinsonian syndrome"=agedx,"Age at onset of of parkinsonian symptoms"=agesymptomonset,"Smoking history in pack-years"=packyears,"ever smoke"=eversmok,"Lives alone"=livesalone,"Charlson co-morbidity index"=charlsonbl,"UPDRS part3 (motor) score"=updrsblpart3,"Hoehn and Yahr Scale"=hybl,"Schwab and England ADL Scale"=sebl,"MMSE at baseline"=mmsebltotal,"MMSE at year 1"=mmseyr1total))
+
+
+plot(naclus(data3[,c(6:18)]))
+
+```
+
+
+```{r misspattern, fig.align = "center",fig.cap = "\\label { } Missing data pattern.", fig.pos ='H'}
+
+explanatory<-c("Smoking history in pack-years","MMSE at baseline","MMSE at year 1")
+dependent<- c("cens","tt")
+
+mispattern<-data3 %>% 
+  missing_pattern(explanatory)
+
+
+```
+
+
+
+
+
+```{r pmm}
+
+pmm<-mice(data2[,c(6,9:18,25:26,28)],method="pmm",seed=81420,m=10,print=F)
+
+```
+
+
+```{r convergence, fig.align = "center",fig.cap = "\\label{ } Mean and standard deviation of the synthetic values plotted against iteration number for the imputed data.", fig.pos ='H'}
+# pmm$visitSequence
+
+plot(pmm)
+
+#tiff("pmm.tif", width=2500, height=2000, res=300)
+
+```
+
+
+```{r densityplot1,fig.height=5, fig.width=10, fig.align = "center",fig.cap = "\\label{ } Density plot of the observed and imputed data of MMSE test score at baseline ", fig.pos ='H' }
+
+densityplot(pmm,~ mmsebltotal,xlab=" Mini Mental State Examination test score at baseline (red line is imputed data and blue line is observed data)" )
+
+
+
+```
+
+
+
+```{r mmsecat}
+
+long<-complete(pmm, 'long', include=TRUE) #include=T means, the long contains original data and 10 imputed data.
+                                          #if include=FALSE or not specified, Error in as.mids(long) : Original data not found.
+
+
+N <- nrow(long)
+for (i in 1:N){
+  if(!is.na(long$mmsebltotal[i])){
+    if (long$mmsebltotal[i] <= 23 ){
+      long$mmsecat[i] = 0
+    }else if (long$mmsebltotal[i] <= 27 && long$mmsebltotal[i] > 23){
+      long$mmsecat[i] = 1
+    }else if (long$mmsebltotal[i] <= 30 && long$mmsebltotal[i] > 27){
+      long$mmsecat[i] = 2
+    }
+  }
+}
+
+
+
+
+long$mmsecat<-factor(long$mmsecat,
+                        levels = c(0,1,2),
+                        labels = c("<24", "24-27", "28-30"))
+
+
+
+pmm.new<-as.mids(long)
+
+
+
+```
+
+
+
+```{r age10}
+
+
+
+long$age10<-long$agebl/10
+                        
+long$packyears10<-long$packyears/10
+
+long$updr3.10<-long$updrsblpart3/10
+
+long$sebl10<-long$sebl/10
+
+pmm.new<-as.mids(long)
+
+
+
+```
+
+
+**Identify the risk factors**
+
+
+```{r cox models,results = 'hide'}
+
+dd<-datadist(long)
+options(datadist='dd')
+
+#modela<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)  #full
+
+modela<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+hybl+sebl+mmsecat+group),fitter=cph,xtrans=pmm.new)
+
+#modelb<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) #without hybl
+
+modelb<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+sebl+mmsecat+group),fitter=cph,xtrans=pmm.new)
+
+#modelc<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) #without updrsblpart3
+
+modelc<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+sebl+mmsecat+group),fitter=cph,xtrans=pmm.new)
+
+#modeld<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+updrsblpart3+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) #without sebl
+
+modeld<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+updrsblpart3+mmsecat+group),fitter=cph,xtrans=pmm.new)
+
+#modele<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+sebl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)  #without hybl updrsblpart3
+
+modele<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+sebl+mmsecat+group),fitter=cph,xtrans=pmm.new)
+
+#modelf<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)  #without hybl sebl  
+
+modelf<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+mmsecat+group),fitter=cph,xtrans=pmm.new) 
+
+#modelg<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new)  #without updrsblpart3 sebl 
+
+modelg<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+hybl+mmsecat+group),fitter=cph,xtrans=pmm.new)   
+
+```
+
+```{r ,eval=FALSE}
+modela   #full
+modelb   #without hybl
+modelc   #without updrsblpart3
+modeld   #without sebl
+modele   #without hybl updrsblpart3
+modelf   #without hybl sebl 
+modelg   #without updrsblpart3 sebl 
+
+```
+
+
+```{r modelselect}
+
+AIC1<-AIC(modela)  #full
+AIC2<-AIC(modelb)  #without hybl
+AIC3<-AIC(modelc)  #without updrsblpart3
+AIC4<-AIC(modeld)  #without sebl
+AIC5<-AIC(modele)  #without hybl updrsblpart3
+AIC6<-AIC(modelf)  #without hybl sebl
+AIC7<-AIC(modelg)  #without updrsblpart3 sebl
+
+
+BIC1<-BIC(modela)  #full
+BIC2<-BIC(modelb)  #without hybl
+BIC3<-BIC(modelc)  #without updrsblpart3
+BIC4<-BIC(modeld)  #without sebl
+BIC5<-BIC(modele)  #without hybl updrsblpart3
+BIC6<-BIC(modelf)  #without hybl sebl
+BIC7<-BIC(modelg)  #without updrsblpart3 sebl
+
+data.frame(Model=c("Full Model","Model without Hoehn & Yahr disease stage","Model without UPDRS part 3 (motor) score","Model without Schwab and England ADL Scale","Model without Hoehn & Yahr disease stage and UPDRS part 3 (motor) score","Model without Hoehn & Yahr disease stage and Schwab and England ADL Scale","Model without UPDRS part 3 (motor) score and Schwab and England ADL Scale") , 'Nagelkerke R-squared' = c(0.36,0.36,0.36,0.36,0.35,0.36,0.36),AIC = c(AIC1,AIC2,AIC3,AIC4,AIC5,AIC6,AIC7), BIC = c(BIC1,BIC2,BIC3,BIC4,BIC5,BIC6,BIC7))%>%
+  kable(caption='Model tests and discrimination indexes.',booktabs=T,linesep="",digits=2)
+
+
+```
+
+
+```{r label}
+
+labs<-c("Beta(t) for Age",
+        "Beta(t) for Sex","Beta(t) for Smoking history in pack-years",
+        "Beta(t) for Lives alone",
+        "Beta(t) for Charlson co-morbidity index","Beta(t) for UPDRS part 3 (motor) score",
+        "Beta(t) for Schwab and England ADL Scale",
+        "Beta(t) for Mini Mental State Examination test",
+        "Beta(t) for Diagnosis")
+
+data.label<-set_label(data2[,c(6,9,10,12:14,16,17,28)],label=labs)
+
+
+colnames(data2)
+
+```
+
+```{r testcox}
+
+
+pmm.new_names <- paste("pmm.new",1:10,sep="")  # create names first
+
+for (i in 1:10){
+    pmm.new_df<-complete(pmm.new,i)
+    assign(pmm.new_names[i], pmm.new_df)
+}
+
+
+test_names<- paste("test.ph",1:10,sep="")   # create names first
+
+for (i in 1:10){
+    test.ph_df<-cox.zph(coxph(Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+mmsecat+group,data=get(paste0("pmm.new",i))),transform = "km")   # data=get(paste0("pmm.new",i))
+    assign(test_names[i], test.ph_df)
+}
+
+
+test.ph<-unlist(test.ph10[["table"]])
+
+test.ph<-as.data.frame(test.ph)
+  
+rownames(test.ph)<-c("Age","Sex","Smoking history in pack-years","Lives alone","Charlson co-morbidity index","UPDRS part 3 (motor) score","Mini Mental State Examination (MMSE) test","Atypical parkinsonism vs PD group","Global") 
+
+
+test.ph %>%
+   kable(caption='\\label{tab:testcox} PH assumption test results.',booktabs=T,linesep="",digits=2)
+
+
+test.ph.plot<-cox.zph(coxph(Surv(tt/365.25,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+mmsecat+group,data=pmm.new10),transform = "km") 
+
+
+#plot(test.ph.plot,ylab = label(data.label))
+
+
+p1<-ggcoxzph(test.ph.plot,var=1,ylab ="Beta(t) for Age",caption = NULL)+
+  theme_survminer(font.main = 12,font.y = 12,font.x = 12,axis.text.x = element_text(size = 1))
+
+p2<-ggcoxzph(test.ph.plot,var=2,ylab = "Beta(t) for Sex",caption = NULL)+
+  theme_survminer(font.main = 12,font.y = 12,font.x = 12,axis.text.x = element_text(size = 1))
+
+p3<-ggcoxzph(test.ph.plot,var=3,ylab = "Beta(t) for Smoking history in pack-years",caption = NULL )+
+  theme_survminer(font.main = 12,font.y = 12,font.x = 12,axis.text.x = element_text(size = 1))
+
+p4<-ggcoxzph(test.ph.plot,var=4,ylab = "Beta(t) for Lives alone",caption = NULL )+
+  theme_survminer(font.main = 12,font.y = 12,font.x = 12,axis.text.x = element_text(size = 1))
+
+p5<-ggcoxzph(test.ph.plot,var=5,ylab = "Beta(t) for Charlson co-morbidity index",caption = NULL)+
+  theme_survminer(font.main = 12,font.y = 12,font.x = 12,axis.text.x = element_text(size = 1))
+
+p6<-ggcoxzph(test.ph.plot,var=6,ylab = "Beta(t) for UPDRS part 3 (motor) score",caption = NULL )+
+  theme_survminer(font.main = 12,font.y = 12,font.x = 12,axis.text.x = element_text(size = 1))
+
+p7<-ggcoxzph(test.ph.plot,var=7,ylab = "Beta(t) for Mini Mental State Examination test",caption = NULL )+
+  theme_survminer(font.main = 12,font.y = 12,font.x = 12,axis.text.x = element_text(size = 1))
+
+p8<-ggcoxzph(test.ph.plot,var=8,ylab = "Beta(t) for Diagnosis",caption = NULL)+
+  theme_survminer(font.main = 12,font.y = 12,font.x = 12,axis.text.x = element_text(size = 1))
+
+p1<-p1[["1"]]
+p2<-p2[["2"]]
+p3<-p3[["3"]]
+p4<-p4[["4"]]
+p5<-p5[["5"]]
+p6<-p6[["6"]]
+p7<-p7[["7"]]
+p8<-p8[["8"]]
+
+
+#p1+p2+p3+p4+p5+p6+p7+p8
+
+#tiff("PHtest.tif", width=2500, height=2500, res=300)
+
+#dev.off()
+
+```
+
+
+```{r martingale,fig.align = "center",fig.cap = "\\label{ } Martingale residuals versus continuous predictors.", fig.pos ='H'}
+
+pmm.new1<-complete(pmm.new,1)
+rr.0<-residuals(coxph(Surv(tt,cens)~1,data = data2),type="martingale")
+
+pmm.new1$rr.0<-rr.0
+
+
+plot1<-ggplot(pmm.new1,aes(agebl, rr.0)) + 
+         geom_point(cex=1) +
+         geom_smooth(method = "loess", se = T)+
+         xlab("Age")+
+         ylab("Martingale residuals")+
+         ylim(c(-2,2))
+
+
+
+plot2<- ggplot(pmm.new1,aes(packyears, rr.0)) + 
+         geom_point(cex=1) +
+         geom_smooth(method = "loess", se = T) +
+         xlab("Smoking history in pack-years")+
+         ylab("Martingale residuals")+
+         ylim(c(-2,2))   
+
+plot3<-ggplot(pmm.new1,aes(updrsblpart3, rr.0)) + 
+        geom_point(cex=1) +
+        geom_smooth(method = "loess", se = T)+
+        xlab("UPDRS part 3 (motor) score")+
+        ylab("Martingale residuals")+
+        ylim(c(-2,2))
+
+
+plot4<- ggplot(pmm.new1,aes(charlsonbl, rr.0)) + 
+        geom_point(cex=1) +
+        geom_smooth(method = "loess", se = T)+
+        xlab("Charlson co-morbidity index")+
+        ylab("Martingale residuals")+
+        ylim(c(-2,2))
+
+
+grid.arrange(plot1,plot2,plot3,plot4, ncol=2, nrow=2)
+
+
+#tiff("martingaletest.tif", width=1500, height=1000, res=300)
+
+#dev.off()
+
+
+```
+
+```{r rcs,results = 'hide'}
+
+modelf1<-fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+updrsblpart3+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with age as 3 knot rcs
+
+
+modelf2<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+rcs(updrsblpart3,3)+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with updrsblpart3 as 3 knot rcs
+
+
+modelf3<-fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+rcs(updrsblpart3,3)+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with age and updrsblpart3 as 3 knot rcs
+
+
+
+##old one, not delete yet:
+
+#modelc3<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+updrsblpart3+rcs(sebl,3)+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with sebl as 3 knot rcs Choose
+
+
+#modelc5<-fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+updrsblpart3+rcs(sebl,3)+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with age and sebl as 3 knot rcs
+
+#modelc6<-fit.mult.impute((Surv(tt,cens)~agebl+sex+packyears+livesalone+charlsonbl+rcs(updrsblpart3,3)+rcs(sebl,3)+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with and updrsblpart3 and sebl as 3 knot rcs
+
+
+#modelc7<-fit.mult.impute((Surv(tt,cens)~rcs(agebl,3)+sex+packyears+livesalone+charlsonbl+rcs(updrsblpart3,3)+rcs(sebl,3)+mmsecat+group),x=T,y=T,surv=T,fitter=cph,xtrans=pmm.new) # with age and updrsblpart3 and sebl as 3 knot rcs
+
+
+
+
+
+```
+
+
+```{r ,eval=FALSE}
+modelf1
+modelf2
+modelf3
+
+```
+
+
+```{r modelselect2}
+AIC.f<-AIC(modelf)    # linear
+
+
+BIC.f<-BIC(modelf)   # linear
+
+
+AICf1<-AIC(modelf1)
+AICf2<-AIC(modelf2)
+AICf3<-AIC(modelf3)
+
+BICf1<-BIC(modelf1)
+BICf2<-BIC(modelf2)
+BICf3<-BIC(modelf3)
+
+
+# restricted cubic splines (RCS)
+
+data.frame(Model=c("Linear model","RCS model with 3 knots in age","RCS model with 3 knots in UPDRS part 3 (motor) score","RCS model with 3 knots in age and UPDRS part 3 (motor) score") , 'Nagelkerke R-squared' = c(0.36,0.36,0.36,0.36),AIC = c(AIC.f,AICf1,AICf2,AICf3), BIC = c(BIC.f,BICf1,BICf2,BICf3))%>%
+  kable(caption=' Compare model with and without Restricted cubic splines (RCS).',booktabs=T,linesep="",digits=2)
+
+```
+
+
+```{r coxout}
+
+modelf.new<-fit.mult.impute((Surv(tt/365.25,cens)~age10+sex+packyears10+livesalone+charlsonbl+updr3.10+mmsecat+group),fitter=cph,xtrans=pmm.new)
+
+
+#summary(modelf.new)
+
+modelf.new
+
+
+  
+```
+
+```{r }
+
+-0.9633+0.5805
+
+round(exp(0.3828),2)
+
+round(exp(0.3828-1.96*0.259620),2)
+
+round(exp(0.9633 -1.96*0.3017),2)
+
+exp(0.3828)
+
+
+
+ 
+0.881640-exp(0.3828)
+
+log(exp(0.3828)/0.881640)/1.96
+
+
+
+
+```
+
+
+
+
+
